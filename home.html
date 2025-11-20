@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* DARK PREMIUM THEME */
+        body { background: #0f0c29; font-family: 'Poppins', sans-serif; margin: 0; padding-bottom: 80px; color: white; }
+        
+        .header {
+            padding: 20px; background: linear-gradient(to right, #24243e, #0f0c29);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .badge { padding: 5px 12px; border-radius: 15px; font-size: 0.7rem; font-weight: bold; margin-top: 5px; display: inline-block; }
+        .inact { background: #e74c3c; color: white; box-shadow: 0 0 10px #e74c3c; }
+        .act { background: #00f260; color: black; box-shadow: 0 0 10px #00f260; }
+
+        /* Activation Banner */
+        .activate-box {
+            margin: 20px; padding: 15px; background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border-radius: 15px; display: flex; justify-content: space-between; align-items: center;
+            animation: pulse 2s infinite; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
+        }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.02);} 100% {transform: scale(1);} }
+
+        /* Grid Layout */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        
+        .card {
+            background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; transition: 0.3s;
+        }
+        .card:active { transform: scale(0.95); }
+        .card i.icon { font-size: 2rem; margin-bottom: 10px; }
+        
+        /* Lock Overlay */
+        .lock-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 12, 41, 0.9); /* Dark overlay */
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(3px); z-index: 10;
+        }
+        .lock-layer i { font-size: 1.5rem; color: #e74c3c; margin-bottom: 5px; }
+        .lock-layer span { font-size: 0.7rem; color: #aaa; font-weight: bold; }
+        
+        /* Timed Lock (Blue) */
+        .time-lock i { color: #3498db; }
+
+        /* Colors */
+        .c-task { color: #ff9a9e; } .c-team { color: #a18cd1; } .c-with { color: #84fab0; } .c-vip { color: #fccb90; }
+
+        /* Profile Icon */
+        .profile-btn {
+            width: 45px; height: 45px; background: #1a1a2e; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; border: 2px solid #333; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <h2 style="margin:0;">Hi, <span id="userName">Loading...</span></h2>
+            <span id="userStatus" class="badge inact">Checking...</span>
+        </div>
+        <!-- UPDATED: Profile Button ekhon checkAccess function call korbe -->
+        <div class="profile-btn" onclick="checkAccess('account.html')">
+            <i class="fas fa-user"></i>
+        </div>
+    </div>
+
+    <!-- ACTIVATION BANNER (Hidden if Active) -->
+    <div id="activateBanner" class="activate-box" onclick="window.location.href='account_active.html'">
+        <div>
+            <b style="font-size:1.1rem;">Activate Account</b><br>
+            <small style="color:#eee;">Unlock All Features Now</small>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid">
+        
+        <!-- 1. DAILY TASK -->
+        <div class="card" onclick="checkAccess('task.html')">
+            <i class="fas fa-tasks icon c-task"></i>
+            <div>Daily Task</div>
+            <!-- Lock Overlay -->
+            <div class="lock-layer" id="lock_task">
+                <i class="fas fa-lock"></i>
+                <span>Activate First</span>
+            </div>
+        </div>
+
+        <!-- 2. MY TEAM (Referral) -->
+        <div class="card" onclick="checkAccess('my_team.html')">
+            <i class="fas fa-users icon c-team"></i>
+            <div>My Team</div>
+            <div class="lock-layer" id="lock_team">
+                <i class="fas fa-lock"></i>
+                <span>Activate First</span>
+            </div>
+        </div>
+
+        <!-- 3. WITHDRAW -->
+        <div class="card" onclick="checkAccess('withdraw.html')">
+            <i class="fas fa-wallet icon c-with"></i>
+            <div>Withdraw</div>
+            <div class="lock-layer" id="lock_withdraw">
+                <i class="fas fa-lock"></i>
+                <span>Activate First</span>
+            </div>
+        </div>
+
+        <!-- 4. VIP LEVEL -->
+        <div class="card" onclick="checkAccess('vip_level.html')">
+            <i class="fas fa-crown icon c-vip"></i>
+            <div>VIP Level</div>
+            <div class="lock-layer" id="lock_vip">
+                <i class="fas fa-lock"></i>
+                <span>Activate First</span>
+            </div>
+        </div>
+
+        <!-- 5. QUESTION GAME (Time Locked) -->
+        <div class="card" onclick="window.location.href='question_game.html'">
+            <i class="fas fa-gamepad icon" style="color:#e0c3fc;"></i>
+            <div>Quiz Game</div>
+            <div class="lock-layer time-lock">
+                <i class="fas fa-clock"></i>
+                <span>21 Days</span>
+            </div>
+        </div>
+
+        <!-- 6. WEEKLY (Time Locked) -->
+        <div class="card" onclick="window.location.href='weekly.html'">
+            <i class="fas fa-calendar-week icon" style="color:#fff;"></i>
+            <div>Weekly</div>
+            <div class="lock-layer time-lock">
+                <i class="fas fa-clock"></i>
+                <span>16 Days</span>
+            </div>
+        </div>
+        
+        <!-- 7. MONTHLY (Time Locked) -->
+        <div class="card" onclick="window.location.href='monthly.html'">
+            <i class="fas fa-calendar-alt icon" style="color:#fff;"></i>
+            <div>Monthly</div>
+            <div class="lock-layer time-lock">
+                <i class="fas fa-clock"></i>
+                <span>16 Days</span>
+            </div>
+        </div>
+        
+        <!-- 8. VIP CLUB (Time Locked) -->
+         <div class="card" onclick="window.location.href='vip_club.html'">
+            <i class="fas fa-gem icon" style="color:#f1c40f;"></i>
+            <div>VIP Club</div>
+            <div class="lock-layer time-lock">
+                <i class="fas fa-clock"></i>
+                <span>21 Days</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
+          authDomain: "art-paid-work001.firebaseapp.com",
+          databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com",
+          projectId: "art-paid-work001",
+          storageBucket: "art-paid-work001.firebasestorage.app",
+          messagingSenderId: "524647364992",
+          appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let currentUserStatus = 'inactive'; // Default
+
+        // --- AUTH CHECK ---
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Get User Data Realtime
+                db.ref('users/' + user.uid).on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if(data) {
+                        // Set Name
+                        document.getElementById('userName').innerText = data.firstName;
+                        
+                        // Check Status
+                        currentUserStatus = data.status; // 'active' or 'inactive'
+                        updateUI(currentUserStatus);
+                    }
+                });
+            } else {
+                // No user -> Go to Login
+                window.location.href = 'login_register.html';
+            }
+        });
+
+        // --- UI UPDATE FUNCTION ---
+        function updateUI(status) {
+            const badge = document.getElementById('userStatus');
+            const banner = document.getElementById('activateBanner');
+            
+            // IDs of lock layers to hide/show
+            const locks = ['lock_task', 'lock_team', 'lock_withdraw', 'lock_vip'];
+
+            if (status === 'active') {
+                // ACTIVE STATE
+                badge.innerText = "ACTIVE";
+                badge.className = "badge act";
+                
+                // Hide Banner
+                banner.style.display = 'none';
+
+                // Remove Locks
+                locks.forEach(id => {
+                    document.getElementById(id).style.display = 'none';
+                });
+
+            } else {
+                // INACTIVE STATE
+                badge.innerText = "INACTIVE";
+                badge.className = "badge inact";
+                
+                // Show Banner
+                banner.style.display = 'flex';
+
+                // Show Locks
+                locks.forEach(id => {
+                    document.getElementById(id).style.display = 'flex';
+                });
+            }
+        }
+
+        // --- NAVIGATION GUARD ---
+        function checkAccess(url) {
+            if (currentUserStatus === 'active') {
+                window.location.href = url;
+            } else {
+                // Vibrate phone for effect
+                if("vibrate" in navigator) navigator.vibrate(200);
+                alert("⛔ ACCOUNT LOCKED!\n\nApni Account Active koren nai.\nDoya kore 'Activate Account' e click kore payment koren.");
+            }
+        }
+    </script>
+</body>
+</html>

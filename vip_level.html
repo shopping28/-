@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Zone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* DARK PREMIUM THEME */
+        body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; min-height: 100vh; }
+        
+        .header { display: flex; align-items: center; margin-bottom: 20px; }
+        .back { color: #aaa; text-decoration: none; font-size: 1.1rem; }
+
+        /* USER STATS */
+        .my-stats {
+            background: linear-gradient(135deg, #f1c40f, #f39c12);
+            padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 30px;
+            color: black; box-shadow: 0 10px 30px rgba(241, 196, 15, 0.3);
+        }
+
+        /* LEVEL CARD */
+        .vip-card {
+            background: #1a1a2e; padding: 20px; border-radius: 15px; margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1); position: relative;
+        }
+        .vip-card.locked { opacity: 0.7; border: 1px dashed #555; }
+        
+        .v-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .v-badge { background: #333; color: #f1c40f; padding: 5px 10px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; }
+        
+        .progress-bar { background: #333; height: 8px; border-radius: 4px; overflow: hidden; margin: 10px 0; }
+        .fill { height: 100%; background: #00f260; width: 0%; transition: 1s; }
+        
+        button.claim-btn {
+            width: 100%; padding: 10px; background: #00f260; color: black; border: none;
+            border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;
+            animation: pulse 1.5s infinite;
+        }
+        button.disabled-btn {
+            width: 100%; padding: 10px; background: #333; color: #aaa; border: none;
+            border-radius: 8px; font-weight: bold; cursor: not-allowed; margin-top: 10px;
+        }
+        
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.02);} 100% {transform: scale(1);} }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="home.html" class="back"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </div>
+
+    <div class="my-stats">
+        <small style="opacity:0.8;">Active Referrals</small>
+        <h1 style="margin:0; font-size:3rem;" id="myRef">0</h1>
+        <small style="font-size:0.8rem;">(Only paid members count)</small>
+    </div>
+
+    <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">VIP Levels</h3>
+    <div id="levelContainer">
+        <p style="text-align:center; color:#666;">Loading...</p>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
+          authDomain: "art-paid-work001.firebaseapp.com",
+          databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com",
+          projectId: "art-paid-work001",
+          storageBucket: "art-paid-work001.firebasestorage.app",
+          messagingSenderId: "524647364992",
+          appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let currentUser = null;
+        let myActiveRefCount = 0; // NEW VARIABLE
+        let claimedLevels = {};
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loadUserData();
+            } else {
+                window.location.href = 'login_register.html';
+            }
+        });
+
+        // 1. Load User Info & Active Referrals
+        function loadUserData() {
+            // Get Claimed History
+            db.ref('users/' + currentUser.uid + '/claimed_levels').on('value', (snap) => {
+                claimedLevels = snap.val() || {};
+            });
+
+            // Get Referral Code and Count ONLY Active Users
+            db.ref('users/' + currentUser.uid + '/ownCode').once('value', (s) => {
+                const code = s.val();
+                if(code) {
+                    db.ref('users').orderByChild('referredBy').equalTo(code).on('value', (teamSnapshot) => {
+                        
+                        let activeCount = 0;
+                        
+                        if(teamSnapshot.exists()){
+                            teamSnapshot.forEach((member) => {
+                                // CHECK STATUS HERE
+                                if(member.val().status === 'active') {
+                                    activeCount++;
+                                }
+                            });
+                        }
+                        
+                        myActiveRefCount = activeCount;
+                        document.getElementById('myRef').innerText = myActiveRefCount;
+                        loadLevelsUI(); // Update UI
+                    });
+                } else {
+                    loadLevelsUI();
+                }
+            });
+        }
+
+        // 2. Load Levels & Generate UI
+        function loadLevelsUI() {
+            db.ref('settings/vip_levels').orderByChild('level').on('value', (snapshot) => {
+                const container = document.getElementById('levelContainer');
+                container.innerHTML = "";
+
+                if(!snapshot.exists()) { container.innerHTML = "<p style='text-align:center; color:#666;'>No levels setup.</p>"; return; }
+
+                const levels = [];
+                snapshot.forEach(c => levels.push(c.val()));
+                levels.sort((a,b) => a.level - b.level);
+
+                levels.forEach(l => {
+                    // Use myActiveRefCount instead of total count
+                    const progress = Math.min((myActiveRefCount / l.target) * 100, 100);
+                    const isClaimed = claimedLevels['level'+l.level] === true;
+                    const isUnlocked = myActiveRefCount >= l.target;
+
+                    let btnHtml = "";
+                    let statusText = `${myActiveRefCount} / ${l.target}`;
+
+                    if (isClaimed) {
+                        btnHtml = `<button class="disabled-btn" style="background:#27ae60; color:white;">COMPLETED <i class="fas fa-check"></i></button>`;
+                    } else if (isUnlocked) {
+                        btnHtml = `<button class="claim-btn" onclick="claimBonus(${l.level}, ${l.bonus})">CLAIM ৳${l.bonus}</button>`;
+                    } else {
+                        btnHtml = `<button class="disabled-btn"><i class="fas fa-lock"></i> Locked</button>`;
+                    }
+
+                    const html = `
+                        <div class="vip-card ${!isUnlocked && !isClaimed ? 'locked' : ''}">
+                            <div class="v-header">
+                                <span class="v-badge">LEVEL ${l.level}</span>
+                                <span style="color:#f1c40f; font-weight:bold;">Reward: ৳${l.bonus}</span>
+                            </div>
+                            <p style="font-size:0.9rem; margin:5px 0;">Require: ${l.target} Active Referrals</p>
+                            
+                            <div class="progress-bar">
+                                <div class="fill" style="width:${progress}%"></div>
+                            </div>
+                            <small style="float:right; color:#aaa;">${statusText}</small>
+                            <div style="clear:both;"></div>
+                            
+                            ${btnHtml}
+                        </div>
+                    `;
+                    container.innerHTML += html;
+                });
+            });
+        }
+
+        // 3. Claim Logic
+        function claimBonus(level, amount) {
+            db.ref('users/' + currentUser.uid + '/balance').transaction(curr => (curr || 0) + amount);
+            db.ref('users/' + currentUser.uid + '/claimed_levels/level' + level).set(true);
+            alert(`Congratulations! ৳${amount} added to your balance.`);
+        }
+
+    </script>
+</body>
+</html>

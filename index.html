@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: #0f0c29; 
+            background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+            font-family: 'Poppins', sans-serif; color: white; overflow: hidden;
+        }
+        .logo-container {
+            width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 25px;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 20px #00f260; animation: pulse 2s infinite; border: 1px solid rgba(255,255,255,0.2);
+        }
+        .logo-container i { font-size: 3rem; background: -webkit-linear-gradient(#00f260, #0575E6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        h1 { margin-top: 20px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; font-size: 1.5rem; }
+        .loader-line { width: 150px; height: 4px; background: #333; margin-top: 20px; border-radius: 2px; overflow: hidden; }
+        .line-inner { height: 100%; width: 0%; background: #00f260; animation: load 3s forwards; }
+
+        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 20px #00f260; } 50% { transform: scale(1.05); box-shadow: 0 0 40px #00f260; } 100% { transform: scale(1); box-shadow: 0 0 20px #00f260; } }
+        @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <i class="fas fa-shopping-bag"></i>
+    </div>
+    <h1>ShoppingFree</h1>
+    <div class="loader-line"><div class="line-inner"></div></div>
+
+    <script>
+        setTimeout(() => { window.location.href = 'login_register.html'; }, 3200);
+    </script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; min-height: 100vh; }
+        
+        .header { display: flex; align-items: center; margin-bottom: 20px; }
+        .back { color: #aaa; text-decoration: none; font-size: 1.1rem; }
+
+        .balance-card {
+            background: linear-gradient(135deg, #00f260, #0575E6);
+            padding: 25px; border-radius: 20px; text-align: center; margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 242, 96, 0.3);
+        }
+        .balance-card h1 { margin: 5px 0; font-size: 2.5rem; }
+        
+        .rules-box {
+            background: rgba(231, 76, 60, 0.1); padding: 10px; border-radius: 10px;
+            border: 1px solid #e74c3c; font-size: 0.85rem; color: #ffcccb; margin-bottom: 20px;
+            display: none; /* Shown via JS */
+        }
+
+        input, select {
+            width: 100%; padding: 15px; background: #1a1a2e; border: 1px solid #333;
+            color: white; margin-bottom: 15px; border-radius: 10px; box-sizing: border-box; outline: none;
+        }
+        button {
+            width: 100%; padding: 15px; background: #00f260; border: none; border-radius: 10px;
+            font-weight: bold; font-size: 1.1rem; cursor: pointer; color: #0f0c29; transition: 0.3s;
+        }
+        button:hover { box-shadow: 0 0 15px #00f260; }
+
+        /* HISTORY SECTION */
+        .history-list { margin-top: 30px; }
+        .h-item {
+            background: #1a1a2e; padding: 15px; border-radius: 10px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center; border: 1px solid #333;
+        }
+        .status { font-size: 0.8rem; font-weight: bold; padding: 4px 8px; border-radius: 5px; }
+        .p { color: #f39c12; background: rgba(243, 156, 18, 0.1); }
+        .a { color: #00f260; background: rgba(0, 242, 96, 0.1); }
+        .r { color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="home.html" class="back"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </div>
+
+    <div class="balance-card">
+        <small>Available Balance</small>
+        <h1>৳ <span id="myBal">0</span></h1>
+    </div>
+
+    <div class="rules-box" id="rulesInfo">
+        <i class="fas fa-exclamation-circle"></i>
+        Requires: Min ৳<span id="minA">500</span> & <span id="minR">0</span> Referrals.
+    </div>
+
+    <form onsubmit="event.preventDefault(); requestWithdraw();">
+        <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Payment Method</label>
+        <select id="wMethod">
+            <option value="Bkash">Bkash (Personal)</option>
+            <option value="Nagad">Nagad (Personal)</option>
+        </select>
+
+        <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Wallet Number</label>
+        <input type="number" id="wWallet" placeholder="01xxxxxxxxx" required>
+
+        <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Amount</label>
+        <input type="number" id="wAmount" placeholder="Enter Amount" required>
+
+        <button type="submit" id="wBtn">WITHDRAW NOW</button>
+    </form>
+
+    <div class="history-list">
+        <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">Withdraw History</h3>
+        <div id="histList">Loading...</div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
+          authDomain: "art-paid-work001.firebaseapp.com",
+          databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com",
+          projectId: "art-paid-work001",
+          storageBucket: "art-paid-work001.firebasestorage.app",
+          messagingSenderId: "524647364992",
+          appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let currentUser = null;
+        let currentBal = 0;
+        let referralCount = 0;
+        let minAmt = 500;
+        let minRefs = 0;
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loadData();
+                loadHistory();
+            } else {
+                window.location.href = 'login_register.html';
+            }
+        });
+
+        function loadData() {
+            // 1. Load Admin Rules
+            db.ref('settings/withdraw_rules').on('value', (s) => {
+                const r = s.val();
+                if(r) {
+                    minAmt = r.minAmount;
+                    minRefs = r.minReferrals;
+                    document.getElementById('minA').innerText = minAmt;
+                    document.getElementById('minR').innerText = minRefs;
+                    document.getElementById('rulesInfo').style.display = 'block';
+                }
+            });
+
+            // 2. Load User Balance & Ref Count
+            db.ref('users/' + currentUser.uid).on('value', (snap) => {
+                const u = snap.val();
+                currentBal = u.balance || 0;
+                document.getElementById('myBal').innerText = currentBal;
+
+                // Count Referrals
+                if(u.ownCode) {
+                    db.ref('users').orderByChild('referredBy').equalTo(u.ownCode).on('value', (team) => {
+                        referralCount = team.numChildren();
+                    });
+                }
+            });
+        }
+
+        function requestWithdraw() {
+            const method = document.getElementById('wMethod').value;
+            const wallet = document.getElementById('wWallet').value;
+            const amount = Number(document.getElementById('wAmount').value);
+
+            // Validations
+            if(amount < minAmt) return alert(`Minimum withdraw is ৳${minAmt}`);
+            if(amount > currentBal) return alert("Insufficient Balance!");
+            if(referralCount < minRefs) return alert(`You need ${minRefs} referrals to withdraw. You have ${referralCount}.`);
+
+            if(!confirm(`Confirm withdraw ৳${amount} to ${method}?`)) return;
+
+            const btn = document.getElementById('wBtn');
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            // 1. Deduct Balance
+            db.ref('users/' + currentUser.uid + '/balance').set(currentBal - amount)
+            .then(() => {
+                // 2. Create Request
+                const req = {
+                    uid: currentUser.uid,
+                    method: method,
+                    wallet: wallet,
+                    amount: amount,
+                    status: 'pending',
+                    timestamp: Date.now()
+                };
+                return db.ref('withdraw_requests').push(req);
+            })
+            .then(() => {
+                alert("Withdraw Request Submitted!");
+                btn.innerText = "WITHDRAW NOW";
+                btn.disabled = false;
+                document.getElementById('wAmount').value = "";
+            })
+            .catch(err => {
+                alert("Error: " + err.message);
+                btn.innerText = "WITHDRAW NOW";
+                btn.disabled = false;
+            });
+        }
+
+        function loadHistory() {
+            db.ref('withdraw_requests').orderByChild('uid').equalTo(currentUser.uid).on('value', (snapshot) => {
+                const list = document.getElementById('histList');
+                list.innerHTML = "";
+                
+                if(!snapshot.exists()) { list.innerHTML = "<small>No history yet.</small>"; return; }
+
+                // Convert to array to reverse (newest first)
+                let arr = [];
+                snapshot.forEach(c => arr.push(c.val()));
+                arr.reverse();
+
+                arr.forEach(w => {
+                    let cls = 'p';
+                    if(w.status === 'approved') cls = 'a';
+                    if(w.status === 'rejected') cls = 'r';
+
+                    list.innerHTML += `
+                        <div class="h-item">
+                            <div>
+                                <b>${w.method}</b> (${w.wallet})<br>
+                                <small>${new Date(w.timestamp).toLocaleDateString()}</small>
+                            </div>
+                            <div style="text-align:right">
+                                <b>৳${w.amount}</b><br>
+                                <span class="status ${cls}">${w.status.toUpperCase()}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+    </script>
+</body>
+</html>

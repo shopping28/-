@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Membership</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* DARK PREMIUM THEME */
+        body {
+            background: #0f0c29; 
+            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* ICON ANIMATION (Cyan/Blue for Weekly) */
+        .weekly-icon {
+            font-size: 4rem;
+            background: -webkit-linear-gradient(#00f260, #0575E6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(5, 117, 230, 0.3));
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        h1 { margin: 0; font-size: 2rem; letter-spacing: 1px; }
+        p { color: #aaa; margin-bottom: 40px; font-size: 0.9rem; }
+
+        /* COUNTDOWN BOXES */
+        .countdown {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        .time-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 15px;
+            min-width: 70px;
+            border: 1px solid rgba(5, 117, 230, 0.3); /* Blue Border */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .time-val {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00f260; /* Green/Cyan Text */
+            display: block;
+        }
+        .time-label {
+            font-size: 0.7rem;
+            color: #ccc;
+            text-transform: uppercase;
+        }
+
+        /* BUTTON */
+        .btn {
+            padding: 12px 40px;
+            border: 2px solid #00f260;
+            color: #00f260;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: 0.3s;
+            background: rgba(255,255,255,0.05);
+        }
+        .btn:hover {
+            background: #00f260;
+            color: #000;
+            box-shadow: 0 0 20px #00f260;
+        }
+        
+        .lock-msg {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            border: 1px solid #e74c3c;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="weekly-icon">
+        <i class="fas fa-calendar-week"></i>
+    </div>
+
+    <h1>Weekly Plan</h1>
+    <p>Special Rewards for Weekly Members</p>
+
+    <div class="lock-msg">
+        <i class="fas fa-lock"></i> CURRENTLY LOCKED
+    </div>
+
+    <div class="countdown">
+        <div class="time-box">
+            <span class="time-val" id="days">16</span>
+            <span class="time-label">Days</span>
+        </div>
+        <div class="time-box">
+            <span class="time-val" id="hours">00</span>
+            <span class="time-label">Hours</span>
+        </div>
+        <div class="time-box">
+            <span class="time-val" id="minutes">00</span>
+            <span class="time-label">Mins</span>
+        </div>
+        <div class="time-box">
+            <span class="time-val" id="seconds">00</span>
+            <span class="time-label">Secs</span>
+        </div>
+    </div>
+
+    <a href="home.html" class="btn">Go Back</a>
+
+    <script>
+        // 1. Set the date we're counting down to (16 days from now)
+        const now = new Date().getTime();
+        // 16 Days * 24 Hours * 60 Mins * 60 Secs * 1000 Ms
+        const countDownDate = new Date(now + (16 * 24 * 60 * 60 * 1000)).getTime();
+
+        // 2. Update the count down every 1 second
+        const x = setInterval(function() {
+
+            const currentTime = new Date().getTime();
+            const distance = countDownDate - currentTime;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerHTML = days;
+            document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
+            document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
+
+            if (distance < 0) {
+                clearInterval(x);
+                document.querySelector(".countdown").innerHTML = "OPEN NOW!";
+            }
+        }, 1000);
+    </script>
+
+</body>
+</html>

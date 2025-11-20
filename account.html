@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* DARK PREMIUM THEME */
+        body { background: #0f0c29; font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; color: white; min-height: 100vh; }
+        
+        .header-nav { margin-bottom: 20px; }
+        .back-btn { color: #aaa; text-decoration: none; font-size: 1.1rem; display: flex; align-items: center; gap: 5px; }
+
+        /* Profile Card */
+        .profile-card {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 30px; border-radius: 20px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;
+            position: relative; overflow: hidden;
+        }
+        /* Glow Effect behind profile */
+        .profile-card::before {
+            content: ''; position: absolute; top: -50px; right: -50px; width: 100px; height: 100px;
+            background: #00f260; filter: blur(60px); opacity: 0.3;
+        }
+
+        .pic-box {
+            width: 90px; height: 90px; margin: 0 auto 15px; border-radius: 50%;
+            background: #0f0c29; display: flex; justify-content: center; align-items: center;
+            border: 3px solid #00f260; box-shadow: 0 0 15px rgba(0, 242, 96, 0.3);
+        }
+        .pic-box i { font-size: 2.5rem; color: #aaa; }
+
+        h2 { margin: 0; font-size: 1.5rem; }
+        .uid-badge { background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 10px; font-size: 0.8rem; color: #bbb; margin-top: 5px; display: inline-block; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-box {
+            background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px;
+            text-align: center; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .stat-box h3 { margin: 5px 0 0; font-size: 1.4rem; color: #fff; }
+        .stat-box small { color: #aaa; font-size: 0.8rem; }
+        .inc-color { color: #00f260 !important; }
+
+        /* Menu Items */
+        .menu-list { background: #1a1a2e; border-radius: 15px; overflow: hidden; margin-bottom: 20px; }
+        .menu-item {
+            padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s;
+        }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:active { background: rgba(255,255,255,0.05); }
+        .menu-left { display: flex; align-items: center; gap: 15px; }
+        .menu-left i { width: 25px; text-align: center; color: #00f260; }
+        .arrow { color: #555; font-size: 0.9rem; }
+
+        /* Logout Button */
+        .logout-btn {
+            width: 100%; padding: 15px; background: rgba(231, 76, 60, 0.1); color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3); border-radius: 12px;
+            font-weight: bold; cursor: pointer; margin-bottom: 30px;
+        }
+
+        /* History Modal (Hidden by default) */
+        #historySection { display: none; margin-top: 10px; background: #111; padding: 10px; border-radius: 10px; }
+        .hist-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; font-size: 0.9rem; }
+        .status-p { color: #f39c12; }
+        .status-a { color: #00f260; }
+        .status-r { color: #e74c3c; }
+
+    </style>
+</head>
+<body>
+
+    <div class="header-nav">
+        <a href="home.html" class="back-btn"><i class="fas fa-chevron-left"></i> Dashboard</a>
+    </div>
+
+    <!-- Profile Header -->
+    <div class="profile-card">
+        <div class="pic-box">
+            <i class="fas fa-user"></i>
+        </div>
+        <h2 id="p_name">Loading...</h2>
+        <div class="uid-badge">Phone: <span id="p_phone">...</span></div>
+        <br>
+        <div class="uid-badge" style="margin-top:10px; background: #333;">Code: <span id="p_code" style="color:#00f260">...</span></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-box">
+            <i class="fas fa-wallet" style="color:#f39c12; font-size:1.2rem;"></i>
+            <h3 class="inc-color">৳ <span id="p_balance">0</span></h3>
+            <small>Total Income</small>
+        </div>
+        <div class="stat-box">
+            <i class="fas fa-users" style="color:#3498db; font-size:1.2rem;"></i>
+            <h3 id="p_team">0</h3>
+            <small>Total Team</small>
+        </div>
+    </div>
+
+    <!-- Menu List -->
+    <div class="menu-list">
+        
+        <!-- Withdraw History -->
+        <div class="menu-item" onclick="toggleHistory()">
+            <div class="menu-left">
+                <i class="fas fa-history"></i>
+                <span>Withdraw History</span>
+            </div>
+            <i class="fas fa-chevron-down arrow"></i>
+        </div>
+        <!-- Hidden History List -->
+        <div id="historySection">
+            <small style="color:#666; display:block; text-align:center; padding:5px;">Recent Transactions</small>
+            <div id="historyContent">
+                <!-- Data will come from Firebase -->
+                <p style="text-align:center; color:#555;">No history found</p>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <div class="menu-left">
+                <i class="fas fa-info-circle"></i>
+                <span>About Us</span>
+            </div>
+            <i class="fas fa-chevron-right arrow"></i>
+        </div>
+
+        <div class="menu-item" onclick="alert('Please contact admin on Telegram')">
+            <div class="menu-left">
+                <i class="fab fa-telegram-plane"></i>
+                <span>Support</span>
+            </div>
+            <i class="fas fa-chevron-right arrow"></i>
+        </div>
+        
+        <div class="menu-item">
+            <div class="menu-left">
+                <i class="fas fa-lock"></i>
+                <span>Change Password</span>
+            </div>
+            <i class="fas fa-chevron-right arrow"></i>
+        </div>
+    </div>
+
+    <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Log Out
+    </button>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
+          authDomain: "art-paid-work001.firebaseapp.com",
+          databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com",
+          projectId: "art-paid-work001",
+          storageBucket: "art-paid-work001.firebasestorage.app",
+          messagingSenderId: "524647364992",
+          appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const uid = user.uid;
+                loadUserData(uid);
+                loadTeamCount(uid);
+                loadWithdrawHistory(uid);
+            } else {
+                window.location.href = 'login_register.html';
+            }
+        });
+
+        // 1. Load Basic Info & Balance
+        function loadUserData(uid) {
+            db.ref('users/' + uid).on('value', (snapshot) => {
+                const data = snapshot.val();
+                if(data) {
+                    document.getElementById('p_name').innerText = data.firstName + " " + data.lastName;
+                    document.getElementById('p_phone').innerText = data.phone;
+                    document.getElementById('p_balance').innerText = data.balance || 0;
+                    document.getElementById('p_code').innerText = data.ownCode || "N/A";
+                }
+            });
+        }
+
+        // 2. Load Team Count (Query users who referredBy = myCode)
+        function loadTeamCount(uid) {
+            db.ref('users/' + uid + '/ownCode').once('value', (snap) => {
+                const myCode = snap.val();
+                if(myCode) {
+                    db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (teamSnap) => {
+                        const count = teamSnap.numChildren();
+                        document.getElementById('p_team').innerText = count;
+                    });
+                }
+            });
+        }
+
+        // 3. Load Withdraw History
+        function loadWithdrawHistory(uid) {
+            db.ref('withdrawals').orderByChild('userId').equalTo(uid).limitToLast(5).on('value', (snapshot) => {
+                const container = document.getElementById('historyContent');
+                container.innerHTML = ""; // Clear previous
+                
+                if(snapshot.exists()) {
+                    snapshot.forEach((child) => {
+                        const w = child.val();
+                        // Determine color based on status
+                        let statusClass = "status-p"; // Pending
+                        if(w.status === "Approved") statusClass = "status-a";
+                        if(w.status === "Rejected") statusClass = "status-r";
+
+                        const html = `
+                            <div class="hist-item">
+                                <span>${w.method} (${w.amount}৳)</span>
+                                <span class="${statusClass}">${w.status}</span>
+                            </div>
+                        `;
+                        container.innerHTML += html;
+                    });
+                } else {
+                    container.innerHTML = '<p style="text-align:center; color:#555; font-size:0.8rem;">No transactions yet.</p>';
+                }
+            });
+        }
+
+        function toggleHistory() {
+            const div = document.getElementById('historySection');
+            if(div.style.display === 'block') div.style.display = 'none';
+            else div.style.display = 'block';
+        }
+
+        function logout() {
+            if(confirm("Are you sure?")) {
+                auth.signOut().then(() => window.location.href = 'login_register.html');
+            }
+        }
+    </script>
+</body>
+</html>
