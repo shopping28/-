@@ -20,7 +20,6 @@
             border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;
             position: relative; overflow: hidden;
         }
-        /* Glow Effect behind profile */
         .profile-card::before {
             content: ''; position: absolute; top: -50px; right: -50px; width: 100px; height: 100px;
             background: #00f260; filter: blur(60px); opacity: 0.3;
@@ -65,13 +64,14 @@
             font-weight: bold; cursor: pointer; margin-bottom: 30px;
         }
 
-        /* History Modal (Hidden by default) */
-        #historySection { display: none; margin-top: 10px; background: #111; padding: 10px; border-radius: 10px; }
+        /* Dropdown Sections */
+        .hidden-section { display: none; margin-top: 0; background: #111; padding: 15px; border-bottom: 1px solid #333; }
         .hist-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; font-size: 0.9rem; }
         .status-p { color: #f39c12; }
         .status-a { color: #00f260; }
         .status-r { color: #e74c3c; }
 
+        .about-text { font-size: 0.85rem; color: #ccc; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -95,6 +95,7 @@
     <div class="stats-grid">
         <div class="stat-box">
             <i class="fas fa-wallet" style="color:#f39c12; font-size:1.2rem;"></i>
+            <!-- এখানে Total Income দেখানো হবে -->
             <h3 class="inc-color">৳ <span id="p_balance">0</span></h3>
             <small>Total Income</small>
         </div>
@@ -109,36 +110,43 @@
     <div class="menu-list">
         
         <!-- Withdraw History -->
-        <div class="menu-item" onclick="toggleHistory()">
+        <div class="menu-item" onclick="toggleSection('historySection')">
             <div class="menu-left">
                 <i class="fas fa-history"></i>
                 <span>Withdraw History</span>
             </div>
             <i class="fas fa-chevron-down arrow"></i>
         </div>
-        <!-- Hidden History List -->
-        <div id="historySection">
-            <small style="color:#666; display:block; text-align:center; padding:5px;">Recent Transactions</small>
+        <div id="historySection" class="hidden-section">
+            <small style="color:#666; display:block; text-align:center; padding-bottom:10px;">Recent Transactions</small>
             <div id="historyContent">
-                <!-- Data will come from Firebase -->
                 <p style="text-align:center; color:#555;">No history found</p>
             </div>
         </div>
 
-        <div class="menu-item">
+        <!-- About Us -->
+        <div class="menu-item" onclick="toggleSection('aboutSection')">
             <div class="menu-left">
                 <i class="fas fa-info-circle"></i>
                 <span>About Us</span>
             </div>
-            <i class="fas fa-chevron-right arrow"></i>
+            <i class="fas fa-chevron-down arrow"></i>
+        </div>
+        <div id="aboutSection" class="hidden-section">
+            <div class="about-text">
+                <p><strong style="color:#00f260">ShoppingFree</strong> is a premium digital earning platform. We connect advertisers with users to provide value for both.</p>
+                <p>Our goal is to create a sustainable community where you can earn by completing simple tasks and referring friends.</p>
+                <p style="margin-bottom:0;">&copy; 2025 Art Paid Work. All rights reserved.</p>
+            </div>
         </div>
 
-        <div class="menu-item" onclick="alert('Please contact admin on Telegram')">
+        <!-- Telegram Support -->
+        <div class="menu-item" onclick="window.open('https://t.me/art_community_offical', '_blank')">
             <div class="menu-left">
                 <i class="fab fa-telegram-plane"></i>
-                <span>Support</span>
+                <span>Join Telegram</span>
             </div>
-            <i class="fas fa-chevron-right arrow"></i>
+            <i class="fas fa-external-link-alt arrow"></i>
         </div>
         
         <div class="menu-item">
@@ -185,20 +193,43 @@
             }
         });
 
-        // 1. Load Basic Info & Balance
+        // এই ফাংশনটি আপডেট করা হয়েছে Total Income দেখানোর জন্য
         function loadUserData(uid) {
+            // ইউজারের তথ্য এবং বর্তমান ব্যালেন্স নেওয়া
             db.ref('users/' + uid).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
                     document.getElementById('p_name').innerText = data.firstName + " " + data.lastName;
                     document.getElementById('p_phone').innerText = data.phone;
-                    document.getElementById('p_balance').innerText = data.balance || 0;
                     document.getElementById('p_code').innerText = data.ownCode || "N/A";
+
+                    // ১. বর্তমান ব্যালেন্স
+                    const currentBalance = data.balance ? parseFloat(data.balance) : 0;
+
+                    // ২. এখন Withdrawals চেক করে দেখা হবে কত টাকা ক্যাশআউট হয়েছে
+                    db.ref('withdrawals').orderByChild('userId').equalTo(uid).on('value', (wSnap) => {
+                        let totalApprovedWithdrawn = 0;
+                        
+                        if(wSnap.exists()){
+                            wSnap.forEach((item) => {
+                                const w = item.val();
+                                // শুধুমাত্র Approved টাকা যোগ হবে
+                                if(w.status === "Approved") {
+                                    totalApprovedWithdrawn += parseFloat(w.amount);
+                                }
+                            });
+                        }
+
+                        // টোটাল ইনকাম = বর্তমান ব্যালেন্স + মোট উত্তোলিত টাকা
+                        const totalIncome = currentBalance + totalApprovedWithdrawn;
+                        
+                        // HTML এ আপডেট করা
+                        document.getElementById('p_balance').innerText = totalIncome.toFixed(2);
+                    });
                 }
             });
         }
 
-        // 2. Load Team Count (Query users who referredBy = myCode)
         function loadTeamCount(uid) {
             db.ref('users/' + uid + '/ownCode').once('value', (snap) => {
                 const myCode = snap.val();
@@ -211,17 +242,18 @@
             });
         }
 
-        // 3. Load Withdraw History
         function loadWithdrawHistory(uid) {
             db.ref('withdrawals').orderByChild('userId').equalTo(uid).limitToLast(5).on('value', (snapshot) => {
                 const container = document.getElementById('historyContent');
-                container.innerHTML = ""; // Clear previous
+                container.innerHTML = ""; 
                 
                 if(snapshot.exists()) {
-                    snapshot.forEach((child) => {
-                        const w = child.val();
-                        // Determine color based on status
-                        let statusClass = "status-p"; // Pending
+                    let items = [];
+                    snapshot.forEach(c => items.push(c.val()));
+                    items.reverse(); // নতুন ট্রানজেকশন উপরে দেখাবে
+
+                    items.forEach((w) => {
+                        let statusClass = "status-p";
                         if(w.status === "Approved") statusClass = "status-a";
                         if(w.status === "Rejected") statusClass = "status-r";
 
@@ -239,14 +271,14 @@
             });
         }
 
-        function toggleHistory() {
-            const div = document.getElementById('historySection');
+        function toggleSection(id) {
+            const div = document.getElementById(id);
             if(div.style.display === 'block') div.style.display = 'none';
             else div.style.display = 'block';
         }
 
         function logout() {
-            if(confirm("Are you sure?")) {
+            if(confirm("Are you sure you want to log out?")) {
                 auth.signOut().then(() => window.location.href = 'login_register.html');
             }
         }
