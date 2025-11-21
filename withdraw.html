@@ -46,28 +46,6 @@
         .a { color: #00f260; background: rgba(0, 242, 96, 0.1); }
         .r { color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
 
-        /* TOTAL WITHDRAWN SECTION - NEW STYLE */
-        .total-withdrawn {
-            margin-top: 30px;
-            padding: 20px;
-            background: #1a1a2e;
-            border-radius: 10px;
-            text-align: center;
-            border: 1px solid #00f260;
-        }
-        .total-withdrawn h3 {
-            margin: 0 0 10px;
-            color: #aaa;
-            font-weight: normal;
-            font-size: 1rem;
-        }
-        .total-withdrawn p {
-            margin: 0;
-            font-size: 2rem;
-            font-weight: bold;
-            color: #00f260;
-        }
-
     </style>
 </head>
 <body>
@@ -95,6 +73,7 @@
 
         <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Wallet Number</label>
         <input type="number" id="wWallet" placeholder="01xxxxxxxxx" required>
+
         <label style="color:#aaa; font-size:0.9rem; display:block; margin-bottom:5px;">Amount</label>
         <input type="number" id="wAmount" placeholder="Enter Amount" required>
 
@@ -102,18 +81,9 @@
     </form>
 
     <div class="history-list">
-        <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">Recent Withdraw History (Last 10)</h3>
+        <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">Withdraw History</h3>
         <div id="histList">Loading...</div>
-    </div>
-    
-    <!-- TOTAL WITHDRAWN AMOUNT - NEW HTML -->
-    <div class="total-withdrawn">
-        <h3>Total Approved Withdraw</h3>
-        <p>৳ <span id="totalAmountWithdrawn">0.00</span></p>
-    </div>
-
-
-    <!-- Firebase SDK -->
+    </div> <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -190,6 +160,7 @@
             const btn = document.getElementById('wBtn');
             btn.innerText = "Processing...";
             btn.disabled = true;
+
             // 1. Deduct Balance
             db.ref('users/' + currentUser.uid + '/balance').set(currentBal - amount)
             .then(() => {
@@ -205,58 +176,124 @@
                 return db.ref('withdraw_requests').push(req);
             })
             .then(() => {
-                alert("Withdraw Request Submitted!");
-                btn.innerText = "WITHDRAW NOW";
+                alert("Withdraw Request Submitted!"); <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
+          authDomain: "art-paid-work001.firebaseapp.com",
+          databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com",
+          projectId: "art-paid-work001",
+          storageBucket: "art-paid-work001.firebasestorage.app",
+          messagingSenderId: "524647364992",
+          appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let currentUser = null;
+        let currentBal = 0;
+        let referralCount = 0;
+        let minAmt = 500;
+        let minRefs = 0;
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loadData();
+                loadHistory();
+            } else {
+                window.location.href = 'login_register.html';
+            }
+        });
+
+        function loadData() {
+            // 1. Load Admin Rules
+            db.ref('settings/withdraw_rules').on('value', (s) => {
+                const r = s.val();
+                if(r) {
+                    minAmt = r.minAmount;
+                    minRefs = r.minReferrals;
+                    document.getElementById('minA').innerText = minAmt;
+                    document.getElementById('minR').innerText = minRefs;
+                    document.getElementById('rulesInfo').style.display = 'block';
+                }
+            });
+
+            // 2. Load User Balance & Ref Count
+            db.ref('users/' + currentUser.uid).on('value', (snap) => {
+                const u = snap.val();
+                currentBal = u.balance || 0;
+                document.getElementById('myBal').innerText = currentBal;
+
+                // Count Referrals
+                if(u.ownCode) {
+                    db.ref('users').orderByChild('referredBy').equalTo(u.ownCode).on('value', (team) => {
+                        referralCount = team.numChildren();
+                    });
+                }
+            });
+        }
+
+        function requestWithdraw() {
+            const method = document.getElementById('wMethod').value;
+            const wallet = document.getElementById('wWallet').value;
+            const amount = Number(document.getElementById('wAmount').value);
+
+            // Validations
+            if(amount < minAmt) return alert(Minimum withdraw is ৳${minAmt});
+            if(amount > currentBal) return alert("Insufficient Balance!");
+            if(referralCount < minRefs) return alert(You need ${minRefs} referrals to withdraw. You have ${referralCount}.);
+
+            if(!confirm(Confirm withdraw ৳${amount} to ${method}?)) return;
+
+            const btn = document.getElementById('wBtn');
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            // 1. Deduct Balance
+            db.ref('users/' + currentUser.uid + '/balance').set(currentBal - amount)
+            .then(() => {
+                // 2. Create Request
+                const req = {
+                    uid: currentUser.uid,
+                    method: method,
+                    wallet: wallet,
+                    amount: amount,
+                    status: 'pending',
+                    timestamp: Date.now()
+                };
+                return db.ref('withdraw_requests').push(req);
+            })
+            .then(() => {
+                alert("Withdraw Request Submitted!"); btn.innerText = "WITHDRAW NOW";
                 btn.disabled = false;
                 document.getElementById('wAmount').value = "";
             })
             .catch(err => {
                 alert("Error: " + err.message);
-                // IMPORTANT: Rollback balance if request fails
-                db.ref('users/' + currentUser.uid + '/balance').set(currentBal);
                 btn.innerText = "WITHDRAW NOW";
                 btn.disabled = false;
             });
         }
 
-        // --- MODIFIED loadHistory Function ---
         function loadHistory() {
             db.ref('withdraw_requests').orderByChild('uid').equalTo(currentUser.uid).on('value', (snapshot) => {
                 const list = document.getElementById('histList');
-                const totalEl = document.getElementById('totalAmountWithdrawn');
                 list.innerHTML = "";
                 
-                if(!snapshot.exists()) {
-                    list.innerHTML = "<small>No history yet.</small>";
-                    totalEl.innerText = "0.00";
-                    return;
-                }
+                if(!snapshot.exists()) { list.innerHTML = "<small>No history yet.</small>"; return; }
 
-                let historyArray = [];
-                let totalWithdrawn = 0;
+                // Convert to array to reverse (newest first)
+                let arr = [];
+                snapshot.forEach(c => arr.push(c.val()));
+                arr.reverse();
 
-                snapshot.forEach(childSnapshot => {
-                    const requestData = childSnapshot.val();
-                    historyArray.push(requestData);
-
-                    // Calculate total amount only from approved requests
-                    if (requestData.status === 'approved') {
-                        totalWithdrawn += Number(requestData.amount);
-                    }
-                });
-                
-                // Update Total Withdrawn Amount display
-                totalEl.innerText = totalWithdrawn.toFixed(2);
-
-                // Reverse array to show newest requests first
-                historyArray.reverse();
-
-                // Slice the array to get only the last 10 items
-                const recentHistory = historyArray.slice(0, 10);
-
-                // Display the recent 10 items
-                recentHistory.forEach(w => {
-                    let cls = 'p'; // pending
+                arr.forEach(w => {
+                    let cls = 'p';
                     if(w.status === 'approved') cls = 'a';
                     if(w.status === 'rejected') cls = 'r';
 
@@ -264,7 +301,7 @@
                         <div class="h-item">
                             <div>
                                 <b>${w.method}</b> (${w.wallet})<br>
-                                <small>${new Date(w.timestamp).toLocaleString()}</small>
+                                <small>${new Date(w.timestamp).toLocaleDateString()}</small>
                             </div>
                             <div style="text-align:right">
                                 <b>৳${w.amount}</b><br>
