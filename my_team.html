@@ -3,64 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Team</title>
+    <title>My Team & Earnings</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; margin: 0; }
         
+        /* Header & Stats */
         .ref-card {
-            background: linear-gradient(135deg, #6a11cb, #2575fc); padding: 25px;
-            border-radius: 20px; text-align: center; margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(37, 117, 252, 0.3);
+            background: linear-gradient(135deg, #6a11cb, #2575fc); padding: 20px;
+            border-radius: 15px; text-align: center; margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3);
         }
         .code-box {
             background: rgba(255,255,255,0.2); border: 1px dashed white;
-            padding: 10px; margin: 15px 0; font-size: 1.8rem; font-weight: bold; letter-spacing: 2px; border-radius: 10px;
+            padding: 8px; margin: 10px 0; font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; border-radius: 8px;
         }
-        
         .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .box { background: #1a1a2e; padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #333; }
-        .box h2 { margin: 5px 0; font-size: 1.5rem; }
-        
-        .member-list { margin-top: 20px; }
-        .member {
-            background: #1a1a2e; padding: 15px; border-radius: 12px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center; border: 1px solid #333;
-        }
-        .active-tag { color: #00f260; background: rgba(0,242,96,0.1); padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; }
-        .inactive-tag { color: #e74c3c; background: rgba(231, 76, 60, 0.1); padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; }
+        .box { background: #1a1a2e; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333; }
+        .box h2 { margin: 5px 0; font-size: 1.4rem; }
 
+        /* Tabs for Levels */
+        .tabs { display: flex; justify-content: space-between; margin-bottom: 15px; background: #161625; padding: 5px; border-radius: 10px; }
+        .tab-btn {
+            flex: 1; border: none; background: none; color: #aaa; padding: 10px;
+            cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.3s;
+        }
+        .tab-btn.active { background: #2575fc; color: white; }
+
+        /* Member List */
+        .level-container { display: none; }
+        .level-container.active { display: block; }
+
+        .member {
+            background: #1e1e2f; padding: 15px; border-radius: 12px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center; border: 1px solid #333;
+            position: relative; overflow: hidden;
+        }
+        .member-info h4 { margin: 0; font-size: 1rem; }
+        .member-info small { color: #aaa; font-size: 0.8rem; }
+        
+        .status-badge { padding: 4px 8px; border-radius: 5px; font-size: 0.75rem; font-weight: bold; }
+        .active-bg { background: rgba(0, 242, 96, 0.15); color: #00f260; }
+        .inactive-bg { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
+
+        .profit-tag {
+            position: absolute; top: 0; right: 0;
+            background: #f1c40f; color: #000;
+            font-size: 0.7rem; padding: 3px 10px;
+            border-bottom-left-radius: 10px; font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <a href="home.html" style="color:white; text-decoration:none; display:block; margin-bottom:20px;">← Back to Home</a>
 
+    <!-- Referral Code Section -->
     <div class="ref-card">
-        <p style="margin:0; opacity:0.8;">Your Referral Code</p>
-        <div class="code-box" id="myCode">...</div>
-        <button onclick="copyCode()" style="background:white; color:#2575fc; border:none; padding:8px 20px; border-radius:20px; font-weight:bold; cursor:pointer;">Copy Code</button>
+        <p style="margin:0; opacity:0.8;">My Referral Code</p>
+        <div class="code-box" id="myCode">Loading...</div>
+        <button onclick="copyCode()" style="background:white; color:#2575fc; border:none; padding:5px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Copy</button>
     </div>
 
+    <!-- Total Stats -->
     <div class="stats">
         <div class="box">
-            <h2 id="totalMembers">0</h2>
-            <small style="color:#aaa;">Total Members</small>
+            <h2 id="totalTeam">0</h2>
+            <small style="color:#aaa;">Total Team</small>
         </div>
         <div class="box">
-            <h2 id="activeMembers" style="color:#00f260;">0</h2>
-            <small style="color:#aaa;">Active Income Users</small>
+            <h2 id="totalIncome" style="color:#f1c40f;">৳0</h2>
+            <small style="color:#aaa;">Total Profit</small>
         </div>
     </div>
 
-    <h3>My Downline (Level 1)</h3>
-    <div class="member-list" id="list">
-        <p style="text-align:center; color:#666;">Loading members...</p>
+    <!-- Tabs for Multi-Level -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('lvl1')">Level 1</button>
+        <button class="tab-btn" onclick="switchTab('lvl2')">Level 2</button>
+        <button class="tab-btn" onclick="switchTab('lvl3')">Level 3</button>
+    </div>
+
+    <!-- Content Areas -->
+    <div id="lvl1" class="level-container active">
+        <p style="text-align:center; color:#666;">Loading Level 1...</p>
+    </div>
+    <div id="lvl2" class="level-container">
+        <p style="text-align:center; color:#666;">Loading Level 2...</p>
+    </div>
+    <div id="lvl3" class="level-container">
+        <p style="text-align:center; color:#666;">Loading Level 3...</p>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
     <script>
+        // Firebase Config
         const firebaseConfig = {
           apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
           authDomain: "art-paid-work001.firebaseapp.com",
@@ -74,14 +113,23 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
+        // CONFIG: Commission Rates (Change these amounts as needed)
+        const COMMISSION = {
+            level1: 50, // Direct referral profit
+            level2: 20, // Downline of downline profit
+            level3: 10  // Level 3 profit
+        };
+
+        let totalTeamCount = 0;
+        let totalProfitCount = 0;
+
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // Get My Code
                 db.ref('users/' + user.uid + '/ownCode').once('value', (snap) => {
                     const code = snap.val();
                     if(code) {
                         document.getElementById('myCode').innerText = code;
-                        loadTeam(code);
+                        startLoadingTeam(code);
                     }
                 });
             } else {
@@ -89,49 +137,129 @@
             }
         });
 
-        function loadTeam(myCode) {
-            // Find users who used myCode
+        // --------------------------
+        // CORE LOGIC FOR MULTI-LEVEL
+        // --------------------------
+        function startLoadingTeam(myCode) {
+            // 1. Load Level 1 (Direct Referrals)
             db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (snapshot) => {
-                const list = document.getElementById('list');
-                list.innerHTML = "";
+                const lvl1Container = document.getElementById('lvl1');
+                lvl1Container.innerHTML = "";
                 
-                let total = 0;
-                let activeCount = 0;
+                let level1Codes = []; // Store codes to find Level 2
 
                 if(snapshot.exists()) {
-                    snapshot.forEach((child) => {
-                        const u = child.val();
-                        total++;
-                        if(u.status === 'active') activeCount++;
-
-                        const statusHtml = u.status === 'active' 
-                            ? `<span class="active-tag">Active</span>` 
-                            : `<span class="inactive-tag">Pending Payment</span>`;
-
-                        const html = `
-                            <div class="member">
-                                <div>
-                                    <b>${u.firstName}</b><br>
-                                    <small style="color:#aaa;">${u.phone}</small>
-                                </div>
-                                ${statusHtml}
-                            </div>
-                        `;
-                        list.innerHTML += html;
+                    snapshot.forEach(child => {
+                        const user = child.val();
+                        renderMember(user, 1, lvl1Container);
+                        if(user.ownCode) level1Codes.push(user.ownCode);
                     });
+                    loadLevel2(level1Codes); // Trigger Level 2 Load
                 } else {
-                    list.innerHTML = '<p style="text-align:center; color:#555;">No members yet.</p>';
+                    lvl1Container.innerHTML = "<p style='text-align:center; color:#555;'>No Direct Referrals.</p>";
+                    document.getElementById('lvl2').innerHTML = "<p style='text-align:center; color:#555;'>No Level 2 Members.</p>";
+                    document.getElementById('lvl3').innerHTML = "<p style='text-align:center; color:#555;'>No Level 3 Members.</p>";
                 }
-
-                document.getElementById('totalMembers').innerText = total;
-                document.getElementById('activeMembers').innerText = activeCount;
             });
+        }
+
+        function loadLevel2(parentCodes) {
+            const lvl2Container = document.getElementById('lvl2');
+            lvl2Container.innerHTML = "";
+            let level2Codes = [];
+
+            if(parentCodes.length === 0) {
+                lvl2Container.innerHTML = "<p style='text-align:center; color:#555;'>No Level 2 Members.</p>";
+                return;
+            }
+
+            // Since Firebase doesn't support "WHERE IN array", we loop through parents
+            parentCodes.forEach(code => {
+                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => {
+                    const user = snap.val();
+                    renderMember(user, 2, lvl2Container);
+                    if(user.ownCode) {
+                        level2Codes.push(user.ownCode);
+                        loadLevel3([user.ownCode]); // Load Level 3 incrementally
+                    }
+                });
+            });
+        }
+
+        function loadLevel3(parentCodes) {
+            const lvl3Container = document.getElementById('lvl3');
+            // Clear only if it says "Loading..."
+            if(lvl3Container.innerHTML.includes("Loading")) lvl3Container.innerHTML = "";
+
+            parentCodes.forEach(code => {
+                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => {
+                    const user = snap.val();
+                    renderMember(user, 3, lvl3Container);
+                });
+            });
+        }
+
+        // --------------------------
+        // UI RENDERING & CALCULATION
+        // --------------------------
+        function renderMember(user, level, container) {
+            // Update Global Counters
+            totalTeamCount++;
+            document.getElementById('totalTeam').innerText = totalTeamCount;
+
+            // Calculate Profit
+            let profit = 0;
+            let statusHtml = "";
+            
+            if(user.status === 'active') {
+                if(level === 1) profit = COMMISSION.level1;
+                if(level === 2) profit = COMMISSION.level2;
+                if(level === 3) profit = COMMISSION.level3;
+                
+                totalProfitCount += profit;
+                document.getElementById('totalIncome').innerText = "৳" + totalProfitCount;
+
+                statusHtml = `<span class="status-badge active-bg">Active</span>`;
+            } else {
+                statusHtml = `<span class="status-badge inactive-bg">Pending</span>`;
+            }
+
+            // Profit Badge HTML (Only show if > 0)
+            const profitBadge = profit > 0 
+                ? `<div class="profit-tag">+ ৳${profit}</div>` 
+                : '';
+
+            const html = `
+                <div class="member">
+                    ${profitBadge}
+                    <div class="member-info">
+                        <h4>${user.firstName || 'User'}</h4>
+                        <small>${user.phone} | Ref: ${user.referredBy || 'N/A'}</small>
+                    </div>
+                    <div>${statusHtml}</div>
+                </div>
+            `;
+            
+            // Check if empty message exists and remove it
+            if(container.innerHTML.includes("Loading") || container.innerHTML.includes("No")) {
+                container.innerHTML = "";
+            }
+            container.innerHTML += html;
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.level-container').forEach(div => div.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
         }
 
         function copyCode() {
             const text = document.getElementById('myCode').innerText;
             navigator.clipboard.writeText(text);
-            alert("Copied!");
+            alert("Code Copied!");
         }
     </script>
 </body>
