@@ -55,10 +55,14 @@
         /* Colors */
         .c-task { color: #ff9a9e; } .c-team { color: #a18cd1; } .c-with { color: #84fab0; } .c-vip { color: #fccb90; }
 
-        /* Profile Icon */
+        /* Profile Icon (UPDATED CSS) */
         .profile-btn {
             width: 45px; height: 45px; background: #1a1a2e; border-radius: 50%;
             display: flex; justify-content: center; align-items: center; border: 2px solid #333; cursor: pointer;
+            overflow: hidden; /* To crop the image in circle */
+        }
+        .profile-btn img {
+            width: 100%; height: 100%; object-fit: cover;
         }
     </style>
 </head>
@@ -70,13 +74,14 @@
             <h2 style="margin:0;">Hi, <span id="userName">Loading...</span></h2>
             <span id="userStatus" class="badge inact">Checking...</span>
         </div>
-        <!-- UPDATED: Profile Button ekhon checkAccess function call korbe -->
-        <div class="profile-btn" onclick="checkAccess('account.html')">
+        
+        <!-- Profile Button (Image will be injected here) -->
+        <div class="profile-btn" id="profileBtn" onclick="checkAccess('account.html')">
             <i class="fas fa-user"></i>
         </div>
     </div>
 
-    <!-- ACTIVATION BANNER (Hidden if Active) -->
+    <!-- ACTIVATION BANNER -->
     <div id="activateBanner" class="activate-box" onclick="window.location.href='account_active.html'">
         <div>
             <b style="font-size:1.1rem;">Activate Account</b><br>
@@ -92,20 +97,17 @@
         <div class="card" onclick="checkAccess('task.html')">
             <i class="fas fa-tasks icon c-task"></i>
             <div>Daily Task</div>
-            <!-- Lock Overlay -->
             <div class="lock-layer" id="lock_task">
-                <i class="fas fa-lock"></i>
-                <span>Activate First</span>
+                <i class="fas fa-lock"></i><span>Activate First</span>
             </div>
         </div>
 
-        <!-- 2. MY TEAM (Referral) -->
+        <!-- 2. MY TEAM -->
         <div class="card" onclick="checkAccess('my_team.html')">
             <i class="fas fa-users icon c-team"></i>
             <div>My Team</div>
             <div class="lock-layer" id="lock_team">
-                <i class="fas fa-lock"></i>
-                <span>Activate First</span>
+                <i class="fas fa-lock"></i><span>Activate First</span>
             </div>
         </div>
 
@@ -114,8 +116,7 @@
             <i class="fas fa-wallet icon c-with"></i>
             <div>Withdraw</div>
             <div class="lock-layer" id="lock_withdraw">
-                <i class="fas fa-lock"></i>
-                <span>Activate First</span>
+                <i class="fas fa-lock"></i><span>Activate First</span>
             </div>
         </div>
 
@@ -124,49 +125,36 @@
             <i class="fas fa-crown icon c-vip"></i>
             <div>VIP Level</div>
             <div class="lock-layer" id="lock_vip">
-                <i class="fas fa-lock"></i>
-                <span>Activate First</span>
+                <i class="fas fa-lock"></i><span>Activate First</span>
             </div>
         </div>
 
-        <!-- 5. QUESTION GAME (Time Locked) -->
+        <!-- 5. QUIZ GAME -->
         <div class="card" onclick="window.location.href='question_game.html'">
             <i class="fas fa-gamepad icon" style="color:#e0c3fc;"></i>
             <div>Quiz Game</div>
-            <div class="lock-layer time-lock">
-                <i class="fas fa-clock"></i>
-                <span>21 Days</span>
-            </div>
+            <div class="lock-layer time-lock"><i class="fas fa-clock"></i><span>21 Days</span></div>
         </div>
 
-        <!-- 6. WEEKLY (Time Locked) -->
+        <!-- 6. WEEKLY -->
         <div class="card" onclick="window.location.href='weekly.html'">
             <i class="fas fa-calendar-week icon" style="color:#fff;"></i>
             <div>Weekly</div>
-            <div class="lock-layer time-lock">
-                <i class="fas fa-clock"></i>
-                <span>16 Days</span>
-            </div>
+            <div class="lock-layer time-lock"><i class="fas fa-clock"></i><span>16 Days</span></div>
         </div>
         
-        <!-- 7. MONTHLY (Time Locked) -->
+        <!-- 7. MONTHLY -->
         <div class="card" onclick="window.location.href='monthly.html'">
             <i class="fas fa-calendar-alt icon" style="color:#fff;"></i>
             <div>Monthly</div>
-            <div class="lock-layer time-lock">
-                <i class="fas fa-clock"></i>
-                <span>16 Days</span>
-            </div>
+            <div class="lock-layer time-lock"><i class="fas fa-clock"></i><span>16 Days</span></div>
         </div>
         
-        <!-- 8. VIP CLUB (Time Locked) -->
+        <!-- 8. VIP CLUB -->
          <div class="card" onclick="window.location.href='vip_club.html'">
             <i class="fas fa-gem icon" style="color:#f1c40f;"></i>
             <div>VIP Club</div>
-            <div class="lock-layer time-lock">
-                <i class="fas fa-clock"></i>
-                <span>21 Days</span>
-            </div>
+            <div class="lock-layer time-lock"><i class="fas fa-clock"></i><span>21 Days</span></div>
         </div>
 
     </div>
@@ -177,7 +165,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // --- FIREBASE CONFIG ---
         const firebaseConfig = {
           apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
           authDomain: "art-paid-work001.firebaseapp.com",
@@ -191,12 +178,10 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        let currentUserStatus = 'inactive'; // Default
+        let currentUserStatus = 'inactive';
 
-        // --- AUTH CHECK ---
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // Get User Data Realtime
                 db.ref('users/' + user.uid).on('value', (snapshot) => {
                     const data = snapshot.val();
                     if(data) {
@@ -204,60 +189,46 @@
                         document.getElementById('userName').innerText = data.firstName;
                         
                         // Check Status
-                        currentUserStatus = data.status; // 'active' or 'inactive'
+                        currentUserStatus = data.status;
                         updateUI(currentUserStatus);
+
+                        // --- UPDATE: SHOW PROFILE PIC ---
+                        if(data.profilePic) {
+                            document.getElementById('profileBtn').innerHTML = `<img src="${data.profilePic}" alt="Profile">`;
+                        } else {
+                            document.getElementById('profileBtn').innerHTML = `<i class="fas fa-user"></i>`;
+                        }
                     }
                 });
             } else {
-                // No user -> Go to Login
                 window.location.href = 'login_register.html';
             }
         });
 
-        // --- UI UPDATE FUNCTION ---
         function updateUI(status) {
             const badge = document.getElementById('userStatus');
             const banner = document.getElementById('activateBanner');
-            
-            // IDs of lock layers to hide/show
             const locks = ['lock_task', 'lock_team', 'lock_withdraw', 'lock_vip'];
 
             if (status === 'active') {
-                // ACTIVE STATE
                 badge.innerText = "ACTIVE";
                 badge.className = "badge act";
-                
-                // Hide Banner
                 banner.style.display = 'none';
-
-                // Remove Locks
-                locks.forEach(id => {
-                    document.getElementById(id).style.display = 'none';
-                });
-
+                locks.forEach(id => document.getElementById(id).style.display = 'none');
             } else {
-                // INACTIVE STATE
                 badge.innerText = "INACTIVE";
                 badge.className = "badge inact";
-                
-                // Show Banner
                 banner.style.display = 'flex';
-
-                // Show Locks
-                locks.forEach(id => {
-                    document.getElementById(id).style.display = 'flex';
-                });
+                locks.forEach(id => document.getElementById(id).style.display = 'flex');
             }
         }
 
-        // --- NAVIGATION GUARD ---
         function checkAccess(url) {
             if (currentUserStatus === 'active') {
                 window.location.href = url;
             } else {
-                // Vibrate phone for effect
                 if("vibrate" in navigator) navigator.vibrate(200);
-                alert("⛔ ACCOUNT LOCKED!\n\nApni Account Active koren nai.\nDoya kore 'Activate Account' e click kore payment koren.");
+                alert("⛔ ACCOUNT LOCKED!\n\nApni Account Active koren nai.");
             }
         }
     </script>
