@@ -91,15 +91,13 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // Default values (will be overwritten by Admin Settings)
         let COMMISSION = { level1: 0, level2: 0, level3: 0 };
         let currentUserCode = null;
 
-        // Step 1: Fetch Commission Settings from Admin
+        // Fetch Commission Settings
         db.ref('settings/commissions').on('value', (snap) => {
             if(snap.exists()) {
                 COMMISSION = snap.val();
-                // If user is already logged in, reload the team to update prices
                 if(currentUserCode) startLoadingTeam(currentUserCode);
             }
         });
@@ -114,7 +112,6 @@
                     if(code) {
                         currentUserCode = code;
                         document.getElementById('myCode').innerText = code;
-                        // Start loading only after we have the user code
                         startLoadingTeam(code);
                     }
                 });
@@ -124,7 +121,6 @@
         });
 
         function startLoadingTeam(myCode) {
-            // Reset counters on reload
             totalTeamCount = 0;
             totalProfitCount = 0;
             document.getElementById('totalTeam').innerText = "0";
@@ -183,6 +179,17 @@
             });
         }
 
+        // --- NEW FUNCTION: MASK PHONE NUMBER ---
+        function maskPhone(number) {
+            if(!number) return "N/A";
+            const s = number.toString();
+            if(s.length >= 11) {
+                // Keep first 3 (017) and last 3 (678), hide middle 5
+                return s.substring(0, 3) + "*****" + s.substring(s.length - 3);
+            }
+            return s; // If number is weird/short, show as is
+        }
+
         function renderMember(user, level, container) {
             totalTeamCount++;
             document.getElementById('totalTeam').innerText = totalTeamCount;
@@ -190,7 +197,6 @@
             let profit = 0;
             let statusHtml = "";
             
-            // Calculate profit based on ADMIN SETTINGS
             if(user.status === 'active') {
                 if(level === 1) profit = COMMISSION.level1;
                 if(level === 2) profit = COMMISSION.level2;
@@ -205,12 +211,15 @@
 
             const profitBadge = profit > 0 ? `<div class="profit-tag">+ ৳${profit}</div>` : '';
 
+            // Using maskPhone function here
+            const hiddenPhone = maskPhone(user.phone);
+
             const html = `
                 <div class="member">
                     ${profitBadge}
                     <div class="member-info">
                         <h4>${user.firstName || 'User'}</h4>
-                        <small>${user.phone} | Ref: ${user.referredBy || 'N/A'}</small>
+                        <small>${hiddenPhone} | Ref: ${user.referredBy || 'N/A'}</small>
                     </div>
                     <div>${statusHtml}</div>
                 </div>
