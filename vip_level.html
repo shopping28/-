@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* DARK PREMIUM THEME */
         body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; min-height: 100vh; }
         
         .header { display: flex; align-items: center; margin-bottom: 20px; }
@@ -24,26 +23,23 @@
         .vip-card {
             background: #1a1a2e; padding: 20px; border-radius: 15px; margin-bottom: 15px;
             border: 1px solid rgba(255,255,255,0.1); position: relative;
+            transition: 0.3s;
         }
-        .vip-card.locked { opacity: 0.7; border: 1px dashed #555; }
+        .vip-card.completed { border-color: #00f260; background: #102a1d; }
+        .vip-card.locked { opacity: 0.6; border: 1px dashed #555; }
         
         .v-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .v-badge { background: #333; color: #f1c40f; padding: 5px 10px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; }
         
         .progress-bar { background: #333; height: 8px; border-radius: 4px; overflow: hidden; margin: 10px 0; }
         .fill { height: 100%; background: #00f260; width: 0%; transition: 1s; }
-        
-        button.claim-btn {
-            width: 100%; padding: 10px; background: #00f260; color: black; border: none;
-            border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;
-            animation: pulse 1.5s infinite;
+
+        .status-tag {
+            display: block; width: 100%; text-align: center; padding: 10px;
+            border-radius: 8px; font-weight: bold; margin-top: 15px;
         }
-        button.disabled-btn {
-            width: 100%; padding: 10px; background: #333; color: #aaa; border: none;
-            border-radius: 8px; font-weight: bold; cursor: not-allowed; margin-top: 10px;
-        }
-        
-        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.02);} 100% {transform: scale(1);} }
+        .tag-success { background: rgba(0, 242, 96, 0.2); color: #00f260; border: 1px solid #00f260; }
+        .tag-locked { background: rgba(255, 255, 255, 0.05); color: #aaa; }
 
     </style>
 </head>
@@ -55,14 +51,11 @@
 
     <div class="my-stats">
         <small style="opacity:0.8;">Active Referrals</small>
-        <h1 style="margin:0; font-size:3rem;" id="myRef">0</h1>
-        <small style="font-size:0.8rem;">(Only paid members count)</small>
+        <h1 style="margin:0; font-size:3rem;" id="myRef">Loading...</h1>
     </div>
 
     <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">VIP Levels</h3>
-    <div id="levelContainer">
-        <p style="text-align:center; color:#666;">Loading...</p>
-    </div>
+    <div id="levelContainer">Loading levels...</div>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -83,108 +76,138 @@
         const db = firebase.database();
 
         let currentUser = null;
-        let myActiveRefCount = 0; // NEW VARIABLE
+        let myActiveCount = 0; // Only Active Users
         let claimedLevels = {};
+        let allLevelsData = [];
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
-                loadUserData();
+                initSystem();
             } else {
                 window.location.href = 'login_register.html';
             }
         });
 
-        // 1. Load User Info & Active Referrals
-        function loadUserData() {
-            // Get Claimed History
-            db.ref('users/' + currentUser.uid + '/claimed_levels').on('value', (snap) => {
-                claimedLevels = snap.val() || {};
+        function initSystem() {
+            // 1. Load Admin Level Settings
+            db.ref('settings/vip_levels').orderByChild('level').on('value', (snap) => {
+                allLevelsData = [];
+                if(snap.exists()) {
+                    snap.forEach(c => allLevelsData.push(c.val()));
+                    allLevelsData.sort((a,b) => a.level - b.level);
+                }
+                checkUserProgress();
             });
 
-            // Get Referral Code and Count ONLY Active Users
+            // 2. Load User Claim History
+            db.ref('users/' + currentUser.uid + '/claimed_levels').on('value', (snap) => {
+                claimedLevels = snap.val() || {};
+                checkUserProgress();
+            });
+
+            // 3. Load & Count ONLY ACTIVE Referrals
             db.ref('users/' + currentUser.uid + '/ownCode').once('value', (s) => {
                 const code = s.val();
                 if(code) {
-                    db.ref('users').orderByChild('referredBy').equalTo(code).on('value', (teamSnapshot) => {
-                        
-                        let activeCount = 0;
-                        
-                        if(teamSnapshot.exists()){
-                            teamSnapshot.forEach((member) => {
+                    db.ref('users').orderByChild('referredBy').equalTo(code).on('value', (team) => {
+                        let activeCounter = 0;
+
+                        if(team.exists()) {
+                            team.forEach(child => {
+                                const member = child.val();
                                 // CHECK STATUS HERE
-                                if(member.val().status === 'active') {
-                                    activeCount++;
+                                if(member.status === 'active') {
+                                    activeCounter++;
                                 }
                             });
                         }
-                        
-                        myActiveRefCount = activeCount;
-                        document.getElementById('myRef').innerText = myActiveRefCount;
-                        loadLevelsUI(); // Update UI
+
+                        myActiveCount = activeCounter;
+                        document.getElementById('myRef').innerText = myActiveCount;
+                        checkUserProgress(); // Re-check levels with new count
                     });
                 } else {
-                    loadLevelsUI();
+                    document.getElementById('myRef').innerText = "0";
                 }
             });
         }
 
-        // 2. Load Levels & Generate UI
-        function loadLevelsUI() {
-            db.ref('settings/vip_levels').orderByChild('level').on('value', (snapshot) => {
-                const container = document.getElementById('levelContainer');
-                container.innerHTML = "";
+        // 4. Main Logic: Check Progress with Active Count
+        function checkUserProgress() {
+            const container = document.getElementById('levelContainer');
+            container.innerHTML = "";
 
-                if(!snapshot.exists()) { container.innerHTML = "<p style='text-align:center; color:#666;'>No levels setup.</p>"; return; }
+            if(allLevelsData.length === 0) {
+                container.innerHTML = "<p style='text-align:center; color:#aaa;'>No VIP levels active.</p>";
+                return;
+            }
 
-                const levels = [];
-                snapshot.forEach(c => levels.push(c.val()));
-                levels.sort((a,b) => a.level - b.level);
+            allLevelsData.forEach(l => {
+                // Calculate progress based on ACTIVE count
+                const progress = Math.min((myActiveCount / l.target) * 100, 100);
+                const isClaimed = claimedLevels['level'+l.level] === true;
+                const isUnlocked = myActiveCount >= l.target;
 
-                levels.forEach(l => {
-                    // Use myActiveRefCount instead of total count
-                    const progress = Math.min((myActiveRefCount / l.target) * 100, 100);
-                    const isClaimed = claimedLevels['level'+l.level] === true;
-                    const isUnlocked = myActiveRefCount >= l.target;
+                // Auto Claim if Unlocked & Not Claimed
+                if (isUnlocked && !isClaimed) {
+                    autoClaimReward(l.level, l.bonus);
+                }
 
-                    let btnHtml = "";
-                    let statusText = `${myActiveRefCount} / ${l.target}`;
+                let statusHtml = "";
+                let cardClass = "";
 
-                    if (isClaimed) {
-                        btnHtml = `<button class="disabled-btn" style="background:#27ae60; color:white;">COMPLETED <i class="fas fa-check"></i></button>`;
-                    } else if (isUnlocked) {
-                        btnHtml = `<button class="claim-btn" onclick="claimBonus(${l.level}, ${l.bonus})">CLAIM ৳${l.bonus}</button>`;
-                    } else {
-                        btnHtml = `<button class="disabled-btn"><i class="fas fa-lock"></i> Locked</button>`;
-                    }
+                if (isClaimed) {
+                    cardClass = "completed";
+                    statusHtml = `<div class="status-tag tag-success"><i class="fas fa-check-circle"></i> REWARD RECEIVED</div>`;
+                } else {
+                    cardClass = "locked";
+                    statusHtml = `<div class="status-tag tag-locked"><i class="fas fa-lock"></i> LOCKED</div>`;
+                }
 
-                    const html = `
-                        <div class="vip-card ${!isUnlocked && !isClaimed ? 'locked' : ''}">
-                            <div class="v-header">
-                                <span class="v-badge">LEVEL ${l.level}</span>
-                                <span style="color:#f1c40f; font-weight:bold;">Reward: ৳${l.bonus}</span>
-                            </div>
-                            <p style="font-size:0.9rem; margin:5px 0;">Require: ${l.target} Active Referrals</p>
-                            
-                            <div class="progress-bar">
-                                <div class="fill" style="width:${progress}%"></div>
-                            </div>
-                            <small style="float:right; color:#aaa;">${statusText}</small>
-                            <div style="clear:both;"></div>
-                            
-                            ${btnHtml}
+                const html = `
+                    <div class="vip-card ${cardClass}">
+                        <div class="v-header">
+                            <span class="v-badge">LEVEL ${l.level}</span>
+                            <span style="color:#f1c40f; font-weight:bold;">Reward: ৳${l.bonus}</span>
                         </div>
-                    `;
-                    container.innerHTML += html;
-                });
+                        <p style="font-size:0.9rem; margin:5px 0;">Target: ${l.target} Active Members</p>
+                        
+                        <div class="progress-bar">
+                            <div class="fill" style="width:${progress}%"></div>
+                        </div>
+                        <small style="float:right; color:#aaa;">${myActiveCount} / ${l.target}</small>
+                        <div style="clear:both;"></div>
+                        
+                        ${statusHtml}
+                    </div>
+                `;
+                container.innerHTML += html;
             });
         }
 
-        // 3. Claim Logic
-        function claimBonus(level, amount) {
-            db.ref('users/' + currentUser.uid + '/balance').transaction(curr => (curr || 0) + amount);
-            db.ref('users/' + currentUser.uid + '/claimed_levels/level' + level).set(true);
-            alert(`Congratulations! ৳${amount} added to your balance.`);
+        // 5. Auto Claim Function
+        function autoClaimReward(level, amount) {
+            const levelKey = 'level' + level;
+            if(claimedLevels[levelKey]) return;
+
+            // Mark locally to prevent loop
+            claimedLevels[levelKey] = true;
+
+            db.ref('users/' + currentUser.uid).transaction((user) => {
+                if (user) {
+                    if (!user.claimed_levels) user.claimed_levels = {};
+                    if (user.claimed_levels[levelKey]) return; // Stop if already on server
+
+                    user.balance = (user.balance || 0) + amount;
+                    user.claimed_levels[levelKey] = true;
+                }
+                return user;
+            }, (error, committed) => {
+                if (committed) {
+                    console.log(`Level ${level} Reward Auto-Added!`);
+                }
+            });
         }
 
     </script>
