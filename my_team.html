@@ -8,7 +8,6 @@
     <style>
         body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; margin: 0; }
         
-        /* Header & Stats */
         .ref-card {
             background: linear-gradient(135deg, #6a11cb, #2575fc); padding: 20px;
             border-radius: 15px; text-align: center; margin-bottom: 20px;
@@ -22,7 +21,6 @@
         .box { background: #1a1a2e; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333; }
         .box h2 { margin: 5px 0; font-size: 1.4rem; }
 
-        /* Tabs for Levels */
         .tabs { display: flex; justify-content: space-between; margin-bottom: 15px; background: #161625; padding: 5px; border-radius: 10px; }
         .tab-btn {
             flex: 1; border: none; background: none; color: #aaa; padding: 10px;
@@ -30,7 +28,6 @@
         }
         .tab-btn.active { background: #2575fc; color: white; }
 
-        /* Member List */
         .level-container { display: none; }
         .level-container.active { display: block; }
 
@@ -57,14 +54,12 @@
 <body>
     <a href="home.html" style="color:white; text-decoration:none; display:block; margin-bottom:20px;">← Back to Home</a>
 
-    <!-- Referral Code Section -->
     <div class="ref-card">
         <p style="margin:0; opacity:0.8;">My Referral Code</p>
         <div class="code-box" id="myCode">Loading...</div>
         <button onclick="copyCode()" style="background:white; color:#2575fc; border:none; padding:5px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Copy</button>
     </div>
 
-    <!-- Total Stats -->
     <div class="stats">
         <div class="box">
             <h2 id="totalTeam">0</h2>
@@ -76,49 +71,38 @@
         </div>
     </div>
 
-    <!-- Tabs for Multi-Level -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('lvl1')">Level 1</button>
         <button class="tab-btn" onclick="switchTab('lvl2')">Level 2</button>
         <button class="tab-btn" onclick="switchTab('lvl3')">Level 3</button>
     </div>
 
-    <!-- Content Areas -->
-    <div id="lvl1" class="level-container active">
-        <p style="text-align:center; color:#666;">Loading Level 1...</p>
-    </div>
-    <div id="lvl2" class="level-container">
-        <p style="text-align:center; color:#666;">Loading Level 2...</p>
-    </div>
-    <div id="lvl3" class="level-container">
-        <p style="text-align:center; color:#666;">Loading Level 3...</p>
-    </div>
+    <div id="lvl1" class="level-container active"> <p style="text-align:center; color:#666;">Loading...</p> </div>
+    <div id="lvl2" class="level-container"> <p style="text-align:center; color:#666;">Loading...</p> </div>
+    <div id="lvl3" class="level-container"> <p style="text-align:center; color:#666;">Loading...</p> </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
     <script>
-        // Firebase Config
-        const firebaseConfig = {
-          apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
-          authDomain: "art-paid-work001.firebaseapp.com",
-          databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com",
-          projectId: "art-paid-work001",
-          storageBucket: "art-paid-work001.firebasestorage.app",
-          messagingSenderId: "524647364992",
-          appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // CONFIG: Commission Rates (Change these amounts as needed)
-        const COMMISSION = {
-            level1: 50, // Direct referral profit
-            level2: 20, // Downline of downline profit
-            level3: 10  // Level 3 profit
-        };
+        // Default values (will be overwritten by Admin Settings)
+        let COMMISSION = { level1: 0, level2: 0, level3: 0 };
+        let currentUserCode = null;
+
+        // Step 1: Fetch Commission Settings from Admin
+        db.ref('settings/commissions').on('value', (snap) => {
+            if(snap.exists()) {
+                COMMISSION = snap.val();
+                // If user is already logged in, reload the team to update prices
+                if(currentUserCode) startLoadingTeam(currentUserCode);
+            }
+        });
 
         let totalTeamCount = 0;
         let totalProfitCount = 0;
@@ -128,7 +112,9 @@
                 db.ref('users/' + user.uid + '/ownCode').once('value', (snap) => {
                     const code = snap.val();
                     if(code) {
+                        currentUserCode = code;
                         document.getElementById('myCode').innerText = code;
+                        // Start loading only after we have the user code
                         startLoadingTeam(code);
                     }
                 });
@@ -137,16 +123,18 @@
             }
         });
 
-        // --------------------------
-        // CORE LOGIC FOR MULTI-LEVEL
-        // --------------------------
         function startLoadingTeam(myCode) {
-            // 1. Load Level 1 (Direct Referrals)
+            // Reset counters on reload
+            totalTeamCount = 0;
+            totalProfitCount = 0;
+            document.getElementById('totalTeam').innerText = "0";
+            document.getElementById('totalIncome').innerText = "৳0";
+
+            // Load Level 1
             db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (snapshot) => {
                 const lvl1Container = document.getElementById('lvl1');
                 lvl1Container.innerHTML = "";
-                
-                let level1Codes = []; // Store codes to find Level 2
+                let level1Codes = [];
 
                 if(snapshot.exists()) {
                     snapshot.forEach(child => {
@@ -154,7 +142,7 @@
                         renderMember(user, 1, lvl1Container);
                         if(user.ownCode) level1Codes.push(user.ownCode);
                     });
-                    loadLevel2(level1Codes); // Trigger Level 2 Load
+                    loadLevel2(level1Codes);
                 } else {
                     lvl1Container.innerHTML = "<p style='text-align:center; color:#555;'>No Direct Referrals.</p>";
                     document.getElementById('lvl2').innerHTML = "<p style='text-align:center; color:#555;'>No Level 2 Members.</p>";
@@ -166,21 +154,18 @@
         function loadLevel2(parentCodes) {
             const lvl2Container = document.getElementById('lvl2');
             lvl2Container.innerHTML = "";
-            let level2Codes = [];
-
+            
             if(parentCodes.length === 0) {
                 lvl2Container.innerHTML = "<p style='text-align:center; color:#555;'>No Level 2 Members.</p>";
                 return;
             }
 
-            // Since Firebase doesn't support "WHERE IN array", we loop through parents
             parentCodes.forEach(code => {
                 db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => {
                     const user = snap.val();
                     renderMember(user, 2, lvl2Container);
                     if(user.ownCode) {
-                        level2Codes.push(user.ownCode);
-                        loadLevel3([user.ownCode]); // Load Level 3 incrementally
+                        loadLevel3([user.ownCode]);
                     }
                 });
             });
@@ -188,7 +173,6 @@
 
         function loadLevel3(parentCodes) {
             const lvl3Container = document.getElementById('lvl3');
-            // Clear only if it says "Loading..."
             if(lvl3Container.innerHTML.includes("Loading")) lvl3Container.innerHTML = "";
 
             parentCodes.forEach(code => {
@@ -199,18 +183,14 @@
             });
         }
 
-        // --------------------------
-        // UI RENDERING & CALCULATION
-        // --------------------------
         function renderMember(user, level, container) {
-            // Update Global Counters
             totalTeamCount++;
             document.getElementById('totalTeam').innerText = totalTeamCount;
 
-            // Calculate Profit
             let profit = 0;
             let statusHtml = "";
             
+            // Calculate profit based on ADMIN SETTINGS
             if(user.status === 'active') {
                 if(level === 1) profit = COMMISSION.level1;
                 if(level === 2) profit = COMMISSION.level2;
@@ -218,16 +198,12 @@
                 
                 totalProfitCount += profit;
                 document.getElementById('totalIncome').innerText = "৳" + totalProfitCount;
-
                 statusHtml = `<span class="status-badge active-bg">Active</span>`;
             } else {
                 statusHtml = `<span class="status-badge inactive-bg">Pending</span>`;
             }
 
-            // Profit Badge HTML (Only show if > 0)
-            const profitBadge = profit > 0 
-                ? `<div class="profit-tag">+ ৳${profit}</div>` 
-                : '';
+            const profitBadge = profit > 0 ? `<div class="profit-tag">+ ৳${profit}</div>` : '';
 
             const html = `
                 <div class="member">
@@ -240,18 +216,15 @@
                 </div>
             `;
             
-            // Check if empty message exists and remove it
             if(container.innerHTML.includes("Loading") || container.innerHTML.includes("No")) {
                 container.innerHTML = "";
             }
             container.innerHTML += html;
         }
 
-        // Tab Switching Logic
         function switchTab(tabId) {
             document.querySelectorAll('.level-container').forEach(div => div.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
         }
