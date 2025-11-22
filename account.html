@@ -25,14 +25,23 @@
             background: #00f260; filter: blur(60px); opacity: 0.3;
         }
 
+        /* Profile Picture Styles */
+        .pic-container { position: relative; width: 90px; height: 90px; margin: 0 auto 15px; }
         .pic-box {
-            width: 90px; height: 90px; margin: 0 auto 15px; border-radius: 50%;
+            width: 100%; height: 100%; border-radius: 50%;
             background: #0f0c29; display: flex; justify-content: center; align-items: center;
-            border: 3px solid #00f260; box-shadow: 0 0 15px rgba(0, 242, 96, 0.3);
+            border: 2px solid #00f260; box-shadow: 0 0 15px rgba(0, 242, 96, 0.3);
+            overflow: hidden; cursor: pointer;
         }
+        .pic-box img { width: 100%; height: 100%; object-fit: cover; }
         .pic-box i { font-size: 2.5rem; color: #aaa; }
+        .camera-icon {
+            position: absolute; bottom: 0; right: 0; background: #00f260; color: black;
+            width: 25px; height: 25px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 0.8rem; border: 2px solid #1a1a2e; pointer-events: none;
+        }
 
-        h2 { margin: 0; font-size: 1.5rem; }
+        h2 { margin: 0; font-size: 1.3rem; }
         .uid-badge { background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 10px; font-size: 0.8rem; color: #bbb; margin-top: 5px; display: inline-block; }
 
         /* Stats Grid */
@@ -41,8 +50,8 @@
             background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px;
             text-align: center; border: 1px solid rgba(255,255,255,0.05);
         }
-        .stat-box h3 { margin: 5px 0 0; font-size: 1.4rem; color: #fff; }
-        .stat-box small { color: #aaa; font-size: 0.8rem; }
+        .stat-box h3 { margin: 5px 0 0; font-size: 1.2rem; color: #fff; }
+        .stat-box small { color: #aaa; font-size: 0.75rem; }
         .inc-color { color: #00f260 !important; }
 
         /* Menu Items */
@@ -53,25 +62,39 @@
         }
         .menu-item:last-child { border-bottom: none; }
         .menu-item:active { background: rgba(255,255,255,0.05); }
-        .menu-left { display: flex; align-items: center; gap: 15px; }
-        .menu-left i { width: 25px; text-align: center; color: #00f260; }
-        .arrow { color: #555; font-size: 0.9rem; }
+        .menu-left { display: flex; align-items: center; gap: 15px; font-size: 0.95rem; }
+        .menu-left i { width: 20px; text-align: center; color: #00f260; }
+        .arrow { color: #555; font-size: 0.8rem; }
 
-        /* Logout Button */
+        /* Hidden Sections */
+        .hidden-section { display: none; background: #111; padding: 20px; border-bottom: 1px solid #333; }
+        
+        /* History Styles */
+        .hist-item { 
+            display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; font-size: 0.9rem; 
+        }
+        .status-p { color: #f1c40f; background: rgba(241, 196, 15, 0.1); padding: 2px 8px; border-radius: 5px; font-size: 0.75rem; }
+        .status-a { color: #00f260; background: rgba(0, 242, 96, 0.1); padding: 2px 8px; border-radius: 5px; font-size: 0.75rem; }
+        .status-r { color: #e74c3c; background: rgba(231, 76, 60, 0.1); padding: 2px 8px; border-radius: 5px; font-size: 0.75rem; }
+
+        /* About Us Styles */
+        .about-content { text-align: left; color: #ccc; font-size: 0.9rem; line-height: 1.6; }
+        .about-content h4 { color: #00f260; margin: 15px 0 5px 0; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .about-content ul { padding-left: 20px; margin: 5px 0; }
+        .about-content li { margin-bottom: 5px; }
+        .founder-card { background: #1a1a2e; padding: 10px; border-radius: 10px; border: 1px solid #333; text-align: center; margin: 10px 0; }
+
+        /* Password Inputs */
+        .pass-input { width: 100%; padding: 12px; margin-bottom: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
+        .update-btn { width: 100%; padding: 12px; background: #00f260; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* Logout */
         .logout-btn {
             width: 100%; padding: 15px; background: rgba(231, 76, 60, 0.1); color: #e74c3c;
             border: 1px solid rgba(231, 76, 60, 0.3); border-radius: 12px;
             font-weight: bold; cursor: pointer; margin-bottom: 30px;
         }
 
-        /* Dropdown Sections */
-        .hidden-section { display: none; margin-top: 0; background: #111; padding: 15px; border-bottom: 1px solid #333; }
-        .hist-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; font-size: 0.9rem; }
-        .status-p { color: #f39c12; }
-        .status-a { color: #00f260; }
-        .status-r { color: #e74c3c; }
-
-        .about-text { font-size: 0.85rem; color: #ccc; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -82,9 +105,15 @@
 
     <!-- Profile Header -->
     <div class="profile-card">
-        <div class="pic-box">
-            <i class="fas fa-user"></i>
+        <div class="pic-container" onclick="document.getElementById('fileInput').click()">
+            <div class="pic-box" id="profilePicBox">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="camera-icon"><i class="fas fa-camera"></i></div>
         </div>
+        <!-- Hidden File Input -->
+        <input type="file" id="fileInput" hidden accept="image/*" onchange="uploadProfilePic(this)">
+
         <h2 id="p_name">Loading...</h2>
         <div class="uid-badge">Phone: <span id="p_phone">...</span></div>
         <br>
@@ -95,7 +124,6 @@
     <div class="stats-grid">
         <div class="stat-box">
             <i class="fas fa-wallet" style="color:#f39c12; font-size:1.2rem;"></i>
-            <!-- এখানে Total Income দেখানো হবে -->
             <h3 class="inc-color">৳ <span id="p_balance">0</span></h3>
             <small>Total Income</small>
         </div>
@@ -111,51 +139,83 @@
         
         <!-- Withdraw History -->
         <div class="menu-item" onclick="toggleSection('historySection')">
-            <div class="menu-left">
-                <i class="fas fa-history"></i>
-                <span>Withdraw History</span>
-            </div>
+            <div class="menu-left"><i class="fas fa-history"></i><span>Withdraw History</span></div>
             <i class="fas fa-chevron-down arrow"></i>
         </div>
         <div id="historySection" class="hidden-section">
-            <small style="color:#666; display:block; text-align:center; padding-bottom:10px;">Recent Transactions</small>
+            <small style="color:#666; display:block; text-align:center; padding-bottom:10px;">Last 10 Transactions</small>
             <div id="historyContent">
-                <p style="text-align:center; color:#555;">No history found</p>
+                <p style="text-align:center; color:#555;">Loading history...</p>
             </div>
         </div>
 
         <!-- About Us -->
         <div class="menu-item" onclick="toggleSection('aboutSection')">
-            <div class="menu-left">
-                <i class="fas fa-info-circle"></i>
-                <span>About Us</span>
-            </div>
+            <div class="menu-left"><i class="fas fa-info-circle"></i><span>About Us</span></div>
             <i class="fas fa-chevron-down arrow"></i>
         </div>
         <div id="aboutSection" class="hidden-section">
-            <div class="about-text">
-                <p><strong style="color:#00f260">ShoppingFree</strong> is a premium digital earning platform. We connect advertisers with users to provide value for both.</p>
-                <p>Our goal is to create a sustainable community where you can earn by completing simple tasks and referring friends.</p>
-                <p style="margin-bottom:0;">&copy; 2025 Art Paid Work. All rights reserved.</p>
+            <div class="about-content">
+                <center>
+                    <i class="fas fa-shield-alt" style="font-size:3rem; color:#00f260; margin-bottom:10px;"></i>
+                    <h3 style="color:white; margin:0;">ShoppingFree</h3>
+                    <small style="color:#aaa;">Version 2.0.1 | © 2025</small>
+                </center>
+                
+                <p>ShoppingFree is the #1 digital earning platform in Bangladesh, designed to help everyone achieve financial freedom through simple online tasks. Our system is fast, secure, and beginner-friendly.</p>
+
+                <h4>🎯 Our Mission</h4>
+                <p>To empower the people of Bangladesh with easy and reliable digital earning opportunities—so anyone can build income from the comfort of home.</p>
+
+                <div class="founder-card">
+                    <i class="fas fa-user-tie" style="color:#f39c12; font-size:1.5rem;"></i>
+                    <p style="margin:5px 0; font-weight:bold; color:white;">The Rafsan</p>
+                    <small>Founder & System Developer</small>
+                    <br><small style="color:#aaa;">Digital Entrepreneur & Visionary</small>
+                </div>
+
+                <h4>💰 Referral Income (3 Levels)</h4>
+                <ul>
+                    <li><strong style="color:#00f260">Level 1 (Direct):</strong> Earn 130 Taka</li>
+                    <li><strong style="color:#3498db">Level 2 (Downline):</strong> Earn 20 Taka</li>
+                    <li><strong style="color:#e74c3c">Level 3 (Super):</strong> Earn 10 Taka</li>
+                </ul>
+
+                <h4>🚀 Upcoming Features</h4>
+                <ul>
+                    <li>🎮 <strong>Game Zone:</strong> Play & Earn, Lucky Spin</li>
+                    <li>💎 <strong>VIP Club:</strong> Higher income rates & rewards</li>
+                    <li>📅 <strong>Plans:</strong> Monthly & Weekly Membership</li>
+                    <li>📝 <strong>Tasks:</strong> Ad view, Surveys, Share & Earn</li>
+                </ul>
+
+                <h4>❤️ Why Users Love Us</h4>
+                <p>
+                    ✔ Trusted by 10,000+ active users<br>
+                    ✔ 24/7 fast payments<br>
+                    ✔ Fully secure system<br>
+                    ✔ Transparent income structure
+                </p>
             </div>
         </div>
 
-        <!-- Telegram Support -->
+        <!-- Telegram -->
         <div class="menu-item" onclick="window.open('https://t.me/art_community_offical', '_blank')">
-            <div class="menu-left">
-                <i class="fab fa-telegram-plane"></i>
-                <span>Join Telegram</span>
-            </div>
+            <div class="menu-left"><i class="fab fa-telegram-plane"></i><span>Join Telegram</span></div>
             <i class="fas fa-external-link-alt arrow"></i>
         </div>
         
-        <div class="menu-item">
-            <div class="menu-left">
-                <i class="fas fa-lock"></i>
-                <span>Change Password</span>
-            </div>
-            <i class="fas fa-chevron-right arrow"></i>
+        <!-- Change Password -->
+        <div class="menu-item" onclick="toggleSection('passSection')">
+            <div class="menu-left"><i class="fas fa-lock"></i><span>Change Password</span></div>
+            <i class="fas fa-chevron-down arrow"></i>
         </div>
+        <div id="passSection" class="hidden-section">
+            <input type="password" id="oldPass" class="pass-input" placeholder="Enter Old Password">
+            <input type="password" id="newPass" class="pass-input" placeholder="Enter New Password (min 6 chars)">
+            <button class="update-btn" onclick="changePassword()">Update Password</button>
+        </div>
+
     </div>
 
     <button class="logout-btn" onclick="logout()">
@@ -182,52 +242,67 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
+        let currentUser = null;
+        let currentUserEmail = "";
+
         auth.onAuthStateChanged((user) => {
             if (user) {
-                const uid = user.uid;
-                loadUserData(uid);
-                loadTeamCount(uid);
-                loadWithdrawHistory(uid);
+                currentUser = user;
+                currentUserEmail = user.email;
+                loadUserData(user.uid);
+                loadTeamCount(user.uid);
+                loadWithdrawHistory(user.uid);
             } else {
                 window.location.href = 'login_register.html';
             }
         });
 
-        // এই ফাংশনটি আপডেট করা হয়েছে Total Income দেখানোর জন্য
         function loadUserData(uid) {
-            // ইউজারের তথ্য এবং বর্তমান ব্যালেন্স নেওয়া
             db.ref('users/' + uid).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
-                    document.getElementById('p_name').innerText = data.firstName + " " + data.lastName;
+                    document.getElementById('p_name').innerText = data.firstName + " " + (data.lastName || "");
                     document.getElementById('p_phone').innerText = data.phone;
+                    document.getElementById('p_balance').innerText = data.balance ? data.balance.toFixed(2) : 0;
                     document.getElementById('p_code').innerText = data.ownCode || "N/A";
 
-                    // ১. বর্তমান ব্যালেন্স
-                    const currentBalance = data.balance ? parseFloat(data.balance) : 0;
-
-                    // ২. এখন Withdrawals চেক করে দেখা হবে কত টাকা ক্যাশআউট হয়েছে
-                    db.ref('withdrawals').orderByChild('userId').equalTo(uid).on('value', (wSnap) => {
-                        let totalApprovedWithdrawn = 0;
-                        
-                        if(wSnap.exists()){
-                            wSnap.forEach((item) => {
-                                const w = item.val();
-                                // শুধুমাত্র Approved টাকা যোগ হবে
-                                if(w.status === "Approved") {
-                                    totalApprovedWithdrawn += parseFloat(w.amount);
-                                }
-                            });
-                        }
-
-                        // টোটাল ইনকাম = বর্তমান ব্যালেন্স + মোট উত্তোলিত টাকা
-                        const totalIncome = currentBalance + totalApprovedWithdrawn;
-                        
-                        // HTML এ আপডেট করা
-                        document.getElementById('p_balance').innerText = totalIncome.toFixed(2);
-                    });
+                    // Load Profile Pic
+                    if(data.profilePic) {
+                        document.getElementById('profilePicBox').innerHTML = `<img src="${data.profilePic}">`;
+                    }
                 }
             });
+        }
+
+        // --- PROFILE PIC UPLOAD (Compressed) ---
+        function uploadProfilePic(input) {
+            const file = input.files[0];
+            if(!file) return;
+
+            // Reading file
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    // Resize Logic to save DB space (Max 200px)
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const maxWidth = 200;
+                    const scaleSize = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scaleSize;
+
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const base64String = canvas.toDataURL('image/jpeg', 0.7); // Compress Quality 0.7
+
+                    // Save to Database
+                    db.ref('users/' + currentUser.uid).update({ profilePic: base64String })
+                    .then(() => alert("Profile Picture Updated!"))
+                    .catch(err => alert("Error: " + err.message));
+                }
+            }
+            reader.readAsDataURL(file);
         }
 
         function loadTeamCount(uid) {
@@ -235,43 +310,83 @@
                 const myCode = snap.val();
                 if(myCode) {
                     db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (teamSnap) => {
-                        const count = teamSnap.numChildren();
-                        document.getElementById('p_team').innerText = count;
+                        document.getElementById('p_team').innerText = teamSnap.numChildren();
                     });
                 }
             });
         }
 
+        // --- REAL WITHDRAW HISTORY (Fixed Limit 10) ---
         function loadWithdrawHistory(uid) {
-            db.ref('withdrawals').orderByChild('userId').equalTo(uid).limitToLast(5).on('value', (snapshot) => {
+            // limitToLast(10) brings the newest 10 entries
+            db.ref('withdraw_requests').orderByChild('userId').equalTo(uid).limitToLast(10).on('value', (snapshot) => {
                 const container = document.getElementById('historyContent');
                 container.innerHTML = ""; 
                 
                 if(snapshot.exists()) {
                     let items = [];
                     snapshot.forEach(c => items.push(c.val()));
-                    items.reverse(); // নতুন ট্রানজেকশন উপরে দেখাবে
+                    items.reverse(); // Reverse so the very latest is at top
 
                     items.forEach((w) => {
-                        let statusClass = "status-p";
-                        if(w.status === "Approved") statusClass = "status-a";
-                        if(w.status === "Rejected") statusClass = "status-r";
+                        let statusBadge = "";
+                        if(w.status === "approved" || w.status === "Approved") statusBadge = `<span class="status-a">Approved</span>`;
+                        else if(w.status === "rejected" || w.status === "Rejected") statusBadge = `<span class="status-r">Rejected</span>`;
+                        else statusBadge = `<span class="status-p">Pending</span>`;
 
                         const html = `
                             <div class="hist-item">
-                                <span>${w.method} (${w.amount}৳)</span>
-                                <span class="${statusClass}">${w.status}</span>
+                                <div>
+                                    <b style="color:white;">${w.method}</b><br>
+                                    <small style="color:#aaa;">${w.number}</small>
+                                </div>
+                                <div style="text-align:right;">
+                                    <b style="color:white;">৳${w.amount}</b><br>
+                                    ${statusBadge}
+                                </div>
                             </div>
                         `;
                         container.innerHTML += html;
                     });
                 } else {
-                    container.innerHTML = '<p style="text-align:center; color:#555; font-size:0.8rem;">No transactions yet.</p>';
+                    container.innerHTML = '<p style="text-align:center; color:#555; font-size:0.8rem; padding:10px;">No withdrawal history found.</p>';
                 }
             });
         }
 
+        // --- CHANGE PASSWORD LOGIC ---
+        function changePassword() {
+            const oldPass = document.getElementById('oldPass').value;
+            const newPass = document.getElementById('newPass').value;
+
+            if(newPass.length < 6) {
+                alert("New password must be at least 6 characters.");
+                return;
+            }
+
+            const credential = firebase.auth.EmailAuthProvider.credential(currentUserEmail, oldPass);
+
+            currentUser.reauthenticateWithCredential(credential).then(() => {
+                currentUser.updatePassword(newPass).then(() => {
+                    db.ref('users/' + currentUser.uid).update({ password: newPass });
+                    
+                    alert("Password updated successfully!");
+                    document.getElementById('oldPass').value = "";
+                    document.getElementById('newPass').value = "";
+                    toggleSection('passSection'); 
+                }).catch((error) => {
+                    alert("Error updating password: " + error.message);
+                });
+            }).catch((error) => {
+                alert("Incorrect Old Password!");
+            });
+        }
+
         function toggleSection(id) {
+            document.querySelectorAll('.hidden-section').forEach(div => {
+                if(div.id !== id) div.style.display = 'none';
+            });
+
             const div = document.getElementById(id);
             if(div.style.display === 'block') div.style.display = 'none';
             else div.style.display = 'block';
