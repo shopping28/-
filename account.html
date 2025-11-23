@@ -79,27 +79,20 @@
         /* Hidden Sections */
         .hidden-section { display: none; background: #111; padding: 20px; border-bottom: 1px solid #333; }
         
-        /* BETTER WITHDRAW HISTORY STYLE */
-        .hist-item { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px; margin-bottom: 8px; 
-            background: rgba(255,255,255,0.03); border-radius: 8px;
-            border-left: 4px solid #555; 
-        }
-        .hist-item.approved { border-left-color: #00f260; }
-        .hist-item.rejected { border-left-color: #e74c3c; }
-        .hist-item.pending { border-left-color: #f1c40f; }
-
-        .status-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .sb-app { color: #00f260; background: rgba(0,242,96,0.1); }
-        .sb-rej { color: #e74c3c; background: rgba(231,76,60,0.1); }
-        .sb-pen { color: #f1c40f; background: rgba(241,196,15,0.1); }
-
         /* ABOUT US CONTENT STYLE */
         .about-content h4 { color: #00f260; margin: 15px 0 5px; border-bottom: 1px solid #333; padding-bottom: 5px; }
         .about-content p { font-size: 0.9rem; color: #ccc; line-height: 1.5; }
         .about-content ul { margin: 5px 0; padding-left: 20px; color: #ddd; font-size: 0.9rem; }
         .about-content li { margin-bottom: 5px; }
+        
+        .leader-card {
+            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;
+            margin-bottom: 10px; text-align: center; border: 1px solid #333;
+        }
+
+        /* Password Inputs */
+        .pass-input { width: 100%; padding: 12px; margin-bottom: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
+        .update-btn { width: 100%; padding: 12px; background: #00f260; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
         /* Logout */
         .logout-btn {
@@ -164,51 +157,46 @@
 
     <!-- Menu List -->
     <div class="menu-list">
-        
-        <!-- Withdraw History -->
-        <div class="menu-item" onclick="toggleSection('historySection')">
-            <div class="menu-left"><i class="fas fa-history"></i><span>Withdraw History</span></div>
-            <i class="fas fa-chevron-down arrow"></i>
-        </div>
-        <div id="historySection" class="hidden-section">
-            <div id="historyContent">
-                <p style="text-align:center; color:#555;">Loading history...</p>
-            </div>
-        </div>
 
-        <!-- ABOUT US (ADDED BACK & DETAILED) -->
+        <!-- ABOUT US (UPDATED DETAILS) -->
         <div class="menu-item" onclick="toggleSection('aboutSection')">
             <div class="menu-left"><i class="fas fa-info-circle"></i><span>About & Rules</span></div>
             <i class="fas fa-chevron-down arrow"></i>
         </div>
         <div id="aboutSection" class="hidden-section about-content">
             <center>
-                <i class="fas fa-shopping-bag" style="font-size:2.5rem; color:#00f260;"></i>
+                <i class="fas fa-shopping-bag" style="font-size:2.5rem; color:#00f260; margin-bottom:10px;"></i>
                 <h3>ShoppingFree</h3>
-                <small>Digital Marketing Platform</small>
+                <small>Operated by <b style="color:#f1c40f;">ART COMMUNITY</b></small>
             </center>
 
-            <h4>📝 How it Works?</h4>
-            <p>ShoppingFree is a digital platform where you can earn money by completing simple daily tasks and building your own team.</p>
+            <h4>👨‍💻 Developer & Owner Info</h4>
+            <div class="leader-card">
+                <p><strong>Website Developer:</strong> <span style="color:#00f260">THE RAFSAN</span></p>
+                <p><strong>Website Seller:</strong> <span style="color:#3498db">RAFSAN</span></p>
+            </div>
+
+            <h4>🏆 ART COMMUNITY Top Leaders</h4>
+            <div style="text-align:center; background:#111; padding:10px; border-radius:10px;">
+                <p style="color:#f1c40f; font-weight:bold; margin:5px;">𝐑𝐀𝐅𝐒𝐀𝐍 ❖ 𝐓𝐇𝐄 𝐀𝐑𝐓 (𝐋𝐄𝐀𝐃𝐄𝐑 ) 🍥</p>
+                <p style="color:#e74c3c; font-weight:bold; margin:5px;">𝐌𝐑 ❖ 𝐒𝐇𝐔𝐕𝐎 (𝐋𝐄𝐀𝐃𝐄𝐑 ) 🍥</p>
+                <p style="color:#9b59b6; font-weight:bold; margin:5px;">𝐓𝐀𝐍𝐈𝐒𝐇𝐀_𝐀𝐑𝐓 𝐐𝐔𝐄𝐄𝐍 (𝐋𝐄𝐀𝐃𝐄𝐑 )</p>
+                <p style="color:#3498db; font-weight:bold; margin:5px;">𝐌𝐔𝐍𝐍𝐀_𝐀𝐑𝐓 (𝐂.𝐄.𝐎) 🛡️</p>
+            </div>
 
             <h4>💰 Referral Income System</h4>
             <ul>
-                <li><strong style="color:#00f260">Level 1 (Direct):</strong> 130 Taka (Per Active Refer)</li>
+                <li><strong style="color:#00f260">Level 1 (Direct):</strong> 130 Taka</li>
                 <li><strong style="color:#3498db">Level 2 (Team):</strong> 20 Taka</li>
                 <li><strong style="color:#e74c3c">Level 3 (Team):</strong> 10 Taka</li>
             </ul>
-            <p style="font-size:0.8rem; color:#aaa;">* Referral bonus is only given when your referred user activates their account.</p>
 
             <h4>🏦 Withdrawal Rules</h4>
             <ul>
-                <li>Minimum Withdraw: <strong>500 Taka</strong></li>
+                <li>Minimum Withdraw: <strong>150 Taka</strong></li>
                 <li>Payment Methods: Bkash & Nagad (Personal)</li>
-                <li>Withdraw Time: 10:00 AM - 10:00 PM</li>
-                <li>Payment Duration: 10 Minutes to 24 Hours</li>
+                <li>Time: 10:00 AM - 10:00 PM</li>
             </ul>
-
-            <h4>📞 Support</h4>
-            <p>For any issues, please join our official Telegram channel or contact your upline.</p>
         </div>
 
         <!-- Telegram -->
@@ -223,9 +211,9 @@
             <i class="fas fa-chevron-down arrow"></i>
         </div>
         <div id="passSection" class="hidden-section">
-            <input type="password" id="oldPass" class="pass-input" style="width:100%; padding:10px; background:#222; border:1px solid #444; color:white; margin-bottom:10px; border-radius:5px;" placeholder="Enter Old Password">
-            <input type="password" id="newPass" class="pass-input" style="width:100%; padding:10px; background:#222; border:1px solid #444; color:white; margin-bottom:10px; border-radius:5px;" placeholder="Enter New Password (min 6 chars)">
-            <button class="save-btn" onclick="changePassword()">Update Password</button>
+            <input type="password" id="oldPass" class="pass-input" placeholder="Enter Old Password">
+            <input type="password" id="newPass" class="pass-input" placeholder="Enter New Password (min 6 chars)">
+            <button class="update-btn" onclick="changePassword()">Update Password</button>
         </div>
 
     </div>
@@ -256,7 +244,7 @@
                 currentUserEmail = user.email;
                 loadUserData(user.uid);
                 loadTeamCount(user.uid);
-                loadWithdrawHistory(user.uid);
+                // Withdraw history function removed as requested
             } else {
                 window.location.href = 'login_register.html';
             }
@@ -278,26 +266,16 @@
             });
         }
 
-        // PHONE TOGGLE
-        function togglePhone() {
-            isPhoneHidden = !isPhoneHidden;
-            updatePhoneDisplay();
-        }
+        function togglePhone() { isPhoneHidden = !isPhoneHidden; updatePhoneDisplay(); }
         function updatePhoneDisplay() {
             const el = document.getElementById('p_phone');
             if (isPhoneHidden) {
                 if(realPhone.length >= 11) el.innerText = realPhone.substring(0, 3) + "******" + realPhone.substring(realPhone.length - 2);
                 else el.innerText = "****";
-            } else {
-                el.innerText = realPhone;
-            }
+            } else { el.innerText = realPhone; }
         }
 
-        // NAME EDIT
-        function toggleNameEdit() {
-            const form = document.getElementById('nameEditForm');
-            form.style.display = (form.style.display === 'block') ? 'none' : 'block';
-        }
+        function toggleNameEdit() { const form = document.getElementById('nameEditForm'); form.style.display = (form.style.display === 'block') ? 'none' : 'block'; }
         function saveNameChange() {
             const f = document.getElementById('newFName').value.trim();
             const l = document.getElementById('newLName').value.trim();
@@ -306,49 +284,6 @@
                 alert("Name Updated Successfully!");
                 document.getElementById('nameEditForm').style.display = 'none';
             }).catch(e => alert("Error: " + e.message));
-        }
-
-        // WITHDRAW HISTORY (IMPROVED)
-        function loadWithdrawHistory(uid) {
-            db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).limitToLast(10).on('value', (snapshot) => {
-                const container = document.getElementById('historyContent');
-                container.innerHTML = ""; 
-                
-                if(snapshot.exists()) {
-                    let items = [];
-                    snapshot.forEach(c => items.push(c.val()));
-                    items.reverse(); 
-
-                    items.forEach((w) => {
-                        const st = w.status.toLowerCase();
-                        let badgeClass = "sb-pen";
-                        let rowClass = "pending";
-                        let icon = '<i class="fas fa-clock" style="color:#f1c40f"></i>';
-
-                        if(st === "approved") { badgeClass = "sb-app"; rowClass = "approved"; icon = '<i class="fas fa-check-circle" style="color:#00f260"></i>'; }
-                        else if(st === "rejected") { badgeClass = "sb-rej"; rowClass = "rejected"; icon = '<i class="fas fa-times-circle" style="color:#e74c3c"></i>'; }
-
-                        const date = new Date(w.timestamp).toLocaleDateString();
-                        const time = new Date(w.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-                        const html = `
-                            <div class="hist-item ${rowClass}">
-                                <div>
-                                    <b style="color:white;">${w.method}</b> <small style="color:#777">(${date})</small><br>
-                                    <small style="color:#aaa;">${w.wallet}</small>
-                                </div>
-                                <div style="text-align:right;">
-                                    <b style="color:white;">৳${w.amount}</b><br>
-                                    <span class="status-badge ${badgeClass}">${st.toUpperCase()}</span>
-                                </div>
-                            </div>
-                        `;
-                        container.innerHTML += html;
-                    });
-                } else {
-                    container.innerHTML = '<p style="text-align:center; color:#555; font-size:0.8rem; padding:10px;">No withdrawal history found.</p>';
-                }
-            });
         }
 
         function uploadProfilePic(input) {
