@@ -3,80 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Team & Earnings</title>
+    <title>My Team</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; margin: 0; }
-        
-        .ref-card {
-            background: linear-gradient(135deg, #6a11cb, #2575fc); padding: 20px;
-            border-radius: 15px; text-align: center; margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3);
-        }
-        .code-box {
-            background: rgba(255,255,255,0.2); border: 1px dashed white;
-            padding: 8px; margin: 10px 0; font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; border-radius: 8px;
-        }
+        .ref-card { background: linear-gradient(135deg, #6a11cb, #2575fc); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3); }
+        .code-box { background: rgba(255,255,255,0.2); border: 1px dashed white; padding: 8px; margin: 10px 0; font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; border-radius: 8px; }
         .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .box { background: #1a1a2e; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333; }
         .box h2 { margin: 5px 0; font-size: 1.4rem; }
-
         .tabs { display: flex; justify-content: space-between; margin-bottom: 15px; background: #161625; padding: 5px; border-radius: 10px; }
-        .tab-btn {
-            flex: 1; border: none; background: none; color: #aaa; padding: 10px;
-            cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.3s;
-        }
+        .tab-btn { flex: 1; border: none; background: none; color: #aaa; padding: 10px; cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.3s; }
         .tab-btn.active { background: #2575fc; color: white; }
-
         .level-container { display: none; }
         .level-container.active { display: block; }
-
-        .member {
-            background: #1e1e2f; padding: 15px; border-radius: 12px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center; border: 1px solid #333;
-            position: relative; overflow: hidden;
-        }
+        .member { background: #1e1e2f; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; position: relative; overflow: hidden; }
         .member-info h4 { margin: 0; font-size: 1rem; }
         .member-info small { color: #aaa; font-size: 0.8rem; }
-        
         .status-badge { padding: 4px 8px; border-radius: 5px; font-size: 0.75rem; font-weight: bold; }
         .active-bg { background: rgba(0, 242, 96, 0.15); color: #00f260; }
         .inactive-bg { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
-
-        .profit-tag {
-            position: absolute; top: 0; right: 0;
-            background: #f1c40f; color: #000;
-            font-size: 0.7rem; padding: 3px 10px;
-            border-bottom-left-radius: 10px; font-weight: bold;
-        }
+        .profit-tag { position: absolute; top: 0; right: 0; background: #f1c40f; color: #000; font-size: 0.7rem; padding: 3px 10px; border-bottom-left-radius: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
     <a href="home.html" style="color:white; text-decoration:none; display:block; margin-bottom:20px;">← Back to Home</a>
-
     <div class="ref-card">
         <p style="margin:0; opacity:0.8;">My Referral Code</p>
         <div class="code-box" id="myCode">Loading...</div>
         <button onclick="copyCode()" style="background:white; color:#2575fc; border:none; padding:5px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Copy</button>
     </div>
-
     <div class="stats">
         <div class="box">
-            <h2 id="totalTeam">0</h2>
-            <small style="color:#aaa;">Total Team</small>
+            <h2 id="totalTeam" style="color:#00f260;">0</h2>
+            <small style="color:#aaa;">Active Team</small>
         </div>
         <div class="box">
             <h2 id="totalIncome" style="color:#f1c40f;">৳0</h2>
             <small style="color:#aaa;">Total Profit</small>
         </div>
     </div>
-
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('lvl1')">Level 1</button>
         <button class="tab-btn" onclick="switchTab('lvl2')">Level 2</button>
         <button class="tab-btn" onclick="switchTab('lvl3')">Level 3</button>
     </div>
-
     <div id="lvl1" class="level-container active"> <p style="text-align:center; color:#666;">Loading...</p> </div>
     <div id="lvl2" class="level-container"> <p style="text-align:center; color:#666;">Loading...</p> </div>
     <div id="lvl3" class="level-container"> <p style="text-align:center; color:#666;">Loading...</p> </div>
@@ -84,7 +55,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
         firebase.initializeApp(firebaseConfig);
@@ -93,45 +63,34 @@
 
         let COMMISSION = { level1: 0, level2: 0, level3: 0 };
         let currentUserCode = null;
-
-        // Fetch Commission Settings
-        db.ref('settings/commissions').on('value', (snap) => {
-            if(snap.exists()) {
-                COMMISSION = snap.val();
-                if(currentUserCode) startLoadingTeam(currentUserCode);
-            }
-        });
-
         let totalTeamCount = 0;
         let totalProfitCount = 0;
+
+        db.ref('settings/commissions').on('value', (snap) => {
+            if(snap.exists()) { COMMISSION = snap.val(); if(currentUserCode) startLoadingTeam(currentUserCode); }
+        });
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 db.ref('users/' + user.uid + '/ownCode').once('value', (snap) => {
-                    const code = snap.val();
-                    if(code) {
-                        currentUserCode = code;
-                        document.getElementById('myCode').innerText = code;
-                        startLoadingTeam(code);
+                    if(snap.val()) {
+                        currentUserCode = snap.val();
+                        document.getElementById('myCode').innerText = currentUserCode;
+                        startLoadingTeam(currentUserCode);
                     }
                 });
-            } else {
-                window.location.href = 'login_register.html';
-            }
+            } else { window.location.href = 'login_register.html'; }
         });
 
         function startLoadingTeam(myCode) {
-            totalTeamCount = 0;
-            totalProfitCount = 0;
+            totalTeamCount = 0; totalProfitCount = 0;
             document.getElementById('totalTeam').innerText = "0";
             document.getElementById('totalIncome').innerText = "৳0";
 
-            // Load Level 1
             db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (snapshot) => {
                 const lvl1Container = document.getElementById('lvl1');
                 lvl1Container.innerHTML = "";
                 let level1Codes = [];
-
                 if(snapshot.exists()) {
                     snapshot.forEach(child => {
                         const user = child.val();
@@ -148,21 +107,13 @@
         }
 
         function loadLevel2(parentCodes) {
-            const lvl2Container = document.getElementById('lvl2');
-            lvl2Container.innerHTML = "";
-            
-            if(parentCodes.length === 0) {
-                lvl2Container.innerHTML = "<p style='text-align:center; color:#555;'>No Level 2 Members.</p>";
-                return;
-            }
-
+            const lvl2Container = document.getElementById('lvl2'); lvl2Container.innerHTML = "";
+            if(parentCodes.length === 0) { lvl2Container.innerHTML = "<p style='text-align:center; color:#555;'>No Level 2 Members.</p>"; return; }
             parentCodes.forEach(code => {
                 db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => {
                     const user = snap.val();
                     renderMember(user, 2, lvl2Container);
-                    if(user.ownCode) {
-                        loadLevel3([user.ownCode]);
-                    }
+                    if(user.ownCode) loadLevel3([user.ownCode]);
                 });
             });
         }
@@ -170,64 +121,37 @@
         function loadLevel3(parentCodes) {
             const lvl3Container = document.getElementById('lvl3');
             if(lvl3Container.innerHTML.includes("Loading")) lvl3Container.innerHTML = "";
-
             parentCodes.forEach(code => {
                 db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => {
-                    const user = snap.val();
-                    renderMember(user, 3, lvl3Container);
+                    renderMember(snap.val(), 3, lvl3Container);
                 });
             });
         }
 
-        // --- NEW FUNCTION: MASK PHONE NUMBER ---
-        function maskPhone(number) {
-            if(!number) return "N/A";
-            const s = number.toString();
-            if(s.length >= 11) {
-                // Keep first 3 (017) and last 3 (678), hide middle 5
-                return s.substring(0, 3) + "*****" + s.substring(s.length - 3);
-            }
-            return s; // If number is weird/short, show as is
-        }
-
         function renderMember(user, level, container) {
-            totalTeamCount++;
-            document.getElementById('totalTeam').innerText = totalTeamCount;
-
             let profit = 0;
             let statusHtml = "";
-            
+            let profitBadge = "";
+
             if(user.status === 'active') {
+                totalTeamCount++; // ONLY COUNT ACTIVE USERS
+                document.getElementById('totalTeam').innerText = totalTeamCount;
                 if(level === 1) profit = COMMISSION.level1;
                 if(level === 2) profit = COMMISSION.level2;
                 if(level === 3) profit = COMMISSION.level3;
-                
                 totalProfitCount += profit;
                 document.getElementById('totalIncome').innerText = "৳" + totalProfitCount;
                 statusHtml = `<span class="status-badge active-bg">Active</span>`;
+                profitBadge = `<div class="profit-tag">+ ৳${profit}</div>`;
             } else {
                 statusHtml = `<span class="status-badge inactive-bg">Pending</span>`;
+                profitBadge = `<div class="profit-tag" style="background:#444; color:#aaa;">No Profit</div>`;
             }
 
-            const profitBadge = profit > 0 ? `<div class="profit-tag">+ ৳${profit}</div>` : '';
-
-            // Using maskPhone function here
-            const hiddenPhone = maskPhone(user.phone);
-
-            const html = `
-                <div class="member">
-                    ${profitBadge}
-                    <div class="member-info">
-                        <h4>${user.firstName || 'User'}</h4>
-                        <small>${hiddenPhone} | Ref: ${user.referredBy || 'N/A'}</small>
-                    </div>
-                    <div>${statusHtml}</div>
-                </div>
-            `;
+            const hiddenPhone = user.phone ? user.phone.toString().substring(0, 3) + "*****" + user.phone.toString().substring(user.phone.toString().length - 3) : "N/A";
             
-            if(container.innerHTML.includes("Loading") || container.innerHTML.includes("No")) {
-                container.innerHTML = "";
-            }
+            const html = `<div class="member">${profitBadge}<div class="member-info"><h4>${user.firstName || 'User'}</h4><small>${hiddenPhone} | Ref: ${user.referredBy || 'N/A'}</small></div><div>${statusHtml}</div></div>`;
+            if(container.innerHTML.includes("Loading") || container.innerHTML.includes("No")) container.innerHTML = "";
             container.innerHTML += html;
         }
 
@@ -237,12 +161,7 @@
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
         }
-
-        function copyCode() {
-            const text = document.getElementById('myCode').innerText;
-            navigator.clipboard.writeText(text);
-            alert("Code Copied!");
-        }
+        function copyCode() { navigator.clipboard.writeText(document.getElementById('myCode').innerText); alert("Code Copied!"); }
     </script>
 </body>
 </html>
