@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Team</title>
+    <title>My Team & Earnings</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; margin: 0; }
@@ -28,26 +28,24 @@
 </head>
 <body>
     <a href="home.html" style="color:white; text-decoration:none; display:block; margin-bottom:20px;">← Back to Home</a>
+
     <div class="ref-card">
         <p style="margin:0; opacity:0.8;">My Referral Code</p>
         <div class="code-box" id="myCode">Loading...</div>
         <button onclick="copyCode()" style="background:white; color:#2575fc; border:none; padding:5px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Copy</button>
     </div>
+
     <div class="stats">
-        <div class="box">
-            <h2 id="totalTeam" style="color:#00f260;">0</h2>
-            <small style="color:#aaa;">Active Team</small>
-        </div>
-        <div class="box">
-            <h2 id="totalIncome" style="color:#f1c40f;">৳0</h2>
-            <small style="color:#aaa;">Total Profit</small>
-        </div>
+        <div class="box"><h2 id="totalTeam" style="color:#00f260;">0</h2><small style="color:#aaa;">Active Team</small></div>
+        <div class="box"><h2 id="totalIncome" style="color:#f1c40f;">৳0</h2><small style="color:#aaa;">Total Profit</small></div>
     </div>
+
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('lvl1')">Level 1</button>
         <button class="tab-btn" onclick="switchTab('lvl2')">Level 2</button>
         <button class="tab-btn" onclick="switchTab('lvl3')">Level 3</button>
     </div>
+
     <div id="lvl1" class="level-container active"> <p style="text-align:center; color:#666;">Loading...</p> </div>
     <div id="lvl2" class="level-container"> <p style="text-align:center; color:#666;">Loading...</p> </div>
     <div id="lvl3" class="level-container"> <p style="text-align:center; color:#666;">Loading...</p> </div>
@@ -72,31 +70,35 @@
 
         auth.onAuthStateChanged((user) => {
             if (user) {
+                // SCENARIO 3: TEAM PAGE OPEN VOICE
+                speak("Your team is open");
+
                 db.ref('users/' + user.uid + '/ownCode').once('value', (snap) => {
-                    if(snap.val()) {
-                        currentUserCode = snap.val();
-                        document.getElementById('myCode').innerText = currentUserCode;
-                        startLoadingTeam(currentUserCode);
+                    const code = snap.val();
+                    if(code) {
+                        currentUserCode = code;
+                        document.getElementById('myCode').innerText = code;
+                        startLoadingTeam(code);
                     }
                 });
             } else { window.location.href = 'login_register.html'; }
         });
 
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            window.speechSynthesis.speak(utterance);
+            document.body.addEventListener('click', () => { window.speechSynthesis.speak(utterance); }, { once: true });
+        }
+
         function startLoadingTeam(myCode) {
             totalTeamCount = 0; totalProfitCount = 0;
-            document.getElementById('totalTeam').innerText = "0";
-            document.getElementById('totalIncome').innerText = "৳0";
-
+            document.getElementById('totalTeam').innerText = "0"; document.getElementById('totalIncome').innerText = "৳0";
             db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (snapshot) => {
-                const lvl1Container = document.getElementById('lvl1');
-                lvl1Container.innerHTML = "";
+                const lvl1Container = document.getElementById('lvl1'); lvl1Container.innerHTML = "";
                 let level1Codes = [];
                 if(snapshot.exists()) {
-                    snapshot.forEach(child => {
-                        const user = child.val();
-                        renderMember(user, 1, lvl1Container);
-                        if(user.ownCode) level1Codes.push(user.ownCode);
-                    });
+                    snapshot.forEach(child => { const user = child.val(); renderMember(user, 1, lvl1Container); if(user.ownCode) level1Codes.push(user.ownCode); });
                     loadLevel2(level1Codes);
                 } else {
                     lvl1Container.innerHTML = "<p style='text-align:center; color:#555;'>No Direct Referrals.</p>";
@@ -109,47 +111,26 @@
         function loadLevel2(parentCodes) {
             const lvl2Container = document.getElementById('lvl2'); lvl2Container.innerHTML = "";
             if(parentCodes.length === 0) { lvl2Container.innerHTML = "<p style='text-align:center; color:#555;'>No Level 2 Members.</p>"; return; }
-            parentCodes.forEach(code => {
-                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => {
-                    const user = snap.val();
-                    renderMember(user, 2, lvl2Container);
-                    if(user.ownCode) loadLevel3([user.ownCode]);
-                });
-            });
+            parentCodes.forEach(code => { db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => { const user = snap.val(); renderMember(user, 2, lvl2Container); if(user.ownCode) loadLevel3([user.ownCode]); }); });
         }
 
         function loadLevel3(parentCodes) {
             const lvl3Container = document.getElementById('lvl3');
             if(lvl3Container.innerHTML.includes("Loading")) lvl3Container.innerHTML = "";
-            parentCodes.forEach(code => {
-                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => {
-                    renderMember(snap.val(), 3, lvl3Container);
-                });
-            });
+            parentCodes.forEach(code => { db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => { renderMember(snap.val(), 3, lvl3Container); }); });
         }
 
         function renderMember(user, level, container) {
-            let profit = 0;
-            let statusHtml = "";
-            let profitBadge = "";
-
+            let profit = 0; let statusHtml = ""; let profitBadge = "";
             if(user.status === 'active') {
-                totalTeamCount++; // ONLY COUNT ACTIVE USERS
-                document.getElementById('totalTeam').innerText = totalTeamCount;
-                if(level === 1) profit = COMMISSION.level1;
-                if(level === 2) profit = COMMISSION.level2;
-                if(level === 3) profit = COMMISSION.level3;
-                totalProfitCount += profit;
-                document.getElementById('totalIncome').innerText = "৳" + totalProfitCount;
-                statusHtml = `<span class="status-badge active-bg">Active</span>`;
-                profitBadge = `<div class="profit-tag">+ ৳${profit}</div>`;
+                totalTeamCount++; document.getElementById('totalTeam').innerText = totalTeamCount;
+                if(level === 1) profit = COMMISSION.level1; if(level === 2) profit = COMMISSION.level2; if(level === 3) profit = COMMISSION.level3;
+                totalProfitCount += profit; document.getElementById('totalIncome').innerText = "৳" + totalProfitCount;
+                statusHtml = `<span class="status-badge active-bg">Active</span>`; profitBadge = `<div class="profit-tag">+ ৳${profit}</div>`;
             } else {
-                statusHtml = `<span class="status-badge inactive-bg">Pending</span>`;
-                profitBadge = `<div class="profit-tag" style="background:#444; color:#aaa;">No Profit</div>`;
+                statusHtml = `<span class="status-badge inactive-bg">Pending</span>`; profitBadge = `<div class="profit-tag" style="background:#444; color:#aaa;">No Profit</div>`;
             }
-
             const hiddenPhone = user.phone ? user.phone.toString().substring(0, 3) + "*****" + user.phone.toString().substring(user.phone.toString().length - 3) : "N/A";
-            
             const html = `<div class="member">${profitBadge}<div class="member-info"><h4>${user.firstName || 'User'}</h4><small>${hiddenPhone} | Ref: ${user.referredBy || 'N/A'}</small></div><div>${statusHtml}</div></div>`;
             if(container.innerHTML.includes("Loading") || container.innerHTML.includes("No")) container.innerHTML = "";
             container.innerHTML += html;
