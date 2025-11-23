@@ -3,36 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Team</title>
+    <title>My Team Network</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; margin: 0; }
+        
+        /* Header Card */
         .ref-card { background: linear-gradient(135deg, #6a11cb, #2575fc); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3); }
         .code-box { background: rgba(255,255,255,0.2); border: 1px dashed white; padding: 8px; margin: 10px 0; font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; border-radius: 8px; }
         
-        /* Stats Grid Updated for 3 columns or 2 rows */
+        /* Stats Grid */
         .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .stats .full-width { grid-column: span 2; } 
-        
         .box { background: #1a1a2e; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333; }
         .box h2 { margin: 5px 0; font-size: 1.4rem; }
         
-        .tabs { display: flex; justify-content: space-between; margin-bottom: 15px; background: #161625; padding: 5px; border-radius: 10px; }
-        .tab-btn { flex: 1; border: none; background: none; color: #aaa; padding: 10px; cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.3s; font-size: 0.9rem; }
-        .tab-btn.active { background: #2575fc; color: white; }
+        /* Tabs Design */
+        .tabs-wrapper { overflow-x: auto; white-space: nowrap; margin-bottom: 15px; padding-bottom: 5px; }
+        .tabs { display: inline-flex; background: #161625; padding: 5px; border-radius: 10px; min-width: 100%; }
+        .tab-btn { border: none; background: none; color: #aaa; padding: 10px 15px; cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.3s; font-size: 0.85rem; }
+        .tab-btn.active { background: #2575fc; color: white; box-shadow: 0 2px 10px rgba(37, 117, 252, 0.4); }
         
-        .level-container { display: none; }
+        /* Lists */
+        .level-container { display: none; animation: fadeIn 0.5s; }
         .level-container.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
+        /* Member Card */
         .member { background: #1e1e2f; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; position: relative; overflow: hidden; }
-        .member-info h4 { margin: 0; font-size: 1rem; }
-        .member-info small { color: #aaa; font-size: 0.8rem; }
+        .member-info h4 { margin: 0; font-size: 1rem; color: #fff; }
+        .member-info small { color: #aaa; font-size: 0.8rem; display: block; margin-top: 2px; }
         
-        .status-badge { padding: 4px 8px; border-radius: 5px; font-size: 0.75rem; font-weight: bold; }
-        .active-bg { background: rgba(0, 242, 96, 0.15); color: #00f260; }
-        .inactive-bg { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
+        .status-badge { padding: 4px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .active-bg { background: rgba(0, 242, 96, 0.15); color: #00f260; border: 1px solid rgba(0, 242, 96, 0.3); }
+        .inactive-bg { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3); }
         
-        .profit-tag { position: absolute; top: 0; right: 0; background: #f1c40f; color: #000; font-size: 0.7rem; padding: 3px 10px; border-bottom-left-radius: 10px; font-weight: bold; }
+        .profit-tag { position: absolute; top: 0; right: 0; background: #f1c40f; color: #000; font-size: 0.65rem; padding: 2px 8px; border-bottom-left-radius: 8px; font-weight: bold; }
+        .lvl-tag { font-size: 0.7rem; color: #2575fc; font-weight: bold; margin-right: 5px; }
     </style>
 </head>
 <body onclick="unlockAudio()">
@@ -41,31 +48,38 @@
     <div class="ref-card">
         <p style="margin:0; opacity:0.8;">My Referral Code</p>
         <div class="code-box" id="myCode">Loading...</div>
-        <button onclick="copyCode()" style="background:white; color:#2575fc; border:none; padding:5px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Copy</button>
+        <button onclick="copyCode()" style="background:white; color:#2575fc; border:none; padding:5px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Copy Code</button>
     </div>
 
-    <!-- Updated Stats Area -->
+    <!-- Statistics Area -->
     <div class="stats">
-        <div class="box"><h2 id="totalTeam" style="color:#00f260;">0</h2><small style="color:#aaa;">Active Team</small></div>
+        <div class="box"><h2 id="totalTeam" style="color:#00f260;">0</h2><small style="color:#aaa;">Active Users</small></div>
         <div class="box"><h2 id="totalPending" style="color:#e74c3c;">0</h2><small style="color:#aaa;">Pending Users</small></div>
         <div class="box full-width"><h2 id="totalIncome" style="color:#f1c40f;">৳0</h2><small style="color:#aaa;">Total Profit</small></div>
     </div>
 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('lvl1')" id="btnLvl1">Level 1 (0)</button>
-        <button class="tab-btn" onclick="switchTab('lvl2')" id="btnLvl2">Level 2 (0)</button>
-        <button class="tab-btn" onclick="switchTab('lvl3')" id="btnLvl3">Level 3 (0)</button>
+    <!-- Tabs Area -->
+    <div class="tabs-wrapper">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('lvl1')" id="btnLvl1">Level 1 (0)</button>
+            <button class="tab-btn" onclick="switchTab('lvl2')" id="btnLvl2">Level 2 (0)</button>
+            <button class="tab-btn" onclick="switchTab('lvl3')" id="btnLvl3">Level 3 (0)</button>
+            <button class="tab-btn" onclick="switchTab('allActive')" id="btnAllActive" style="color:#00f260;">All Active (0)</button>
+        </div>
     </div>
 
-    <div id="lvl1" class="level-container active"> <p style="text-align:center; color:#666;">Loading...</p> </div>
-    <div id="lvl2" class="level-container"> <p style="text-align:center; color:#666;">Waiting for L1...</p> </div>
-    <div id="lvl3" class="level-container"> <p style="text-align:center; color:#666;">Waiting for L2...</p> </div>
+    <!-- Member Lists -->
+    <div id="lvl1" class="level-container active"> <p style="text-align:center; color:#666;">Loading Level 1...</p> </div>
+    <div id="lvl2" class="level-container"> <p style="text-align:center; color:#666;">Waiting for Level 1...</p> </div>
+    <div id="lvl3" class="level-container"> <p style="text-align:center; color:#666;">Waiting for Level 2...</p> </div>
+    
+    <!-- NEW: All Active List -->
+    <div id="allActive" class="level-container"> <p style="text-align:center; color:#666;">No Active Members Yet.</p> </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
             authDomain: "art-paid-work001.firebaseapp.com",
@@ -79,11 +93,10 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // Global Variables
         let COMMISSION = { level1: 0, level2: 0, level3: 0 };
         let currentUserCode = null;
         
-        // Counters
+        // Statistics Object
         let stats = {
             active: 0,
             pending: 0,
@@ -95,7 +108,6 @@
 
         let isVoiceReady = false;
 
-        // VOICE UNLOCKER
         function unlockAudio() {
             if(isVoiceReady) return;
             window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); 
@@ -110,7 +122,7 @@
             window.speechSynthesis.speak(u);
         }
 
-        // Load Settings
+        // 1. Get Commission Settings
         db.ref('settings/commissions').on('value', (snap) => {
             if(snap.exists()) { 
                 COMMISSION = snap.val(); 
@@ -118,6 +130,7 @@
             }
         });
 
+        // 2. Auth Check
         auth.onAuthStateChanged((user) => {
             if (user) {
                 if(isVoiceReady) speakNow("Your team report is ready");
@@ -132,9 +145,14 @@
         });
 
         function reloadAllData() {
-            // Reset Counters
+            // Reset Data
             stats = { active: 0, pending: 0, profit: 0, lvl1: 0, lvl2: 0, lvl3: 0 };
+            document.getElementById('lvl1').innerHTML = "";
+            document.getElementById('lvl2').innerHTML = "";
+            document.getElementById('lvl3').innerHTML = "";
+            document.getElementById('allActive').innerHTML = "";
             updateDisplay();
+            
             startLoadingTeam(currentUserCode);
         }
 
@@ -146,53 +164,45 @@
             document.getElementById('btnLvl1').innerText = `Level 1 (${stats.lvl1})`;
             document.getElementById('btnLvl2').innerText = `Level 2 (${stats.lvl2})`;
             document.getElementById('btnLvl3').innerText = `Level 3 (${stats.lvl3})`;
+            document.getElementById('btnAllActive').innerText = `All Active (${stats.active})`;
         }
 
         function startLoadingTeam(myCode) {
-            // Level 1 Listener
+            // Load Level 1
             db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (snapshot) => {
-                const lvl1Container = document.getElementById('lvl1'); 
-                lvl1Container.innerHTML = "";
-                
-                // Reset L1 specific counts before recount (since 'value' returns whole list)
-                // Note: Complex to reset total stats here perfectly without full reload, 
-                // but for simplicity we assume this is the main entry.
-                // Ideally, we clear L1 stats and re-add.
-                
-                // To avoid double counting on updates, we just re-process the snapshot logic lightly or assume page load.
-                // For a perfect realtime counter with 'on', we handle logic inside render.
+                const lvl1Container = document.getElementById('lvl1');
+                lvl1Container.innerHTML = ""; // Clear to prevent duplicates on update
+                // Note: Clearing L1 container means we need to be careful not to clear L2/L3 logic if relying on array persistence,
+                // but for this structure, we will just re-trigger loadLevel2 with new list.
                 
                 let level1Codes = [];
-                let localL1Count = 0;
-
                 if(snapshot.exists()) {
                     snapshot.forEach(child => { 
                         const user = child.val(); 
                         renderMember(user, 1, lvl1Container); 
                         if(user.ownCode) level1Codes.push(user.ownCode);
-                        localL1Count++;
                     });
-                    // Trigger Level 2
                     loadLevel2(level1Codes);
                 } else {
-                    lvl1Container.innerHTML = "<p style='text-align:center; color:#555;'>No Direct Referrals.</p>";
-                    document.getElementById('lvl2').innerHTML = "<p style='text-align:center; color:#555;'>No Level 2 Members.</p>";
-                    document.getElementById('lvl3').innerHTML = "<p style='text-align:center; color:#555;'>No Level 3 Members.</p>";
+                    lvl1Container.innerHTML = "<p style='text-align:center; color:#555; padding:20px;'>No Direct Referrals.</p>";
+                    document.getElementById('lvl2').innerHTML = "<p style='text-align:center; color:#555; padding:20px;'>No Level 2 Members.</p>";
+                    document.getElementById('lvl3').innerHTML = "<p style='text-align:center; color:#555; padding:20px;'>No Level 3 Members.</p>";
                 }
             });
         }
 
-        // Ensure we don't attach multiple listeners
-        let l2Listeners = []; 
-        let l3Listeners = [];
+        // Helper to avoid attaching too many listeners
+        let processedL2 = new Set();
+        let processedL3 = new Set();
 
         function loadLevel2(parentCodes) {
             const lvl2Container = document.getElementById('lvl2');
-            // Clear previous "Waiting..." message if we have parents
-            if(parentCodes.length > 0 && lvl2Container.innerText.includes("Waiting")) lvl2Container.innerHTML = "";
+            if(lvl2Container.innerHTML.includes("Waiting")) lvl2Container.innerHTML = "";
             
-            // Note: Ideally we clear listeners here if re-running, but for simple logic:
-            parentCodes.forEach(code => { 
+            parentCodes.forEach(code => {
+                if(processedL2.has(code)) return; // Avoid double listener
+                processedL2.add(code);
+
                 db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => { 
                     const user = snap.val(); 
                     renderMember(user, 2, lvl2Container); 
@@ -203,9 +213,12 @@
 
         function loadLevel3(parentCodes) {
             const lvl3Container = document.getElementById('lvl3');
-            if(parentCodes.length > 0 && lvl3Container.innerText.includes("Waiting")) lvl3Container.innerHTML = "";
+            if(lvl3Container.innerHTML.includes("Waiting")) lvl3Container.innerHTML = "";
 
             parentCodes.forEach(code => { 
+                if(processedL3.has(code)) return;
+                processedL3.add(code);
+
                 db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => { 
                     renderMember(snap.val(), 3, lvl3Container); 
                 }); 
@@ -213,67 +226,75 @@
         }
 
         function renderMember(user, level, container) {
-            let profit = 0; 
-            let statusHtml = ""; 
+            // Calculate Profit & Status
+            let profit = 0;
+            let isActive = (user.status === 'active');
+            let statusHtml = "";
             let profitBadge = "";
-            
-            // Logic for Status and Counters
-            if(user.status === 'active') {
-                stats.active++; 
-                
-                // Calculate Profit
-                if(level === 1) profit = COMMISSION.level1; 
-                if(level === 2) profit = COMMISSION.level2; 
+
+            if(isActive) {
+                stats.active++;
+                if(level === 1) profit = COMMISSION.level1;
+                if(level === 2) profit = COMMISSION.level2;
                 if(level === 3) profit = COMMISSION.level3;
-                
                 stats.profit += profit;
                 
-                statusHtml = `<span class="status-badge active-bg">Active</span>`; 
+                statusHtml = `<span class="status-badge active-bg">Active</span>`;
                 profitBadge = `<div class="profit-tag">+ ৳${profit}</div>`;
             } else {
                 stats.pending++;
-                statusHtml = `<span class="status-badge inactive-bg">Pending</span>`; 
+                statusHtml = `<span class="status-badge inactive-bg">Pending</span>`;
                 profitBadge = `<div class="profit-tag" style="background:#444; color:#aaa;">No Profit</div>`;
             }
 
-            // Level Specific Counts
+            // Level Counters
             if(level === 1) stats.lvl1++;
             if(level === 2) stats.lvl2++;
             if(level === 3) stats.lvl3++;
 
+            // Update Top Header Stats
             updateDisplay();
 
-            // Hide Phone Number
+            // Generate HTML
             const hiddenPhone = user.phone ? user.phone.toString().substring(0, 3) + "*****" + user.phone.toString().substring(user.phone.toString().length - 3) : "N/A";
             
-            // Create HTML
             const html = `
             <div class="member">
                 ${profitBadge}
                 <div class="member-info">
                     <h4>${user.firstName || 'User'}</h4>
-                    <small>${hiddenPhone} | Ref: ${user.referredBy || 'N/A'}</small>
+                    <small><span class="lvl-tag">L${level}</span> ${hiddenPhone}</small>
                 </div>
                 <div>${statusHtml}</div>
             </div>`;
 
-            // Remove default messages if present
-            if(container.innerHTML.includes("Loading") || container.innerHTML.includes("No") || container.innerHTML.includes("Waiting")) {
-                container.innerHTML = "";
-            }
-            
+            // 1. Add to specific Level Tab (Mixed Active & Pending)
+            if(container.innerHTML.includes("No") || container.innerHTML.includes("Waiting")) container.innerHTML = "";
             container.insertAdjacentHTML('beforeend', html);
+
+            // 2. SPECIAL: If Active, ADD to "All Active" Tab as well
+            if(isActive) {
+                const allActiveContainer = document.getElementById('allActive');
+                if(allActiveContainer.innerHTML.includes("No")) allActiveContainer.innerHTML = "";
+                // We append the exact same HTML to the aggregated list
+                allActiveContainer.insertAdjacentHTML('beforeend', html);
+            }
         }
 
         function switchTab(tabId) {
+            // Hide all containers
             document.querySelectorAll('.level-container').forEach(div => div.classList.remove('active'));
+            // Remove active class from buttons
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Show target
             document.getElementById(tabId).classList.add('active');
             
-            // Find which button triggered this
+            // Highlight button
             if(tabId === 'lvl1') document.getElementById('btnLvl1').classList.add('active');
             if(tabId === 'lvl2') document.getElementById('btnLvl2').classList.add('active');
             if(tabId === 'lvl3') document.getElementById('btnLvl3').classList.add('active');
+            if(tabId === 'allActive') document.getElementById('btnAllActive').classList.add('active');
         }
 
         function copyCode() { 
