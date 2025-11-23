@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Team & Earnings</title>
+    <title>My Team</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; margin: 0; }
@@ -26,7 +26,7 @@
         .profit-tag { position: absolute; top: 0; right: 0; background: #f1c40f; color: #000; font-size: 0.7rem; padding: 3px 10px; border-bottom-left-radius: 10px; font-weight: bold; }
     </style>
 </head>
-<body>
+<body onclick="unlockAudio()">
     <a href="home.html" style="color:white; text-decoration:none; display:block; margin-bottom:20px;">← Back to Home</a>
 
     <div class="ref-card">
@@ -63,6 +63,22 @@
         let currentUserCode = null;
         let totalTeamCount = 0;
         let totalProfitCount = 0;
+        let isVoiceReady = false;
+
+        // VOICE UNLOCKER
+        function unlockAudio() {
+            if(isVoiceReady) return;
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); // Silent play
+            isVoiceReady = true;
+            speakNow("Your team is open");
+        }
+
+        function speakNow(text) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US';
+            window.speechSynthesis.speak(u);
+        }
 
         db.ref('settings/commissions').on('value', (snap) => {
             if(snap.exists()) { COMMISSION = snap.val(); if(currentUserCode) startLoadingTeam(currentUserCode); }
@@ -70,26 +86,19 @@
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // SCENARIO 3: TEAM PAGE OPEN VOICE
-                speak("Your team is open");
+                // Try to speak if audio context is already unlocked (rare on first load)
+                // We rely mostly on the 'onclick' trigger
+                if(isVoiceReady) speakNow("Your team is open");
 
                 db.ref('users/' + user.uid + '/ownCode').once('value', (snap) => {
-                    const code = snap.val();
-                    if(code) {
-                        currentUserCode = code;
-                        document.getElementById('myCode').innerText = code;
-                        startLoadingTeam(code);
+                    if(snap.val()) {
+                        currentUserCode = snap.val();
+                        document.getElementById('myCode').innerText = currentUserCode;
+                        startLoadingTeam(currentUserCode);
                     }
                 });
             } else { window.location.href = 'login_register.html'; }
         });
-
-        function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            window.speechSynthesis.speak(utterance);
-            document.body.addEventListener('click', () => { window.speechSynthesis.speak(utterance); }, { once: true });
-        }
 
         function startLoadingTeam(myCode) {
             totalTeamCount = 0; totalProfitCount = 0;
