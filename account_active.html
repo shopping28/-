@@ -8,189 +8,91 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background: #0f0c29; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; color: white; }
-        
-        .container {
-            background: #1a1a2e; padding: 30px; border-radius: 20px; width: 100%; max-width: 400px;
-            border: 1px solid #333; box-shadow: 0 10px 40px rgba(0,0,0,0.5); position: relative; overflow: hidden;
-        }
-
+        .container { background: #1a1a2e; padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; border: 1px solid #333; box-shadow: 0 10px 40px rgba(0,0,0,0.5); position: relative; overflow: hidden; }
         .header { text-align: center; margin-bottom: 20px; }
-        
-        .pay-box {
-            background: linear-gradient(45deg, #e2136e, #f39c12);
-            padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px;
-        }
+        .pay-box { background: linear-gradient(45deg, #e2136e, #f39c12); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
         .amount { font-size: 2rem; font-weight: bold; margin: 5px 0; }
-        .number-display {
-            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; font-family: monospace; font-size: 1.2rem;
-            display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer;
-        }
-        
+        .number-display { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; font-family: monospace; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; }
         label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #ccc; }
         input, select { width: 100%; padding: 12px; background: #0f0c29; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 15px; outline: none; box-sizing: border-box; }
-        
         .submit-btn { width: 100%; padding: 15px; background: #00f260; color: #000; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
-        
-        /* Loader Overlay */
+        .submit-btn:disabled { background: #555; cursor: not-allowed; }
         #overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a2e; z-index: 10; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .loader-ring { width: 50px; height: 50px; border: 4px solid #333; border-top: 4px solid #00f260; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-
     <div class="container">
-        
         <div id="paymentForm">
-            <div class="header">
-                <h2>Activate Account</h2>
-                <p>Send Money (Personal)</p>
-            </div>
-
+            <div class="header"><h2>Activate Account</h2><p>Send Money (Personal)</p></div>
             <div class="pay-box">
-                <small>Send Amount</small>
-                <div class="amount">৳ <span id="dispFee">...</span></div>
+                <small>Send Amount</small><div class="amount">৳ <span id="dispFee">...</span></div>
                 <small>To this Number</small>
-                <div class="number-display" onclick="copyNumber()">
-                    <span id="dispNum">Loading...</span> <i class="fas fa-copy"></i>
-                </div>
+                <div class="number-display" onclick="copyNumber()"><span id="dispNum">Loading...</span> <i class="fas fa-copy"></i></div>
             </div>
-
             <form onsubmit="event.preventDefault(); submitRequest();">
-                <label>Payment Method</label>
-                <select id="method">
-                    <option value="Bkash">Bkash</option>
-                    <option value="Nagad">Nagad</option>
-                </select>
-
-                <label>Your Payment Number</label>
-                <input type="number" id="senderPhone" placeholder="e.g. 017xxxxxxxx" required>
-
-                <label>Transaction ID (TrxID)</label>
-                <input type="text" id="trxId" placeholder="e.g. 8J7HG65F" required>
-
-                <button type="submit" class="submit-btn">Verify Payment</button>
+                <label>Payment Method</label><select id="method"><option value="Bkash">Bkash</option><option value="Nagad">Nagad</option></select>
+                <label>Your Payment Number</label><input type="number" id="senderPhone" placeholder="e.g. 017xxxxxxxx" required>
+                <label>Transaction ID (TrxID)</label><input type="text" id="trxId" placeholder="e.g. 8J7HG65F" required>
+                <button type="submit" id="btnSubmit" class="submit-btn">Verify Payment</button>
             </form>
-            <br>
-            <a href="home.html" style="color:#666; text-decoration:none; display:block; text-align:center;">Cancel</a>
+            <br><a href="home.html" style="color:#666; text-decoration:none; display:block; text-align:center;">Cancel</a>
         </div>
-
-        <!-- TIMER / STATUS -->
         <div id="overlay">
-            <div id="pendingState">
-                <div class="loader-ring"></div>
-                <h3>Checking Payment...</h3>
-                <h2 style="color:#f39c12;" id="timer">15:00</h2>
-                <p style="color:#aaa; font-size:0.8rem;">Do not close this page.</p>
-            </div>
-            <div id="successState" style="display:none;">
-                <i class="fas fa-check-circle" style="font-size:4rem; color:#00f260;"></i>
-                <h2 style="color:#00f260;">Successful!</h2>
-                <p>Account Activated.</p>
-            </div>
+            <div id="pendingState"><div class="loader-ring"></div><h3>Checking Payment...</h3><h2 style="color:#f39c12;" id="timer">15:00</h2><p style="color:#aaa; font-size:0.8rem;">Do not close this page.</p></div>
+            <div id="successState" style="display:none;"><i class="fas fa-check-circle" style="font-size:4rem; color:#00f260;"></i><h2 style="color:#00f260;">Successful!</h2><p>Account Activated.</p></div>
         </div>
-
     </div>
-
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
     <script>
-        const firebaseConfig = {
-          apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
-          authDomain: "art-paid-work001.firebaseapp.com",
-          databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com",
-          projectId: "art-paid-work001",
-          storageBucket: "art-paid-work001.firebasestorage.app",
-          messagingSenderId: "524647364992",
-          appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
+        let currentUser = null, currentFee = 0, adminNumber = "";
 
-        let currentUser = null;
-        let currentFee = 500; // Default fallback
-        let adminNumber = "";
-
-        // 1. Load Admin Settings (Fee & Number)
         db.ref('settings/payment').on('value', (snap) => {
             const data = snap.val();
-            if(data) {
-                currentFee = data.fee;
-                adminNumber = data.number;
-                document.getElementById('dispFee').innerText = currentFee;
-                document.getElementById('dispNum').innerText = adminNumber;
-            }
+            if(data) { currentFee = data.fee; adminNumber = data.number; document.getElementById('dispFee').innerText = currentFee; document.getElementById('dispNum').innerText = adminNumber; }
         });
 
-        // 2. Auth Check
         auth.onAuthStateChanged((user) => {
-            if (user) {
-                currentUser = user;
-                // Listen for activation success
-                db.ref('users/' + user.uid + '/status').on('value', (snap) => {
-                    if(snap.val() === 'active') showSuccess();
-                });
-            } else {
-                window.location.href = 'login_register.html';
-            }
+            if (user) { currentUser = user; db.ref('users/' + user.uid + '/status').on('value', (snap) => { if(snap.val() === 'active') showSuccess(); }); }
+            else { window.location.href = 'login_register.html'; }
         });
 
-        function copyNumber() {
-            navigator.clipboard.writeText(adminNumber);
-            alert("Number Copied!");
-        }
+        function copyNumber() { navigator.clipboard.writeText(adminNumber); alert("Number Copied!"); }
 
         function submitRequest() {
-            if(!adminNumber) return alert("System Loading... Please wait.");
-            
+            if(!adminNumber) return alert("System Loading...");
             const method = document.getElementById('method').value;
             const sender = document.getElementById('senderPhone').value;
             const trx = document.getElementById('trxId').value;
+            const btn = document.getElementById('btnSubmit');
 
             if(!sender || !trx) return alert("Fill all fields");
 
-            // Send Request
-            const reqData = {
-                uid: currentUser.uid,
-                method: method,
-                senderPhone: sender,
-                trxId: trx,
-                amount: currentFee, // Send current fee info
-                status: 'pending',
-                timestamp: Date.now()
-            };
+            btn.disabled = true; btn.innerText = "Submitting...";
 
-            db.ref('activation_requests').push(reqData)
-            .then(() => startTimer())
-            .catch((e) => alert(e.message));
+            db.ref('activation_requests').push({
+                uid: currentUser.uid, method: method, senderPhone: sender, trxId: trx, amount: currentFee, status: 'pending', timestamp: Date.now()
+            }).then(() => startTimer()).catch((e) => { alert(e.message); btn.disabled = false; btn.innerText = "Verify Payment"; });
         }
 
         function startTimer() {
             document.getElementById('overlay').style.display = 'flex';
-            let time = 900; // 15 mins
-            const el = document.getElementById('timer');
-            
+            let time = 900; const el = document.getElementById('timer');
             const interval = setInterval(() => {
-                let m = Math.floor(time / 60);
-                let s = time % 60;
-                el.innerText = `${m}:${s < 10 ? '0'+s : s}`;
-                time--;
-                if(time < 0) {
-                    clearInterval(interval);
-                    el.innerText = "Pending Review";
-                    alert("Admin will verify manually.");
-                }
+                let m = Math.floor(time / 60); let s = time % 60; el.innerText = `${m}:${s < 10 ? '0'+s : s}`; time--;
+                if(time < 0) { clearInterval(interval); el.innerText = "Pending Review"; alert("Wait for Admin approval."); }
             }, 1000);
         }
 
         function showSuccess() {
-            document.getElementById('overlay').style.display = 'flex';
-            document.getElementById('pendingState').style.display = 'none';
-            document.getElementById('successState').style.display = 'block';
+            document.getElementById('overlay').style.display = 'flex'; document.getElementById('pendingState').style.display = 'none'; document.getElementById('successState').style.display = 'block';
             setTimeout(() => window.location.href = 'home.html', 3000);
         }
     </script>
