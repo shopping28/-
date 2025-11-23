@@ -20,12 +20,8 @@
             border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;
             position: relative; overflow: hidden;
         }
-        .profile-card::before {
-            content: ''; position: absolute; top: -50px; right: -50px; width: 100px; height: 100px;
-            background: #00f260; filter: blur(60px); opacity: 0.3;
-        }
 
-        /* Profile Picture Styles */
+        /* Profile Picture */
         .pic-container { position: relative; width: 90px; height: 90px; margin: 0 auto 15px; }
         .pic-box {
             width: 100%; height: 100%; border-radius: 50%;
@@ -34,15 +30,29 @@
             overflow: hidden; cursor: pointer;
         }
         .pic-box img { width: 100%; height: 100%; object-fit: cover; }
-        .pic-box i { font-size: 2.5rem; color: #aaa; }
         .camera-icon {
             position: absolute; bottom: 0; right: 0; background: #00f260; color: black;
             width: 25px; height: 25px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
             font-size: 0.8rem; border: 2px solid #1a1a2e; pointer-events: none;
         }
 
+        /* Name & Phone */
+        .name-area { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 5px; }
         h2 { margin: 0; font-size: 1.3rem; }
-        .uid-badge { background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 10px; font-size: 0.8rem; color: #bbb; margin-top: 5px; display: inline-block; }
+        .edit-icon { color: #f1c40f; cursor: pointer; font-size: 0.9rem; }
+        
+        /* Phone Toggle */
+        .uid-badge { 
+            background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 10px; 
+            font-size: 0.8rem; color: #bbb; margin-top: 5px; display: inline-block; 
+            cursor: pointer; user-select: none; transition: 0.2s;
+        }
+        .uid-badge:active { transform: scale(0.95); background: rgba(255,255,255,0.2); }
+
+        /* Name Edit Form */
+        #nameEditForm { display: none; margin-top: 10px; background: #111; padding: 10px; border-radius: 10px; }
+        .small-input { width: 48%; padding: 8px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; margin-bottom: 5px; }
+        .save-btn { background: #00f260; color: black; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
@@ -73,16 +83,9 @@
         .hist-item { 
             display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; font-size: 0.9rem; 
         }
-        .status-p { color: #f1c40f; background: rgba(241, 196, 15, 0.1); padding: 2px 8px; border-radius: 5px; font-size: 0.75rem; }
+        .status-p { color: #f39c12; background: rgba(241, 196, 15, 0.1); padding: 2px 8px; border-radius: 5px; font-size: 0.75rem; }
         .status-a { color: #00f260; background: rgba(0, 242, 96, 0.1); padding: 2px 8px; border-radius: 5px; font-size: 0.75rem; }
         .status-r { color: #e74c3c; background: rgba(231, 76, 60, 0.1); padding: 2px 8px; border-radius: 5px; font-size: 0.75rem; }
-
-        /* About Us Styles */
-        .about-content { text-align: left; color: #ccc; font-size: 0.9rem; line-height: 1.6; }
-        .about-content h4 { color: #00f260; margin: 15px 0 5px 0; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .about-content ul { padding-left: 20px; margin: 5px 0; }
-        .about-content li { margin-bottom: 5px; }
-        .founder-card { background: #1a1a2e; padding: 10px; border-radius: 10px; border: 1px solid #333; text-align: center; margin: 10px 0; }
 
         /* Password Inputs */
         .pass-input { width: 100%; padding: 12px; margin-bottom: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
@@ -94,7 +97,6 @@
             border: 1px solid rgba(231, 76, 60, 0.3); border-radius: 12px;
             font-weight: bold; cursor: pointer; margin-bottom: 30px;
         }
-
     </style>
 </head>
 <body>
@@ -111,13 +113,29 @@
             </div>
             <div class="camera-icon"><i class="fas fa-camera"></i></div>
         </div>
-        <!-- Hidden File Input -->
         <input type="file" id="fileInput" hidden accept="image/*" onchange="uploadProfilePic(this)">
 
-        <h2 id="p_name">Loading...</h2>
-        <div class="uid-badge">Phone: <span id="p_phone">...</span></div>
+        <!-- Name Section with Edit Icon -->
+        <div class="name-area">
+            <h2 id="p_name">Loading...</h2>
+            <i class="fas fa-pencil-alt edit-icon" onclick="toggleNameEdit()"></i>
+        </div>
+
+        <!-- Name Edit Form (Hidden) -->
+        <div id="nameEditForm">
+            <input type="text" id="newFName" class="small-input" placeholder="First Name">
+            <input type="text" id="newLName" class="small-input" placeholder="Last Name">
+            <button class="save-btn" onclick="saveNameChange()">Update Name</button>
+        </div>
+
+        <!-- Phone (Click to Hide/Show) -->
+        <div class="uid-badge" onclick="togglePhone()" title="Tap to hide/show">
+            Phone: <span id="p_phone">...</span> <i class="fas fa-eye-slash" style="font-size:0.7rem; margin-left:5px;"></i>
+        </div>
         <br>
-        <div class="uid-badge" style="margin-top:10px; background: #333;">Code: <span id="p_code" style="color:#00f260">...</span></div>
+        <div class="uid-badge" style="margin-top:10px; background: #333; cursor: default;">
+            Code: <span id="p_code" style="color:#00f260">...</span>
+        </div>
     </div>
 
     <!-- Stats -->
@@ -146,56 +164,6 @@
             <small style="color:#666; display:block; text-align:center; padding-bottom:10px;">Last 10 Transactions</small>
             <div id="historyContent">
                 <p style="text-align:center; color:#555;">Loading history...</p>
-            </div>
-        </div>
-
-        <!-- About Us -->
-        <div class="menu-item" onclick="toggleSection('aboutSection')">
-            <div class="menu-left"><i class="fas fa-info-circle"></i><span>About Us</span></div>
-            <i class="fas fa-chevron-down arrow"></i>
-        </div>
-        <div id="aboutSection" class="hidden-section">
-            <div class="about-content">
-                <center>
-                    <i class="fas fa-shield-alt" style="font-size:3rem; color:#00f260; margin-bottom:10px;"></i>
-                    <h3 style="color:white; margin:0;">ShoppingFree</h3>
-                    <small style="color:#aaa;">Version 2.0.1 | © 2025</small>
-                </center>
-                
-                <p>ShoppingFree is the #1 digital earning platform in Bangladesh, designed to help everyone achieve financial freedom through simple online tasks. Our system is fast, secure, and beginner-friendly.</p>
-
-                <h4>🎯 Our Mission</h4>
-                <p>To empower the people of Bangladesh with easy and reliable digital earning opportunities—so anyone can build income from the comfort of home.</p>
-
-                <div class="founder-card">
-                    <i class="fas fa-user-tie" style="color:#f39c12; font-size:1.5rem;"></i>
-                    <p style="margin:5px 0; font-weight:bold; color:white;">The Rafsan</p>
-                    <small>Founder & System Developer</small>
-                    <br><small style="color:#aaa;">Digital Entrepreneur & Visionary</small>
-                </div>
-
-                <h4>💰 Referral Income (3 Levels)</h4>
-                <ul>
-                    <li><strong style="color:#00f260">Level 1 (Direct):</strong> Earn 130 Taka</li>
-                    <li><strong style="color:#3498db">Level 2 (Downline):</strong> Earn 20 Taka</li>
-                    <li><strong style="color:#e74c3c">Level 3 (Super):</strong> Earn 10 Taka</li>
-                </ul>
-
-                <h4>🚀 Upcoming Features</h4>
-                <ul>
-                    <li>🎮 <strong>Game Zone:</strong> Play & Earn, Lucky Spin</li>
-                    <li>💎 <strong>VIP Club:</strong> Higher income rates & rewards</li>
-                    <li>📅 <strong>Plans:</strong> Monthly & Weekly Membership</li>
-                    <li>📝 <strong>Tasks:</strong> Ad view, Surveys, Share & Earn</li>
-                </ul>
-
-                <h4>❤️ Why Users Love Us</h4>
-                <p>
-                    ✔ Trusted by 10,000+ active users<br>
-                    ✔ 24/7 fast payments<br>
-                    ✔ Fully secure system<br>
-                    ✔ Transparent income structure
-                </p>
             </div>
         </div>
 
@@ -228,22 +196,17 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        const firebaseConfig = {
-          apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
-          authDomain: "art-paid-work001.firebaseapp.com",
-          databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com",
-          projectId: "art-paid-work001",
-          storageBucket: "art-paid-work001.firebasestorage.app",
-          messagingSenderId: "524647364992",
-          appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965"
-        };
-        
+        const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
 
         let currentUser = null;
         let currentUserEmail = "";
+        
+        // Variables for Phone Toggle
+        let realPhone = "01xxxxxxxxx";
+        let isPhoneHidden = false;
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -261,12 +224,20 @@
             db.ref('users/' + uid).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
+                    // Set Name
                     document.getElementById('p_name').innerText = data.firstName + " " + (data.lastName || "");
-                    document.getElementById('p_phone').innerText = data.phone;
+                    
+                    // Set Real Phone & Update Display
+                    realPhone = data.phone;
+                    updatePhoneDisplay();
+
                     document.getElementById('p_balance').innerText = data.balance ? data.balance.toFixed(2) : 0;
                     document.getElementById('p_code').innerText = data.ownCode || "N/A";
 
-                    // Load Profile Pic
+                    // Pre-fill edit form
+                    document.getElementById('newFName').value = data.firstName;
+                    document.getElementById('newLName').value = data.lastName || "";
+
                     if(data.profilePic) {
                         document.getElementById('profilePicBox').innerHTML = `<img src="${data.profilePic}">`;
                     }
@@ -274,71 +245,75 @@
             });
         }
 
-        // --- PROFILE PIC UPLOAD (Compressed) ---
-        function uploadProfilePic(input) {
-            const file = input.files[0];
-            if(!file) return;
+        // --- 1. PHONE TOGGLE FEATURE ---
+        function togglePhone() {
+            isPhoneHidden = !isPhoneHidden; // Switch true/false
+            updatePhoneDisplay();
+        }
 
-            // Reading file
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = function() {
-                    // Resize Logic to save DB space (Max 200px)
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const maxWidth = 200;
-                    const scaleSize = maxWidth / img.width;
-                    canvas.width = maxWidth;
-                    canvas.height = img.height * scaleSize;
-
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    const base64String = canvas.toDataURL('image/jpeg', 0.7); // Compress Quality 0.7
-
-                    // Save to Database
-                    db.ref('users/' + currentUser.uid).update({ profilePic: base64String })
-                    .then(() => alert("Profile Picture Updated!"))
-                    .catch(err => alert("Error: " + err.message));
+        function updatePhoneDisplay() {
+            const el = document.getElementById('p_phone');
+            if (isPhoneHidden) {
+                // Hide middle numbers
+                if(realPhone.length >= 11) {
+                    el.innerText = realPhone.substring(0, 3) + "******" + realPhone.substring(realPhone.length - 2);
+                } else {
+                    el.innerText = "****";
                 }
+            } else {
+                // Show full number
+                el.innerText = realPhone;
             }
-            reader.readAsDataURL(file);
         }
 
-        function loadTeamCount(uid) {
-            db.ref('users/' + uid + '/ownCode').once('value', (snap) => {
-                const myCode = snap.val();
-                if(myCode) {
-                    db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (teamSnap) => {
-                        document.getElementById('p_team').innerText = teamSnap.numChildren();
-                    });
-                }
-            });
+        // --- 2. NAME EDIT FEATURE ---
+        function toggleNameEdit() {
+            const form = document.getElementById('nameEditForm');
+            form.style.display = (form.style.display === 'block') ? 'none' : 'block';
         }
 
-        // --- REAL WITHDRAW HISTORY (Fixed Limit 10) ---
+        function saveNameChange() {
+            const f = document.getElementById('newFName').value.trim();
+            const l = document.getElementById('newLName').value.trim();
+
+            if(!f) return alert("First Name cannot be empty.");
+
+            db.ref('users/' + currentUser.uid).update({
+                firstName: f,
+                lastName: l
+            }).then(() => {
+                alert("Name Updated Successfully!");
+                document.getElementById('nameEditForm').style.display = 'none';
+            }).catch(e => alert("Error: " + e.message));
+        }
+
+        // --- 3. WITHDRAW HISTORY FIX ---
         function loadWithdrawHistory(uid) {
-            // limitToLast(10) brings the newest 10 entries
-            db.ref('withdraw_requests').orderByChild('userId').equalTo(uid).limitToLast(10).on('value', (snapshot) => {
+            // FIXED: Using 'uid' instead of 'userId' to match withdraw.html
+            db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).limitToLast(10).on('value', (snapshot) => {
                 const container = document.getElementById('historyContent');
                 container.innerHTML = ""; 
                 
                 if(snapshot.exists()) {
                     let items = [];
                     snapshot.forEach(c => items.push(c.val()));
-                    items.reverse(); // Reverse so the very latest is at top
+                    items.reverse(); // Show newest first
 
                     items.forEach((w) => {
                         let statusBadge = "";
-                        if(w.status === "approved" || w.status === "Approved") statusBadge = `<span class="status-a">Approved</span>`;
-                        else if(w.status === "rejected" || w.status === "Rejected") statusBadge = `<span class="status-r">Rejected</span>`;
+                        const st = w.status.toLowerCase();
+                        if(st === "approved") statusBadge = `<span class="status-a">Approved</span>`;
+                        else if(st === "rejected") statusBadge = `<span class="status-r">Rejected</span>`;
                         else statusBadge = `<span class="status-p">Pending</span>`;
+
+                        // Formatting Date
+                        const date = new Date(w.timestamp).toLocaleDateString();
 
                         const html = `
                             <div class="hist-item">
                                 <div>
-                                    <b style="color:white;">${w.method}</b><br>
-                                    <small style="color:#aaa;">${w.number}</small>
+                                    <b style="color:white;">${w.method}</b> <small style="color:#777">(${date})</small><br>
+                                    <small style="color:#aaa;">${w.wallet}</small>
                                 </div>
                                 <div style="text-align:right;">
                                     <b style="color:white;">৳${w.amount}</b><br>
@@ -354,42 +329,63 @@
             });
         }
 
-        // --- CHANGE PASSWORD LOGIC ---
-        function changePassword() {
-            const oldPass = document.getElementById('oldPass').value;
-            const newPass = document.getElementById('newPass').value;
-
-            if(newPass.length < 6) {
-                alert("New password must be at least 6 characters.");
-                return;
+        // --- PROFILE PIC UPLOAD ---
+        function uploadProfilePic(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const maxWidth = 200;
+                    const scaleSize = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scaleSize;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const base64String = canvas.toDataURL('image/jpeg', 0.7);
+                    db.ref('users/' + currentUser.uid).update({ profilePic: base64String })
+                    .then(() => alert("Profile Picture Updated!"))
+                    .catch(err => alert("Error: " + err.message));
+                }
             }
+            reader.readAsDataURL(file);
+        }
 
-            const credential = firebase.auth.EmailAuthProvider.credential(currentUserEmail, oldPass);
-
-            currentUser.reauthenticateWithCredential(credential).then(() => {
-                currentUser.updatePassword(newPass).then(() => {
-                    db.ref('users/' + currentUser.uid).update({ password: newPass });
-                    
-                    alert("Password updated successfully!");
-                    document.getElementById('oldPass').value = "";
-                    document.getElementById('newPass').value = "";
-                    toggleSection('passSection'); 
-                }).catch((error) => {
-                    alert("Error updating password: " + error.message);
-                });
-            }).catch((error) => {
-                alert("Incorrect Old Password!");
+        function loadTeamCount(uid) {
+            db.ref('users/' + uid + '/ownCode').once('value', (snap) => {
+                const myCode = snap.val();
+                if(myCode) {
+                    // This counts Total Team (including inactive) for display stats
+                    // If you want Active Only here, you need to filter like my_team.html
+                    db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (teamSnap) => {
+                        document.getElementById('p_team').innerText = teamSnap.numChildren();
+                    });
+                }
             });
         }
 
-        function toggleSection(id) {
-            document.querySelectorAll('.hidden-section').forEach(div => {
-                if(div.id !== id) div.style.display = 'none';
-            });
+        function changePassword() {
+            const oldPass = document.getElementById('oldPass').value;
+            const newPass = document.getElementById('newPass').value;
+            if(newPass.length < 6) return alert("New password must be at least 6 characters.");
 
+            const credential = firebase.auth.EmailAuthProvider.credential(currentUserEmail, oldPass);
+            currentUser.reauthenticateWithCredential(credential).then(() => {
+                currentUser.updatePassword(newPass).then(() => {
+                    db.ref('users/' + currentUser.uid).update({ password: newPass });
+                    alert("Password updated successfully!");
+                    toggleSection('passSection'); 
+                }).catch((error) => alert("Error updating password: " + error.message));
+            }).catch((error) => alert("Incorrect Old Password!"));
+        }
+
+        function toggleSection(id) {
+            document.querySelectorAll('.hidden-section').forEach(div => { if(div.id !== id) div.style.display = 'none'; });
             const div = document.getElementById(id);
-            if(div.style.display === 'block') div.style.display = 'none';
-            else div.style.display = 'block';
+            div.style.display = (div.style.display === 'block') ? 'none' : 'block';
         }
 
         function logout() {
