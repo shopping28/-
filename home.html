@@ -29,7 +29,6 @@
         }
         @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.02);} 100% {transform: scale(1);} }
 
-        /* Grid Layout */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
         
         .card {
@@ -39,49 +38,37 @@
         .card:active { transform: scale(0.95); }
         .card i.icon { font-size: 2rem; margin-bottom: 10px; }
         
-        /* Lock Overlay */
         .lock-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 12, 41, 0.9); /* Dark overlay */
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(15, 12, 41, 0.9); display: flex; flex-direction: column; align-items: center; justify-content: center;
             backdrop-filter: blur(3px); z-index: 10;
         }
         .lock-layer i { font-size: 1.5rem; color: #e74c3c; margin-bottom: 5px; }
         .lock-layer span { font-size: 0.7rem; color: #aaa; font-weight: bold; }
         
-        /* Timed Lock (Blue) */
         .time-lock i { color: #3498db; }
-
-        /* Colors */
         .c-task { color: #ff9a9e; } .c-team { color: #a18cd1; } .c-with { color: #84fab0; } .c-vip { color: #fccb90; }
 
-        /* Profile Icon */
         .profile-btn {
             width: 45px; height: 45px; background: #1a1a2e; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; border: 2px solid #333; cursor: pointer;
-            overflow: hidden;
+            display: flex; justify-content: center; align-items: center; border: 2px solid #333; cursor: pointer; overflow: hidden;
         }
-        .profile-btn img {
-            width: 100%; height: 100%; object-fit: cover;
-        }
+        .profile-btn img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
-<body>
+<!-- BODY তে ক্লিক ইভেন্ট দেওয়া হলো ভয়েস আনলক করার জন্য -->
+<body onclick="unlockAudio()">
 
-    <!-- HEADER -->
     <div class="header">
         <div>
             <h2 style="margin:0;">Hi, <span id="userName">Loading...</span></h2>
             <span id="userStatus" class="badge inact">Checking...</span>
         </div>
-        
-        <!-- Profile Button -->
         <div class="profile-btn" id="profileBtn" onclick="checkAccess('account.html')">
             <i class="fas fa-user"></i>
         </div>
     </div>
 
-    <!-- ACTIVATION BANNER -->
     <div id="activateBanner" class="activate-box" onclick="window.location.href='account_active.html'">
         <div>
             <b style="font-size:1.1rem;">Activate Account</b><br>
@@ -90,66 +77,44 @@
         <i class="fas fa-chevron-right"></i>
     </div>
 
-    <!-- MAIN GRID -->
     <div class="grid">
-        <!-- 1. DAILY TASK -->
         <div class="card" onclick="checkAccess('task.html')">
-            <i class="fas fa-tasks icon c-task"></i>
-            <div>Daily Task</div>
+            <i class="fas fa-tasks icon c-task"></i><div>Daily Task</div>
             <div class="lock-layer" id="lock_task"><i class="fas fa-lock"></i><span>Activate First</span></div>
         </div>
-
-        <!-- 2. MY TEAM -->
         <div class="card" onclick="checkAccess('my_team.html')">
-            <i class="fas fa-users icon c-team"></i>
-            <div>My Team</div>
+            <i class="fas fa-users icon c-team"></i><div>My Team</div>
             <div class="lock-layer" id="lock_team"><i class="fas fa-lock"></i><span>Activate First</span></div>
         </div>
-
-        <!-- 3. WITHDRAW -->
         <div class="card" onclick="checkAccess('withdraw.html')">
-            <i class="fas fa-wallet icon c-with"></i>
-            <div>Withdraw</div>
+            <i class="fas fa-wallet icon c-with"></i><div>Withdraw</div>
             <div class="lock-layer" id="lock_withdraw"><i class="fas fa-lock"></i><span>Activate First</span></div>
         </div>
-
-        <!-- 4. VIP LEVEL -->
         <div class="card" onclick="checkAccess('vip_level.html')">
-            <i class="fas fa-crown icon c-vip"></i>
-            <div>VIP Level</div>
+            <i class="fas fa-crown icon c-vip"></i><div>VIP Level</div>
             <div class="lock-layer" id="lock_vip"><i class="fas fa-lock"></i><span>Activate First</span></div>
         </div>
-
-        <!-- 5. QUIZ GAME -->
         <div class="card" onclick="window.location.href='question_game.html'">
-            <i class="fas fa-gamepad icon" style="color:#e0c3fc;"></i>
-            <div>Quiz Game</div>
+            <i class="fas fa-gamepad icon" style="color:#e0c3fc;"></i><div>Quiz Game</div>
             <div class="lock-layer time-lock"><i class="fas fa-clock"></i><span>21 Days</span></div>
         </div>
-
-        <!-- 6. WEEKLY -->
         <div class="card" onclick="window.location.href='weekly.html'">
-            <i class="fas fa-calendar-week icon" style="color:#fff;"></i>
-            <div>Weekly</div>
+            <i class="fas fa-calendar-week icon" style="color:#fff;"></i><div>Weekly</div>
             <div class="lock-layer time-lock"><i class="fas fa-clock"></i><span>16 Days</span></div>
         </div>
-        
-        <!-- 7. MONTHLY -->
         <div class="card" onclick="window.location.href='monthly.html'">
-            <i class="fas fa-calendar-alt icon" style="color:#fff;"></i>
-            <div>Monthly</div>
+            <i class="fas fa-calendar-alt icon" style="color:#fff;"></i><div>Monthly</div>
             <div class="lock-layer time-lock"><i class="fas fa-clock"></i><span>16 Days</span></div>
         </div>
-        
-        <!-- 8. VIP CLUB -->
-         <div class="card" onclick="window.location.href='vip_club.html'">
-            <i class="fas fa-gem icon" style="color:#f1c40f;"></i>
-            <div>VIP Club</div>
+        <div class="card" onclick="window.location.href='vip_club.html'">
+            <i class="fas fa-gem icon" style="color:#f1c40f;"></i><div>VIP Club</div>
             <div class="lock-layer time-lock"><i class="fas fa-clock"></i><span>21 Days</span></div>
         </div>
     </div>
 
-    <!-- FIREBASE SDK -->
+    <!-- Hidden audio trigger -->
+    <div id="voiceTrigger" style="display:none;"></div>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -161,50 +126,90 @@
         const db = firebase.database();
 
         let currentUserStatus = 'inactive';
+        let isVoiceReady = false;
+        let pendingMsg = "";
+
+        // --- 1. UNLOCK AUDIO (Browser Policy Fix) ---
+        function unlockAudio() {
+            if(isVoiceReady) return;
+            
+            // Play a silent sound to unlock the audio engine
+            const synth = window.speechSynthesis;
+            const u = new SpeechSynthesisUtterance("");
+            synth.speak(u);
+            isVoiceReady = true;
+
+            // If any message was pending, play it now
+            if(pendingMsg) {
+                speakNow(pendingMsg);
+                pendingMsg = ""; // Clear message
+            }
+        }
+
+        // --- 2. SPEAK FUNCTION ---
+        function speak(text) {
+            // If audio is ready (user touched screen), play immediately
+            if(isVoiceReady) {
+                speakNow(text);
+            } else {
+                // Else wait for first touch
+                pendingMsg = text;
+                console.log("Voice queued, waiting for user interaction...");
+            }
+        }
+
+        function speakNow(text) {
+            window.speechSynthesis.cancel(); // Stop previous sound
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9; 
+            utterance.pitch = 1;
+            utterance.volume = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // 1. USER INFO & ACTIVATION VOICE
+                // LOAD USER DATA
                 db.ref('users/' + user.uid).on('value', (snapshot) => {
                     const data = snapshot.val();
                     if(data) {
                         document.getElementById('userName').innerText = data.firstName;
                         currentUserStatus = data.status;
                         updateUI(currentUserStatus);
+                        
+                        if(data.profilePic) document.getElementById('profileBtn').innerHTML = `<img src="${data.profilePic}">`;
 
-                        if(data.profilePic) {
-                            document.getElementById('profileBtn').innerHTML = `<img src="${data.profilePic}" alt="Profile">`;
-                        } else {
-                            document.getElementById('profileBtn').innerHTML = `<i class="fas fa-user"></i>`;
-                        }
-
-                        // VOICE LOGIC 1 & 2
+                        // --- VOICE LOGIC START ---
                         if(currentUserStatus === 'active') {
-                            // চেক করবো আগে 'Active' ভয়েসটা শুনেছে কিনা
-                            if(!localStorage.getItem('welcome_voice_played')) {
-                                // SCENARIO 1: JUST ACTIVATED
+                            // SCENARIO 1: JUST ACTIVATED
+                            if(!localStorage.getItem('activation_voice_played')) {
                                 speak("Your account active successful so start network marketing journey");
-                                localStorage.setItem('welcome_voice_played', 'true');
-                            } else {
-                                // SCENARIO 2: NORMAL HOME VISIT
-                                // সেশন স্টোরেজ ব্যবহার করছি যাতে প্রতিবার রিলোডে না বাজে, শুধু একবার ব্রাউজার ওপেন করলে বাজে
-                                if(!sessionStorage.getItem('home_visited')) {
+                                localStorage.setItem('activation_voice_played', 'true');
+                            } 
+                            // SCENARIO 2: HOME PAGE VISIT (Every time)
+                            else {
+                                // আমরা ছোট একটা ডিলে দিচ্ছি যাতে ইউজারের টাচ করার সময় পায়
+                                setTimeout(() => {
                                     speak("Account is open");
-                                    sessionStorage.setItem('home_visited', 'true');
-                                }
+                                }, 1000);
                             }
                         }
+                        // --- VOICE LOGIC END ---
                     }
                 });
 
-                // 2. WITHDRAW APPROVAL LISTENER (SCENARIO 4)
-                // এটা রিয়েলটাইমে চেক করবে এডমিন অ্যাপ্রুভ করলো কিনা
+                // --- SCENARIO 3: WITHDRAW APPROVAL LISTENER ---
+                // Using child_changed to detect specific update
                 db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).on('child_changed', (snapshot) => {
                     const req = snapshot.val();
+                    // Check if status changed to approved
                     if(req.status === 'approved') {
                         const msg = "Your withdraw successfully accept then you work first and more withdraw and more earning best of luck for shopping28 and the art community";
                         speak(msg);
-                        alert("🎉 Withdrawal Approved!");
+                        
+                        // Optional: Vibrate phone
+                        if("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
                     }
                 });
 
@@ -212,21 +217,6 @@
                 window.location.href = 'login_register.html';
             }
         });
-
-        // --- MASTER VOICE FUNCTION ---
-        function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.9; 
-            utterance.pitch = 1;
-            
-            window.speechSynthesis.speak(utterance);
-            
-            // অটো-প্লে ফিক্স: যদি ব্রাউজার ব্লক করে, ক্লিকে বাজবে
-            document.body.addEventListener('click', () => {
-                window.speechSynthesis.speak(utterance);
-            }, { once: true });
-        }
 
         function updateUI(status) {
             const badge = document.getElementById('userStatus');
