@@ -79,17 +79,27 @@
         /* Hidden Sections */
         .hidden-section { display: none; background: #111; padding: 20px; border-bottom: 1px solid #333; }
         
-        /* History Styles */
+        /* BETTER WITHDRAW HISTORY STYLE */
         .hist-item { 
-            display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; font-size: 0.9rem; 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px; margin-bottom: 8px; 
+            background: rgba(255,255,255,0.03); border-radius: 8px;
+            border-left: 4px solid #555; 
         }
-        .status-p { color: #f39c12; background: rgba(241, 196, 15, 0.1); padding: 2px 8px; border-radius: 5px; font-size: 0.75rem; }
-        .status-a { color: #00f260; background: rgba(0, 242, 96, 0.1); padding: 2px 8px; border-radius: 5px; font-size: 0.75rem; }
-        .status-r { color: #e74c3c; background: rgba(231, 76, 60, 0.1); padding: 2px 8px; border-radius: 5px; font-size: 0.75rem; }
+        .hist-item.approved { border-left-color: #00f260; }
+        .hist-item.rejected { border-left-color: #e74c3c; }
+        .hist-item.pending { border-left-color: #f1c40f; }
 
-        /* Password Inputs */
-        .pass-input { width: 100%; padding: 12px; margin-bottom: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
-        .update-btn { width: 100%; padding: 12px; background: #00f260; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .status-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .sb-app { color: #00f260; background: rgba(0,242,96,0.1); }
+        .sb-rej { color: #e74c3c; background: rgba(231,76,60,0.1); }
+        .sb-pen { color: #f1c40f; background: rgba(241,196,15,0.1); }
+
+        /* ABOUT US CONTENT STYLE */
+        .about-content h4 { color: #00f260; margin: 15px 0 5px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .about-content p { font-size: 0.9rem; color: #ccc; line-height: 1.5; }
+        .about-content ul { margin: 5px 0; padding-left: 20px; color: #ddd; font-size: 0.9rem; }
+        .about-content li { margin-bottom: 5px; }
 
         /* Logout */
         .logout-btn {
@@ -134,7 +144,7 @@
         </div>
         <br>
         <div class="uid-badge" style="margin-top:10px; background: #333; cursor: default;">
-            Code: <span id="p_code" style="color:#00f260">...</span>
+            Ref Code: <span id="p_code" style="color:#00f260">...</span>
         </div>
     </div>
 
@@ -161,10 +171,44 @@
             <i class="fas fa-chevron-down arrow"></i>
         </div>
         <div id="historySection" class="hidden-section">
-            <small style="color:#666; display:block; text-align:center; padding-bottom:10px;">Last 10 Transactions</small>
             <div id="historyContent">
                 <p style="text-align:center; color:#555;">Loading history...</p>
             </div>
+        </div>
+
+        <!-- ABOUT US (ADDED BACK & DETAILED) -->
+        <div class="menu-item" onclick="toggleSection('aboutSection')">
+            <div class="menu-left"><i class="fas fa-info-circle"></i><span>About & Rules</span></div>
+            <i class="fas fa-chevron-down arrow"></i>
+        </div>
+        <div id="aboutSection" class="hidden-section about-content">
+            <center>
+                <i class="fas fa-shopping-bag" style="font-size:2.5rem; color:#00f260;"></i>
+                <h3>ShoppingFree</h3>
+                <small>Digital Marketing Platform</small>
+            </center>
+
+            <h4>📝 How it Works?</h4>
+            <p>ShoppingFree is a digital platform where you can earn money by completing simple daily tasks and building your own team.</p>
+
+            <h4>💰 Referral Income System</h4>
+            <ul>
+                <li><strong style="color:#00f260">Level 1 (Direct):</strong> 130 Taka (Per Active Refer)</li>
+                <li><strong style="color:#3498db">Level 2 (Team):</strong> 20 Taka</li>
+                <li><strong style="color:#e74c3c">Level 3 (Team):</strong> 10 Taka</li>
+            </ul>
+            <p style="font-size:0.8rem; color:#aaa;">* Referral bonus is only given when your referred user activates their account.</p>
+
+            <h4>🏦 Withdrawal Rules</h4>
+            <ul>
+                <li>Minimum Withdraw: <strong>500 Taka</strong></li>
+                <li>Payment Methods: Bkash & Nagad (Personal)</li>
+                <li>Withdraw Time: 10:00 AM - 10:00 PM</li>
+                <li>Payment Duration: 10 Minutes to 24 Hours</li>
+            </ul>
+
+            <h4>📞 Support</h4>
+            <p>For any issues, please join our official Telegram channel or contact your upline.</p>
         </div>
 
         <!-- Telegram -->
@@ -179,9 +223,9 @@
             <i class="fas fa-chevron-down arrow"></i>
         </div>
         <div id="passSection" class="hidden-section">
-            <input type="password" id="oldPass" class="pass-input" placeholder="Enter Old Password">
-            <input type="password" id="newPass" class="pass-input" placeholder="Enter New Password (min 6 chars)">
-            <button class="update-btn" onclick="changePassword()">Update Password</button>
+            <input type="password" id="oldPass" class="pass-input" style="width:100%; padding:10px; background:#222; border:1px solid #444; color:white; margin-bottom:10px; border-radius:5px;" placeholder="Enter Old Password">
+            <input type="password" id="newPass" class="pass-input" style="width:100%; padding:10px; background:#222; border:1px solid #444; color:white; margin-bottom:10px; border-radius:5px;" placeholder="Enter New Password (min 6 chars)">
+            <button class="save-btn" onclick="changePassword()">Update Password</button>
         </div>
 
     </div>
@@ -203,8 +247,6 @@
 
         let currentUser = null;
         let currentUserEmail = "";
-        
-        // Variables for Phone Toggle
         let realPhone = "01xxxxxxxxx";
         let isPhoneHidden = false;
 
@@ -224,72 +266,50 @@
             db.ref('users/' + uid).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
-                    // Set Name
                     document.getElementById('p_name').innerText = data.firstName + " " + (data.lastName || "");
-                    
-                    // Set Real Phone & Update Display
                     realPhone = data.phone;
                     updatePhoneDisplay();
-
                     document.getElementById('p_balance').innerText = data.balance ? data.balance.toFixed(2) : 0;
                     document.getElementById('p_code').innerText = data.ownCode || "N/A";
-
-                    // Pre-fill edit form
                     document.getElementById('newFName').value = data.firstName;
                     document.getElementById('newLName').value = data.lastName || "";
-
-                    if(data.profilePic) {
-                        document.getElementById('profilePicBox').innerHTML = `<img src="${data.profilePic}">`;
-                    }
+                    if(data.profilePic) document.getElementById('profilePicBox').innerHTML = `<img src="${data.profilePic}">`;
                 }
             });
         }
 
-        // --- 1. PHONE TOGGLE FEATURE ---
+        // PHONE TOGGLE
         function togglePhone() {
-            isPhoneHidden = !isPhoneHidden; // Switch true/false
+            isPhoneHidden = !isPhoneHidden;
             updatePhoneDisplay();
         }
-
         function updatePhoneDisplay() {
             const el = document.getElementById('p_phone');
             if (isPhoneHidden) {
-                // Hide middle numbers
-                if(realPhone.length >= 11) {
-                    el.innerText = realPhone.substring(0, 3) + "******" + realPhone.substring(realPhone.length - 2);
-                } else {
-                    el.innerText = "****";
-                }
+                if(realPhone.length >= 11) el.innerText = realPhone.substring(0, 3) + "******" + realPhone.substring(realPhone.length - 2);
+                else el.innerText = "****";
             } else {
-                // Show full number
                 el.innerText = realPhone;
             }
         }
 
-        // --- 2. NAME EDIT FEATURE ---
+        // NAME EDIT
         function toggleNameEdit() {
             const form = document.getElementById('nameEditForm');
             form.style.display = (form.style.display === 'block') ? 'none' : 'block';
         }
-
         function saveNameChange() {
             const f = document.getElementById('newFName').value.trim();
             const l = document.getElementById('newLName').value.trim();
-
             if(!f) return alert("First Name cannot be empty.");
-
-            db.ref('users/' + currentUser.uid).update({
-                firstName: f,
-                lastName: l
-            }).then(() => {
+            db.ref('users/' + currentUser.uid).update({ firstName: f, lastName: l }).then(() => {
                 alert("Name Updated Successfully!");
                 document.getElementById('nameEditForm').style.display = 'none';
             }).catch(e => alert("Error: " + e.message));
         }
 
-        // --- 3. WITHDRAW HISTORY FIX ---
+        // WITHDRAW HISTORY (IMPROVED)
         function loadWithdrawHistory(uid) {
-            // FIXED: Using 'uid' instead of 'userId' to match withdraw.html
             db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).limitToLast(10).on('value', (snapshot) => {
                 const container = document.getElementById('historyContent');
                 container.innerHTML = ""; 
@@ -297,27 +317,29 @@
                 if(snapshot.exists()) {
                     let items = [];
                     snapshot.forEach(c => items.push(c.val()));
-                    items.reverse(); // Show newest first
+                    items.reverse(); 
 
                     items.forEach((w) => {
-                        let statusBadge = "";
                         const st = w.status.toLowerCase();
-                        if(st === "approved") statusBadge = `<span class="status-a">Approved</span>`;
-                        else if(st === "rejected") statusBadge = `<span class="status-r">Rejected</span>`;
-                        else statusBadge = `<span class="status-p">Pending</span>`;
+                        let badgeClass = "sb-pen";
+                        let rowClass = "pending";
+                        let icon = '<i class="fas fa-clock" style="color:#f1c40f"></i>';
 
-                        // Formatting Date
+                        if(st === "approved") { badgeClass = "sb-app"; rowClass = "approved"; icon = '<i class="fas fa-check-circle" style="color:#00f260"></i>'; }
+                        else if(st === "rejected") { badgeClass = "sb-rej"; rowClass = "rejected"; icon = '<i class="fas fa-times-circle" style="color:#e74c3c"></i>'; }
+
                         const date = new Date(w.timestamp).toLocaleDateString();
+                        const time = new Date(w.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
                         const html = `
-                            <div class="hist-item">
+                            <div class="hist-item ${rowClass}">
                                 <div>
                                     <b style="color:white;">${w.method}</b> <small style="color:#777">(${date})</small><br>
                                     <small style="color:#aaa;">${w.wallet}</small>
                                 </div>
                                 <div style="text-align:right;">
                                     <b style="color:white;">৳${w.amount}</b><br>
-                                    ${statusBadge}
+                                    <span class="status-badge ${badgeClass}">${st.toUpperCase()}</span>
                                 </div>
                             </div>
                         `;
@@ -329,7 +351,6 @@
             });
         }
 
-        // --- PROFILE PIC UPLOAD ---
         function uploadProfilePic(input) {
             const file = input.files[0];
             if(!file) return;
@@ -346,9 +367,7 @@
                     canvas.height = img.height * scaleSize;
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     const base64String = canvas.toDataURL('image/jpeg', 0.7);
-                    db.ref('users/' + currentUser.uid).update({ profilePic: base64String })
-                    .then(() => alert("Profile Picture Updated!"))
-                    .catch(err => alert("Error: " + err.message));
+                    db.ref('users/' + currentUser.uid).update({ profilePic: base64String }).then(() => alert("Profile Picture Updated!"));
                 }
             }
             reader.readAsDataURL(file);
@@ -358,8 +377,6 @@
             db.ref('users/' + uid + '/ownCode').once('value', (snap) => {
                 const myCode = snap.val();
                 if(myCode) {
-                    // This counts Total Team (including inactive) for display stats
-                    // If you want Active Only here, you need to filter like my_team.html
                     db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (teamSnap) => {
                         document.getElementById('p_team').innerText = teamSnap.numChildren();
                     });
@@ -370,28 +387,24 @@
         function changePassword() {
             const oldPass = document.getElementById('oldPass').value;
             const newPass = document.getElementById('newPass').value;
-            if(newPass.length < 6) return alert("New password must be at least 6 characters.");
-
+            if(newPass.length < 6) return alert("Min 6 chars required.");
             const credential = firebase.auth.EmailAuthProvider.credential(currentUserEmail, oldPass);
             currentUser.reauthenticateWithCredential(credential).then(() => {
                 currentUser.updatePassword(newPass).then(() => {
                     db.ref('users/' + currentUser.uid).update({ password: newPass });
-                    alert("Password updated successfully!");
+                    alert("Password updated!");
                     toggleSection('passSection'); 
-                }).catch((error) => alert("Error updating password: " + error.message));
-            }).catch((error) => alert("Incorrect Old Password!"));
+                }).catch((error) => alert("Error: " + error.message));
+            }).catch(() => alert("Incorrect Old Password!"));
         }
 
         function toggleSection(id) {
-            document.querySelectorAll('.hidden-section').forEach(div => { if(div.id !== id) div.style.display = 'none'; });
             const div = document.getElementById(id);
             div.style.display = (div.style.display === 'block') ? 'none' : 'block';
         }
 
         function logout() {
-            if(confirm("Are you sure you want to log out?")) {
-                auth.signOut().then(() => window.location.href = 'login_register.html');
-            }
+            if(confirm("Logout?")) auth.signOut().then(() => window.location.href = 'login_register.html');
         }
     </script>
 </body>
