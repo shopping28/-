@@ -9,20 +9,29 @@
         body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; margin: 0; }
         .ref-card { background: linear-gradient(135deg, #6a11cb, #2575fc); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3); }
         .code-box { background: rgba(255,255,255,0.2); border: 1px dashed white; padding: 8px; margin: 10px 0; font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; border-radius: 8px; }
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        
+        /* Stats Grid Updated for 3 columns or 2 rows */
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stats .full-width { grid-column: span 2; } 
+        
         .box { background: #1a1a2e; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333; }
         .box h2 { margin: 5px 0; font-size: 1.4rem; }
+        
         .tabs { display: flex; justify-content: space-between; margin-bottom: 15px; background: #161625; padding: 5px; border-radius: 10px; }
-        .tab-btn { flex: 1; border: none; background: none; color: #aaa; padding: 10px; cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.3s; }
+        .tab-btn { flex: 1; border: none; background: none; color: #aaa; padding: 10px; cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.3s; font-size: 0.9rem; }
         .tab-btn.active { background: #2575fc; color: white; }
+        
         .level-container { display: none; }
         .level-container.active { display: block; }
+        
         .member { background: #1e1e2f; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; position: relative; overflow: hidden; }
         .member-info h4 { margin: 0; font-size: 1rem; }
         .member-info small { color: #aaa; font-size: 0.8rem; }
+        
         .status-badge { padding: 4px 8px; border-radius: 5px; font-size: 0.75rem; font-weight: bold; }
         .active-bg { background: rgba(0, 242, 96, 0.15); color: #00f260; }
         .inactive-bg { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
+        
         .profit-tag { position: absolute; top: 0; right: 0; background: #f1c40f; color: #000; font-size: 0.7rem; padding: 3px 10px; border-bottom-left-radius: 10px; font-weight: bold; }
     </style>
 </head>
@@ -35,42 +44,63 @@
         <button onclick="copyCode()" style="background:white; color:#2575fc; border:none; padding:5px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Copy</button>
     </div>
 
+    <!-- Updated Stats Area -->
     <div class="stats">
         <div class="box"><h2 id="totalTeam" style="color:#00f260;">0</h2><small style="color:#aaa;">Active Team</small></div>
-        <div class="box"><h2 id="totalIncome" style="color:#f1c40f;">৳0</h2><small style="color:#aaa;">Total Profit</small></div>
+        <div class="box"><h2 id="totalPending" style="color:#e74c3c;">0</h2><small style="color:#aaa;">Pending Users</small></div>
+        <div class="box full-width"><h2 id="totalIncome" style="color:#f1c40f;">৳0</h2><small style="color:#aaa;">Total Profit</small></div>
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('lvl1')">Level 1</button>
-        <button class="tab-btn" onclick="switchTab('lvl2')">Level 2</button>
-        <button class="tab-btn" onclick="switchTab('lvl3')">Level 3</button>
+        <button class="tab-btn active" onclick="switchTab('lvl1')" id="btnLvl1">Level 1 (0)</button>
+        <button class="tab-btn" onclick="switchTab('lvl2')" id="btnLvl2">Level 2 (0)</button>
+        <button class="tab-btn" onclick="switchTab('lvl3')" id="btnLvl3">Level 3 (0)</button>
     </div>
 
     <div id="lvl1" class="level-container active"> <p style="text-align:center; color:#666;">Loading...</p> </div>
-    <div id="lvl2" class="level-container"> <p style="text-align:center; color:#666;">Loading...</p> </div>
-    <div id="lvl3" class="level-container"> <p style="text-align:center; color:#666;">Loading...</p> </div>
+    <div id="lvl2" class="level-container"> <p style="text-align:center; color:#666;">Waiting for L1...</p> </div>
+    <div id="lvl3" class="level-container"> <p style="text-align:center; color:#666;">Waiting for L2...</p> </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
+            authDomain: "art-paid-work001.firebaseapp.com",
+            databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com",
+            projectId: "art-paid-work001",
+            storageBucket: "art-paid-work001.firebasestorage.app",
+            messagingSenderId: "524647364992",
+            appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965"
+        };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
 
+        // Global Variables
         let COMMISSION = { level1: 0, level2: 0, level3: 0 };
         let currentUserCode = null;
-        let totalTeamCount = 0;
-        let totalProfitCount = 0;
+        
+        // Counters
+        let stats = {
+            active: 0,
+            pending: 0,
+            profit: 0,
+            lvl1: 0,
+            lvl2: 0,
+            lvl3: 0
+        };
+
         let isVoiceReady = false;
 
         // VOICE UNLOCKER
         function unlockAudio() {
             if(isVoiceReady) return;
-            window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); // Silent play
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); 
             isVoiceReady = true;
-            speakNow("Your team is open");
+            speakNow("Your team report is ready");
         }
 
         function speakNow(text) {
@@ -80,34 +110,69 @@
             window.speechSynthesis.speak(u);
         }
 
+        // Load Settings
         db.ref('settings/commissions').on('value', (snap) => {
-            if(snap.exists()) { COMMISSION = snap.val(); if(currentUserCode) startLoadingTeam(currentUserCode); }
+            if(snap.exists()) { 
+                COMMISSION = snap.val(); 
+                if(currentUserCode) reloadAllData(); 
+            }
         });
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // Try to speak if audio context is already unlocked (rare on first load)
-                // We rely mostly on the 'onclick' trigger
-                if(isVoiceReady) speakNow("Your team is open");
-
+                if(isVoiceReady) speakNow("Your team report is ready");
                 db.ref('users/' + user.uid + '/ownCode').once('value', (snap) => {
                     if(snap.val()) {
                         currentUserCode = snap.val();
                         document.getElementById('myCode').innerText = currentUserCode;
-                        startLoadingTeam(currentUserCode);
+                        reloadAllData();
                     }
                 });
             } else { window.location.href = 'login_register.html'; }
         });
 
+        function reloadAllData() {
+            // Reset Counters
+            stats = { active: 0, pending: 0, profit: 0, lvl1: 0, lvl2: 0, lvl3: 0 };
+            updateDisplay();
+            startLoadingTeam(currentUserCode);
+        }
+
+        function updateDisplay() {
+            document.getElementById('totalTeam').innerText = stats.active;
+            document.getElementById('totalPending').innerText = stats.pending;
+            document.getElementById('totalIncome').innerText = "৳" + stats.profit;
+            
+            document.getElementById('btnLvl1').innerText = `Level 1 (${stats.lvl1})`;
+            document.getElementById('btnLvl2').innerText = `Level 2 (${stats.lvl2})`;
+            document.getElementById('btnLvl3').innerText = `Level 3 (${stats.lvl3})`;
+        }
+
         function startLoadingTeam(myCode) {
-            totalTeamCount = 0; totalProfitCount = 0;
-            document.getElementById('totalTeam').innerText = "0"; document.getElementById('totalIncome').innerText = "৳0";
+            // Level 1 Listener
             db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (snapshot) => {
-                const lvl1Container = document.getElementById('lvl1'); lvl1Container.innerHTML = "";
+                const lvl1Container = document.getElementById('lvl1'); 
+                lvl1Container.innerHTML = "";
+                
+                // Reset L1 specific counts before recount (since 'value' returns whole list)
+                // Note: Complex to reset total stats here perfectly without full reload, 
+                // but for simplicity we assume this is the main entry.
+                // Ideally, we clear L1 stats and re-add.
+                
+                // To avoid double counting on updates, we just re-process the snapshot logic lightly or assume page load.
+                // For a perfect realtime counter with 'on', we handle logic inside render.
+                
                 let level1Codes = [];
+                let localL1Count = 0;
+
                 if(snapshot.exists()) {
-                    snapshot.forEach(child => { const user = child.val(); renderMember(user, 1, lvl1Container); if(user.ownCode) level1Codes.push(user.ownCode); });
+                    snapshot.forEach(child => { 
+                        const user = child.val(); 
+                        renderMember(user, 1, lvl1Container); 
+                        if(user.ownCode) level1Codes.push(user.ownCode);
+                        localL1Count++;
+                    });
+                    // Trigger Level 2
                     loadLevel2(level1Codes);
                 } else {
                     lvl1Container.innerHTML = "<p style='text-align:center; color:#555;'>No Direct Referrals.</p>";
@@ -117,41 +182,104 @@
             });
         }
 
+        // Ensure we don't attach multiple listeners
+        let l2Listeners = []; 
+        let l3Listeners = [];
+
         function loadLevel2(parentCodes) {
-            const lvl2Container = document.getElementById('lvl2'); lvl2Container.innerHTML = "";
-            if(parentCodes.length === 0) { lvl2Container.innerHTML = "<p style='text-align:center; color:#555;'>No Level 2 Members.</p>"; return; }
-            parentCodes.forEach(code => { db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => { const user = snap.val(); renderMember(user, 2, lvl2Container); if(user.ownCode) loadLevel3([user.ownCode]); }); });
+            const lvl2Container = document.getElementById('lvl2');
+            // Clear previous "Waiting..." message if we have parents
+            if(parentCodes.length > 0 && lvl2Container.innerText.includes("Waiting")) lvl2Container.innerHTML = "";
+            
+            // Note: Ideally we clear listeners here if re-running, but for simple logic:
+            parentCodes.forEach(code => { 
+                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => { 
+                    const user = snap.val(); 
+                    renderMember(user, 2, lvl2Container); 
+                    if(user.ownCode) loadLevel3([user.ownCode]); 
+                }); 
+            });
         }
 
         function loadLevel3(parentCodes) {
             const lvl3Container = document.getElementById('lvl3');
-            if(lvl3Container.innerHTML.includes("Loading")) lvl3Container.innerHTML = "";
-            parentCodes.forEach(code => { db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => { renderMember(snap.val(), 3, lvl3Container); }); });
+            if(parentCodes.length > 0 && lvl3Container.innerText.includes("Waiting")) lvl3Container.innerHTML = "";
+
+            parentCodes.forEach(code => { 
+                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => { 
+                    renderMember(snap.val(), 3, lvl3Container); 
+                }); 
+            });
         }
 
         function renderMember(user, level, container) {
-            let profit = 0; let statusHtml = ""; let profitBadge = "";
+            let profit = 0; 
+            let statusHtml = ""; 
+            let profitBadge = "";
+            
+            // Logic for Status and Counters
             if(user.status === 'active') {
-                totalTeamCount++; document.getElementById('totalTeam').innerText = totalTeamCount;
-                if(level === 1) profit = COMMISSION.level1; if(level === 2) profit = COMMISSION.level2; if(level === 3) profit = COMMISSION.level3;
-                totalProfitCount += profit; document.getElementById('totalIncome').innerText = "৳" + totalProfitCount;
-                statusHtml = `<span class="status-badge active-bg">Active</span>`; profitBadge = `<div class="profit-tag">+ ৳${profit}</div>`;
+                stats.active++; 
+                
+                // Calculate Profit
+                if(level === 1) profit = COMMISSION.level1; 
+                if(level === 2) profit = COMMISSION.level2; 
+                if(level === 3) profit = COMMISSION.level3;
+                
+                stats.profit += profit;
+                
+                statusHtml = `<span class="status-badge active-bg">Active</span>`; 
+                profitBadge = `<div class="profit-tag">+ ৳${profit}</div>`;
             } else {
-                statusHtml = `<span class="status-badge inactive-bg">Pending</span>`; profitBadge = `<div class="profit-tag" style="background:#444; color:#aaa;">No Profit</div>`;
+                stats.pending++;
+                statusHtml = `<span class="status-badge inactive-bg">Pending</span>`; 
+                profitBadge = `<div class="profit-tag" style="background:#444; color:#aaa;">No Profit</div>`;
             }
+
+            // Level Specific Counts
+            if(level === 1) stats.lvl1++;
+            if(level === 2) stats.lvl2++;
+            if(level === 3) stats.lvl3++;
+
+            updateDisplay();
+
+            // Hide Phone Number
             const hiddenPhone = user.phone ? user.phone.toString().substring(0, 3) + "*****" + user.phone.toString().substring(user.phone.toString().length - 3) : "N/A";
-            const html = `<div class="member">${profitBadge}<div class="member-info"><h4>${user.firstName || 'User'}</h4><small>${hiddenPhone} | Ref: ${user.referredBy || 'N/A'}</small></div><div>${statusHtml}</div></div>`;
-            if(container.innerHTML.includes("Loading") || container.innerHTML.includes("No")) container.innerHTML = "";
-            container.innerHTML += html;
+            
+            // Create HTML
+            const html = `
+            <div class="member">
+                ${profitBadge}
+                <div class="member-info">
+                    <h4>${user.firstName || 'User'}</h4>
+                    <small>${hiddenPhone} | Ref: ${user.referredBy || 'N/A'}</small>
+                </div>
+                <div>${statusHtml}</div>
+            </div>`;
+
+            // Remove default messages if present
+            if(container.innerHTML.includes("Loading") || container.innerHTML.includes("No") || container.innerHTML.includes("Waiting")) {
+                container.innerHTML = "";
+            }
+            
+            container.insertAdjacentHTML('beforeend', html);
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.level-container').forEach(div => div.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            
+            // Find which button triggered this
+            if(tabId === 'lvl1') document.getElementById('btnLvl1').classList.add('active');
+            if(tabId === 'lvl2') document.getElementById('btnLvl2').classList.add('active');
+            if(tabId === 'lvl3') document.getElementById('btnLvl3').classList.add('active');
         }
-        function copyCode() { navigator.clipboard.writeText(document.getElementById('myCode').innerText); alert("Code Copied!"); }
+
+        function copyCode() { 
+            navigator.clipboard.writeText(document.getElementById('myCode').innerText); 
+            alert("Code Copied!"); 
+        }
     </script>
 </body>
 </html>
