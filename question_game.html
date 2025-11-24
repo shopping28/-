@@ -3,167 +3,384 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Question Game</title>
+    <title>Live Question Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* DARK PREMIUM THEME */
+        /* --- THEME & COLORS --- */
+        :root {
+            --bg-dark: #0f0c29;
+            --bg-gradient: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+            --primary: #e0c3fc;
+            --accent: #00f260;
+            --danger: #e74c3c;
+            --glass: rgba(255, 255, 255, 0.08);
+        }
+
         body {
-            background: #0f0c29; 
-            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+            background: var(--bg-gradient);
             font-family: 'Poppins', sans-serif;
             color: white;
             height: 100vh;
             margin: 0;
             display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .game-wrapper {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* --- HEADER & STATUS --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .user-info { font-size: 0.9rem; color: var(--primary); }
+        .q-count { font-weight: bold; color: var(--accent); }
+
+        /* --- TIMER --- */
+        .timer-box { text-align: center; margin-bottom: 30px; }
+        .big-timer { font-size: 3rem; font-weight: 700; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .phase-label { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: #aaa; margin-top: 5px; }
+
+        /* --- QUESTION AREA --- */
+        .question-card {
+            background: var(--glass);
+            padding: 25px;
+            border-radius: 20px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+        .question-card.blurred { filter: blur(12px); pointer-events: none; }
+
+        /* --- OPTIONS --- */
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; transition: opacity 0.3s; }
+        .opt-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .options-hidden { opacity: 0; pointer-events: none; }
+        .options-visible { opacity: 1; pointer-events: all; }
+        .opt-btn:active { transform: scale(0.95); }
+        .opt-btn.correct { background: var(--accent); color: #000; border-color: var(--accent); }
+        .opt-btn.wrong { background: var(--danger); border-color: var(--danger); }
+        .opt-btn:disabled { cursor: not-allowed; opacity: 0.6; }
+
+        /* --- OVERLAYS --- */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background: rgba(15, 12, 41, 0.98);
+            z-index: 99;
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 20px;
         }
-
-        /* ICON ANIMATION */
-        .game-icon {
-            font-size: 4rem;
-            background: -webkit-linear-gradient(#e0c3fc, #8ec5fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-
-        h1 { margin: 0; font-size: 2rem; letter-spacing: 1px; }
-        p { color: #aaa; margin-bottom: 40px; font-size: 0.9rem; }
-
-        /* COUNTDOWN BOXES */
-        .countdown {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 40px;
-        }
-        .time-box {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 15px;
-            min-width: 70px;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        .time-val {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #00f260;
-            display: block;
-        }
-        .time-label {
-            font-size: 0.7rem;
-            color: #ccc;
-            text-transform: uppercase;
-        }
-
-        /* BACK BUTTON */
-        .btn {
-            padding: 12px 40px;
-            border: 2px solid #e0c3fc;
-            color: white;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
-            transition: 0.3s;
-            background: rgba(255,255,255,0.05);
-        }
-        .btn:hover {
-            background: #e0c3fc;
-            color: #0f0c29;
-            box-shadow: 0 0 20px #e0c3fc;
-        }
+        .overlay.active { display: flex; }
+        .countdown-text { font-size: 2rem; color: var(--accent); margin-top: 10px; font-family: monospace;}
         
-        .lock-msg {
+        /* Account Inactive Message */
+        .lock-badge {
             background: rgba(231, 76, 60, 0.2);
             color: #e74c3c;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-bottom: 20px;
+            padding: 10px 20px;
+            border-radius: 30px;
             border: 1px solid #e74c3c;
+            margin-bottom: 20px;
+            display: none; /* Hidden by default */
         }
 
     </style>
 </head>
 <body>
 
-    <div class="game-icon">
-        <i class="fas fa-gamepad"></i>
+    <!-- OVERLAY: WAITING / INACTIVE -->
+    <div id="mainOverlay" class="overlay active">
+        
+        <!-- Status for Inactive Users -->
+        <div id="inactiveMsg" class="lock-badge">
+            <i class="fas fa-lock"></i> ACCOUNT NOT ACTIVE
+        </div>
+
+        <i class="fas fa-rocket fa-3x" style="margin-bottom: 20px; color: #e0c3fc;" id="statusIcon"></i>
+        
+        <h2 id="statusTitle">Game Starts In</h2>
+        <div class="countdown-text" id="mainTimer">Loading...</div>
+        <p id="subText" style="color: #888; margin-top: 10px; font-size: 0.8rem;">Dec 1st, 8:00 PM</p>
     </div>
 
-    <h1>Question Game</h1>
-    <p>Answer Questions & Win Real Money</p>
+    <!-- MAIN GAME UI -->
+    <div class="game-wrapper" id="gameUI" style="opacity: 0.2; pointer-events: none;"> 
+        <!-- Default blurred/disabled until game starts & user is active -->
+        
+        <div class="header">
+            <span class="user-info"><i class="fas fa-user-circle"></i> <span id="displayUid">Checking...</span></span>
+            <span class="q-count">Q: <span id="currentQNum">1</span>/10</span>
+        </div>
 
-    <div class="lock-msg">
-        <i class="fas fa-lock"></i> CURRENTLY LOCKED
+        <div class="timer-box">
+            <div class="big-timer" id="phaseTimer">--</div>
+            <div class="phase-label" id="phaseText">WAITING</div>
+        </div>
+
+        <div class="question-card" id="qCard">
+            Prepare yourself...
+        </div>
+
+        <div class="options-grid options-hidden" id="optGrid">
+            <button class="opt-btn" onclick="submitAnswer('A')" id="btnA">A</button>
+            <button class="opt-btn" onclick="submitAnswer('B')" id="btnB">B</button>
+            <button class="opt-btn" onclick="submitAnswer('C')" id="btnC">C</button>
+            <button class="opt-btn" onclick="submitAnswer('D')" id="btnD">D</button>
+        </div>
     </div>
 
-    <div class="countdown">
-        <div class="time-box">
-            <span class="time-val" id="days">21</span>
-            <span class="time-label">Days</span>
-        </div>
-        <div class="time-box">
-            <span class="time-val" id="hours">00</span>
-            <span class="time-label">Hours</span>
-        </div>
-        <div class="time-box">
-            <span class="time-val" id="minutes">00</span>
-            <span class="time-label">Mins</span>
-        </div>
-        <div class="time-box">
-            <span class="time-val" id="seconds">00</span>
-            <span class="time-label">Secs</span>
-        </div>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-    <a href="home.html" class="btn">Go Back</a>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
+            authDomain: "art-paid-work001.firebaseapp.com",
+            databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com",
+            projectId: "art-paid-work001",
+            storageBucket: "art-paid-work001.firebasestorage.app",
+            messagingSenderId: "524647364992",
+            appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965"
+        };
 
-    <script>
-        // 1. Set the date we're counting down to (21 days from now)
-        // Note: In a real app, you might fetch this date from Firebase Admin
-        const now = new Date().getTime();
-        const countDownDate = new Date(now + (21 * 24 * 60 * 60 * 1000)).getTime();
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        // 2. Update the count down every 1 second
-        const x = setInterval(function() {
+        // --- VARIABLES ---
+        let userId = localStorage.getItem("game_uid");
+        if(!userId) {
+            userId = "u" + Math.floor(Math.random() * 100000); // Random ID for testing
+            localStorage.setItem("game_uid", userId);
+        }
+        document.getElementById("displayUid").innerText = userId;
 
-            // Get today's date and time
-            const currentTime = new Date().getTime();
+        let isUserActive = false; // Default blocked
+        let startTime = 0;
+        let questionDuration = 5 * 60 * 1000; 
+        let currentQIndex = 0;
+        let currentQuestionData = null;
+        let hasAnswered = false;
+        let answerStartTime = 0;
 
-            // Find the distance between now and the count down date
-            const distance = countDownDate - currentTime;
-
-            // Time calculations for days, hours, minutes and seconds
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Output the result in elements
-            document.getElementById("days").innerHTML = days;
-            document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
-            document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
-            document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
-
-            // If the count down is over, write some text 
-            if (distance < 0) {
-                clearInterval(x);
-                document.querySelector(".countdown").innerHTML = "GAME IS LIVE!";
+        // --- 1. CHECK ACCOUNT STATUS (REALTIME) ---
+        // This listens to changes. If admin makes them active, it updates instantly.
+        const userStatusRef = ref(db, `users/${userId}/account_status`);
+        onValue(userStatusRef, (snapshot) => {
+            const status = snapshot.val();
+            
+            if (status === 'active') {
+                isUserActive = true;
+                document.getElementById("inactiveMsg").style.display = "none";
+                document.getElementById("statusIcon").className = "fas fa-rocket fa-3x";
+            } else {
+                isUserActive = false;
+                document.getElementById("inactiveMsg").style.display = "inline-block";
+                document.getElementById("statusIcon").className = "fas fa-ban fa-3x";
+                document.getElementById("statusIcon").style.color = "#e74c3c";
             }
-        }, 1000);
-    </script>
+        });
 
+        // --- 2. GET GAME TIME & START LOOP ---
+        const configRef = ref(db, 'game_config');
+        onValue(configRef, (snapshot) => {
+            const data = snapshot.val();
+            if(data && data.startTime) {
+                startTime = data.startTime;
+                startGameLoop();
+            }
+        });
+
+        function startGameLoop() {
+            setInterval(() => {
+                const now = new Date().getTime();
+                const overlay = document.getElementById("mainOverlay");
+                const gameUI = document.getElementById("gameUI");
+
+                // SCENARIO 1: BEFORE GAME STARTS (Everyone sees Timer)
+                if(now < startTime) {
+                    overlay.classList.add("active");
+                    updateCountdown(startTime - now);
+                    return;
+                }
+
+                // SCENARIO 2: GAME STARTED BUT USER INACTIVE
+                if(!isUserActive) {
+                    overlay.classList.add("active");
+                    document.getElementById("statusTitle").innerText = "GAME IS LIVE";
+                    document.getElementById("mainTimer").innerText = "ACCESS DENIED";
+                    document.getElementById("mainTimer").style.color = "#e74c3c";
+                    document.getElementById("subText").innerText = "Only active members can join.";
+                    return; // Stop here, don't show game UI
+                }
+
+                // SCENARIO 3: GAME STARTED & USER ACTIVE
+                overlay.classList.remove("active");
+                gameUI.style.opacity = "1";
+                gameUI.style.pointerEvents = "all";
+
+                // Calculate Logic
+                const timeElapsed = now - startTime;
+                const newIndex = Math.floor(timeElapsed / questionDuration) + 1;
+
+                if(newIndex > 10) {
+                    document.body.innerHTML = "<h1 style='color:gold'>GAME OVER</h1>";
+                    return;
+                }
+
+                if(newIndex !== currentQIndex) {
+                    currentQIndex = newIndex;
+                    hasAnswered = false;
+                    checkDbForAnswer();
+                    fetchQuestion(currentQIndex);
+                }
+                
+                document.getElementById("currentQNum").innerText = currentQIndex;
+                handleGamePhases(timeElapsed % questionDuration);
+
+            }, 1000);
+        }
+
+        function handleGamePhases(t) {
+            const phaseTimerEl = document.getElementById("phaseTimer");
+            const qCard = document.getElementById("qCard");
+            const optGrid = document.getElementById("optGrid");
+            const phaseText = document.getElementById("phaseText");
+
+            // 0-10s: Read
+            if (t < 10000) {
+                qCard.classList.remove("blurred");
+                optGrid.classList.remove("options-visible");
+                optGrid.classList.add("options-hidden");
+                phaseTimerEl.innerText = Math.ceil((10000 - t)/1000);
+                phaseTimerEl.style.color = "#00f260";
+                phaseText.innerText = "READING TIME";
+            }
+            // 10s-30s: Answer
+            else if (t >= 10000 && t < 30000) {
+                if(!optGrid.classList.contains("options-visible")) {
+                    qCard.classList.add("blurred");
+                    optGrid.classList.remove("options-hidden");
+                    optGrid.classList.add("options-visible");
+                    answerStartTime = Date.now();
+                }
+                phaseTimerEl.innerText = Math.ceil((30000 - t)/1000);
+                phaseTimerEl.style.color = "#e74c3c";
+                phaseText.innerText = "ANSWER NOW";
+                if(hasAnswered) disableButtons();
+            }
+            // 30s+: Cooldown
+            else {
+                qCard.classList.remove("blurred");
+                optGrid.classList.remove("options-visible");
+                optGrid.classList.add("options-hidden");
+                
+                // Show cooldown in the main timer box instead of separate overlay for smoother UX
+                const nextTime = questionDuration - t;
+                const m = Math.floor((nextTime % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((nextTime % (1000 * 60)) / 1000);
+                phaseTimerEl.innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                phaseTimerEl.style.color = "#f1c40f";
+                phaseText.innerText = "NEXT QUESTION IN";
+                resetButtons();
+            }
+        }
+
+        // --- DATA FUNCTIONS ---
+        function fetchQuestion(id) {
+            get(ref(db, 'questions/' + id)).then((snap) => {
+                if(snap.exists()) {
+                    currentQuestionData = snap.val();
+                    document.getElementById("qCard").innerText = currentQuestionData.question;
+                    document.getElementById("btnA").innerText = "A: " + currentQuestionData.options.A;
+                    document.getElementById("btnB").innerText = "B: " + currentQuestionData.options.B;
+                    document.getElementById("btnC").innerText = "C: " + currentQuestionData.options.C;
+                    document.getElementById("btnD").innerText = "D: " + currentQuestionData.options.D;
+                }
+            });
+        }
+
+        function checkDbForAnswer() {
+            get(ref(db, `users_game_data/${userId}/answers/${currentQIndex}`)).then(snap => {
+                if(snap.exists()) {
+                    hasAnswered = true;
+                    disableButtons();
+                    document.getElementById("phaseText").innerText = "ALREADY ANSWERED";
+                }
+            });
+        }
+
+        window.submitAnswer = function(opt) {
+            if(hasAnswered) return;
+            hasAnswered = true;
+            const timeTaken = Date.now() - answerStartTime;
+            const isCorrect = (opt === currentQuestionData.answer);
+            
+            const btn = document.querySelector(`#btn${opt}`);
+            if(isCorrect) btn.classList.add("correct");
+            else btn.classList.add("wrong");
+            disableButtons();
+
+            // Save Answer
+            update(ref(db, `users_game_data/${userId}/answers/${currentQIndex}`), {
+                choice: opt, correct: isCorrect, timeTaken: timeTaken
+            });
+            // Update Stats
+            get(ref(db, `users_game_data/${userId}`)).then(snap => {
+                let s = snap.val()?.score || 0;
+                let t = snap.val()?.totalTime || 0;
+                if(isCorrect) s++;
+                t += timeTaken;
+                update(ref(db, `users_game_data/${userId}`), { score: s, totalTime: t });
+            });
+        };
+
+        function updateCountdown(ms) {
+            const d = Math.floor(ms / (1000 * 60 * 60 * 24));
+            const h = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((ms % (1000 * 60)) / 1000);
+            document.getElementById("mainTimer").innerText = `${d}d ${h}h ${m}m ${s}s`;
+        }
+        
+        function disableButtons() { document.querySelectorAll(".opt-btn").forEach(b => b.disabled = true); }
+        function resetButtons() { document.querySelectorAll(".opt-btn").forEach(b => { b.className = "opt-btn"; b.disabled = false; }); }
+
+    </script>
 </body>
 </html>
