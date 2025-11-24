@@ -50,14 +50,48 @@
             font-size: 1.8rem;
             font-weight: 700;
             letter-spacing: 3px;
-            margin: 15px 0;
+            margin: 15px 0 10px 0;
             border: 1px dashed rgba(255,255,255,0.4);
+        }
+
+        /* NEW LINK BOX STYLE */
+        .link-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 5px;
+            margin-top: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .link-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #ddd;
+            padding: 8px 15px;
+            font-size: 0.8rem;
+            outline: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .copy-btn-icon {
+            background: white;
+            color: #764ba2;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .copy-btn {
             background: white; color: #764ba2; border: none; padding: 8px 25px;
             border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             transition: 0.3s;
+            margin-top: 10px;
         }
         .copy-btn:active { transform: scale(0.95); }
 
@@ -118,12 +152,10 @@
             transition: transform 0.2s;
         }
         
-        /* ACTIVE STYLE */
         .member-card.is-active {
             border-left-color: var(--active-color);
             background: linear-gradient(90deg, rgba(0, 242, 96, 0.05), transparent);
         }
-        /* PENDING STYLE */
         .member-card.is-pending {
             border-left-color: var(--pending-color);
             background: linear-gradient(90deg, rgba(255, 71, 87, 0.05), transparent);
@@ -141,7 +173,6 @@
         
         .user-details h4 { margin: 0; font-size: 0.95rem; color: white; margin-bottom: 4px; }
         
-        /* ID & Phone Styling */
         .info-badges { display: flex; gap: 5px; flex-wrap: wrap; }
         .badge { 
             font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; 
@@ -176,7 +207,13 @@
     <div class="ref-card">
         <p style="margin:0; font-size:0.9rem; opacity:0.9;">Your Referral Code</p>
         <div class="code-display" id="myCode">...</div>
-        <button class="copy-btn" onclick="copyCode()"><i class="far fa-copy"></i> Copy Code</button>
+        
+        <!-- NEW: REFERRAL LINK SECTION -->
+        <p style="margin:10px 0 5px 0; font-size:0.8rem; opacity:0.8;">Share Referral Link</p>
+        <div class="link-container">
+            <input type="text" id="refLinkInput" class="link-input" readonly value="Loading link...">
+            <button class="copy-btn-icon" onclick="copyLink()"><i class="fas fa-link"></i></button>
+        </div>
     </div>
 
     <!-- STATS -->
@@ -233,7 +270,7 @@
 
         let stats = { active: 0, pending: 0, profit: 0, lvl1: 0, lvl2: 0, lvl3: 0 };
 
-        // VOICE FEATURE
+        // --- VOICE FEATURE ---
         function unlockAudio() {
             if(isVoiceReady) return;
             window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); 
@@ -252,7 +289,7 @@
             if(snap.exists()) { COMMISSION = snap.val(); if(currentUserCode) reloadAllData(); }
         });
 
-        // AUTH
+        // AUTH & GENERATE LINK
         auth.onAuthStateChanged((user) => {
             if (user) {
                 if(isVoiceReady) speakNow("Your team report is ready");
@@ -260,6 +297,12 @@
                     if(snap.val()) {
                         currentUserCode = snap.val();
                         document.getElementById('myCode').innerText = currentUserCode;
+                        
+                        // *** GENERATE REFERRAL LINK ***
+                        const baseUrl = "https://shopping28.github.io/-/login_register.html";
+                        const refLink = `${baseUrl}?ref=${currentUserCode}`;
+                        document.getElementById('refLinkInput').value = refLink;
+
                         reloadAllData();
                     }
                 });
@@ -286,7 +329,6 @@
             document.getElementById('btnLvl3').innerText = `Level 3 (${stats.lvl3})`;
         }
 
-        // --- TEAM LOADING LOGIC ---
         function startLoadingTeam(myCode) {
             db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (snapshot) => {
                 const lvl1Container = document.getElementById('lvl1');
@@ -338,7 +380,6 @@
         function renderMember(user, level, container) {
             let profit = 0;
             const isActive = (user.status === 'active');
-            
             let statusClass = isActive ? "is-active" : "is-pending";
             let icon = isActive ? "fa-user-check" : "fa-user-clock";
             let pillClass = isActive ? "pill-active" : "pill-pending";
@@ -362,11 +403,8 @@
 
             updateDisplay();
 
-            // Phone masking (017****123)
             let phone = user.phone ? user.phone.toString() : "N/A";
             if(phone.length > 6) phone = phone.substring(0,3) + "****" + phone.substring(phone.length-3);
-
-            // Display ID logic: user.ownCode (Referral Code)
             let userIdDisplay = user.ownCode ? user.ownCode : "Pending ID";
 
             const html = `
@@ -389,13 +427,9 @@
                     </div>
                 </div>
             `;
-
             container.insertAdjacentHTML('beforeend', html);
-
-            // Add to All Active Tab only if active
             if(isActive) {
-                const allActiveContainer = document.getElementById('allActive');
-                allActiveContainer.insertAdjacentHTML('beforeend', html);
+                document.getElementById('allActive').insertAdjacentHTML('beforeend', html);
             }
         }
 
@@ -403,8 +437,6 @@
             document.querySelectorAll('.list-section').forEach(div => div.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            
-            // Map button ID
             let btnId = 'btn' + tabId.charAt(0).toUpperCase() + tabId.slice(1);
             document.getElementById(btnId).classList.add('active');
         }
@@ -413,6 +445,16 @@
             document.getElementById(divId).innerHTML = `<div style="text-align:center; padding:20px; color:#666;">${msg}</div>`;
         }
 
+        // *** COPY LINK FUNCTION ***
+        function copyLink() {
+            const linkInput = document.getElementById('refLinkInput');
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999); /* For mobile devices */
+            navigator.clipboard.writeText(linkInput.value);
+            alert("Referral Link Copied!");
+        }
+        
+        // Keep old copy code function just in case
         function copyCode() {
             navigator.clipboard.writeText(document.getElementById('myCode').innerText);
             alert("Referral Code Copied!");
