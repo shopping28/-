@@ -26,7 +26,10 @@
 </head>
 <body>
     <div class="card">
-        <div class="tabs"><div class="tab active" onclick="switchTab('login', this)">Login</div><div class="tab" onclick="switchTab('register', this)">Register</div></div>
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login', this)" id="tab_login">Login</div>
+            <div class="tab" onclick="switchTab('register', this)" id="tab_register">Register</div>
+        </div>
         <p id="msg" class="error"></p>
 
         <!-- LOGIN FORM -->
@@ -44,6 +47,7 @@
             <input type="number" id="r_phone" placeholder="Phone Number">
             <input type="password" id="r_pass" placeholder="Password">
             <input type="password" id="r_cpass" placeholder="Confirm Password">
+            <!-- Referral ID is r_ref -->
             <input type="text" id="r_ref" placeholder="Referral Code (Required)" style="border-color: #e74c3c;">
             <button id="regBtn">REGISTER</button>
         </div>
@@ -64,6 +68,31 @@
             document.getElementById(id).classList.add('active'); el.classList.add('active'); showMsg("");
         }
         function showMsg(text, color="#ff4757") { const m = document.getElementById('msg'); m.style.color = color; m.innerText = text; }
+
+        // --- NEW: AUTO REFERRAL CODE LOGIC ---
+        window.onload = function() {
+            // Check URL for ?ref=CODE
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+
+            if (refCode) {
+                // 1. Fill the input
+                const refInput = document.getElementById('r_ref');
+                if (refInput) {
+                    refInput.value = refCode;
+                    refInput.readOnly = true; // Lock the field
+                    refInput.style.borderColor = "#00f260"; // Green border to show success
+                    refInput.style.background = "rgba(0, 242, 96, 0.1)";
+                }
+
+                // 2. Automatically switch to Register tab
+                const regTab = document.getElementById('tab_register');
+                if (regTab) {
+                    switchTab('register', regTab);
+                }
+            }
+        }
+        // -------------------------------------
 
         // --- REGISTER LOGIC ---
         document.getElementById('regBtn').addEventListener('click', () => {
