@@ -3,82 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Team Network</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>My Team | Premium Network</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; margin: 0; }
+        /* PREMIUM THEME SETTINGS */
+        :root {
+            --bg-dark: #0f0c29;
+            --bg-gradient: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --active-color: #00f260;
+            --pending-color: #ff4757;
+            --text-main: #ffffff;
+            --text-muted: #a4b0be;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: var(--bg-gradient);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* HEADER & REFERRAL CARD */
+        .header-nav { display: flex; align-items: center; margin-bottom: 20px; font-size: 1.1rem; font-weight: 600; }
+        .header-nav a { color: white; text-decoration: none; margin-right: 15px; }
+
+        .ref-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(118, 75, 162, 0.4);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
         
-        /* Header Card */
-        .ref-card { background: linear-gradient(135deg, #6a11cb, #2575fc); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3); }
-        .code-box { background: rgba(255,255,255,0.2); border: 1px dashed white; padding: 8px; margin: 10px 0; font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; border-radius: 8px; }
+        .code-display {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin: 15px 0;
+            border: 1px dashed rgba(255,255,255,0.4);
+        }
+
+        .copy-btn {
+            background: white; color: #764ba2; border: none; padding: 8px 25px;
+            border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+        .copy-btn:active { transform: scale(0.95); }
+
+        /* DASHBOARD STATS */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-box {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            border: var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+        .stat-box h2 { margin: 5px 0; font-size: 1.4rem; }
+        .full-width { grid-column: span 2; background: linear-gradient(to right, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1)); border: 1px solid rgba(255, 215, 0, 0.3); }
+
+        /* TABS */
+        .tabs-container {
+            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px;
+            scrollbar-width: none; 
+        }
+        .tabs-container::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted);
+            padding: 8px 18px;
+            border-radius: 30px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.85rem;
+        }
+        .tab-btn.active {
+            background: #ffffff;
+            color: #0f0c29;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(255,255,255,0.3);
+        }
+
+        /* MEMBER LIST STYLE */
+        .list-section { display: none; animation: slideUp 0.4s ease; }
+        .list-section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .member-card {
+            background: rgba(30, 30, 50, 0.6);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border-left: 4px solid #555;
+            transition: transform 0.2s;
+        }
         
-        /* Stats Grid */
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stats .full-width { grid-column: span 2; } 
-        .box { background: #1a1a2e; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333; }
-        .box h2 { margin: 5px 0; font-size: 1.4rem; }
+        /* ACTIVE STYLE */
+        .member-card.is-active {
+            border-left-color: var(--active-color);
+            background: linear-gradient(90deg, rgba(0, 242, 96, 0.05), transparent);
+        }
+        /* PENDING STYLE */
+        .member-card.is-pending {
+            border-left-color: var(--pending-color);
+            background: linear-gradient(90deg, rgba(255, 71, 87, 0.05), transparent);
+        }
+
+        .user-left { display: flex; align-items: center; flex: 1; }
+
+        .user-avatar {
+            width: 40px; height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; margin-right: 12px;
+        }
         
-        /* Tabs Design */
-        .tabs-wrapper { overflow-x: auto; white-space: nowrap; margin-bottom: 15px; padding-bottom: 5px; }
-        .tabs { display: inline-flex; background: #161625; padding: 5px; border-radius: 10px; min-width: 100%; }
-        .tab-btn { border: none; background: none; color: #aaa; padding: 10px 15px; cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.3s; font-size: 0.85rem; }
-        .tab-btn.active { background: #2575fc; color: white; box-shadow: 0 2px 10px rgba(37, 117, 252, 0.4); }
+        .user-details h4 { margin: 0; font-size: 0.95rem; color: white; margin-bottom: 4px; }
         
-        /* Lists */
-        .level-container { display: none; animation: fadeIn 0.5s; }
-        .level-container.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Member Card */
-        .member { background: #1e1e2f; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; position: relative; overflow: hidden; }
-        .member-info h4 { margin: 0; font-size: 1rem; color: #fff; }
-        .member-info small { color: #aaa; font-size: 0.8rem; display: block; margin-top: 2px; }
-        
-        .status-badge { padding: 4px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
-        .active-bg { background: rgba(0, 242, 96, 0.15); color: #00f260; border: 1px solid rgba(0, 242, 96, 0.3); }
-        .inactive-bg { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3); }
-        
-        .profit-tag { position: absolute; top: 0; right: 0; background: #f1c40f; color: #000; font-size: 0.65rem; padding: 2px 8px; border-bottom-left-radius: 8px; font-weight: bold; }
-        .lvl-tag { font-size: 0.7rem; color: #2575fc; font-weight: bold; margin-right: 5px; }
+        /* ID & Phone Styling */
+        .info-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+        .badge { 
+            font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; 
+            display: inline-flex; align-items: center; gap: 4px;
+        }
+        .id-badge { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        .phone-badge { background: rgba(0,0,0,0.3); color: var(--text-muted); }
+
+        .status-pill {
+            padding: 4px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; margin-left: 10px;
+        }
+        .pill-active { background: rgba(0, 242, 96, 0.2); color: var(--active-color); }
+        .pill-pending { background: rgba(255, 71, 87, 0.2); color: var(--pending-color); }
+
+        .profit-badge {
+            position: absolute; top: 0; right: 0;
+            background: #ffd700; color: black;
+            font-size: 0.65rem; font-weight: bold;
+            padding: 2px 8px; border-bottom-left-radius: 8px;
+        }
+
     </style>
 </head>
 <body onclick="unlockAudio()">
-    <a href="home.html" style="color:white; text-decoration:none; display:block; margin-bottom:20px;">← Back to Home</a>
 
+    <div class="header-nav">
+        <a href="home.html"><i class="fas fa-chevron-left"></i></a>
+        <span>Team Network</span>
+    </div>
+
+    <!-- REFERRAL SECTION -->
     <div class="ref-card">
-        <p style="margin:0; opacity:0.8;">My Referral Code</p>
-        <div class="code-box" id="myCode">Loading...</div>
-        <button onclick="copyCode()" style="background:white; color:#2575fc; border:none; padding:5px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Copy Code</button>
+        <p style="margin:0; font-size:0.9rem; opacity:0.9;">Your Referral Code</p>
+        <div class="code-display" id="myCode">...</div>
+        <button class="copy-btn" onclick="copyCode()"><i class="far fa-copy"></i> Copy Code</button>
     </div>
 
-    <!-- Statistics Area -->
-    <div class="stats">
-        <div class="box"><h2 id="totalTeam" style="color:#00f260;">0</h2><small style="color:#aaa;">Active Users</small></div>
-        <div class="box"><h2 id="totalPending" style="color:#e74c3c;">0</h2><small style="color:#aaa;">Pending Users</small></div>
-        <div class="box full-width"><h2 id="totalIncome" style="color:#f1c40f;">৳0</h2><small style="color:#aaa;">Total Profit</small></div>
-    </div>
-
-    <!-- Tabs Area -->
-    <div class="tabs-wrapper">
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('lvl1')" id="btnLvl1">Level 1 (0)</button>
-            <button class="tab-btn" onclick="switchTab('lvl2')" id="btnLvl2">Level 2 (0)</button>
-            <button class="tab-btn" onclick="switchTab('lvl3')" id="btnLvl3">Level 3 (0)</button>
-            <button class="tab-btn" onclick="switchTab('allActive')" id="btnAllActive" style="color:#00f260;">All Active (0)</button>
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-box">
+            <h2 id="totalTeam" style="color:var(--active-color)">0</h2>
+            <small style="color:#aaa">Active</small>
+        </div>
+        <div class="stat-box">
+            <h2 id="totalPending" style="color:var(--pending-color)">0</h2>
+            <small style="color:#aaa">Pending</small>
+        </div>
+        <div class="stat-box full-width">
+            <h2 id="totalIncome" style="color:#ffd700">৳0</h2>
+            <small style="color:#aaa">Total Team Profit</small>
         </div>
     </div>
 
-    <!-- Member Lists -->
-    <div id="lvl1" class="level-container active"> <p style="text-align:center; color:#666;">Loading Level 1...</p> </div>
-    <div id="lvl2" class="level-container"> <p style="text-align:center; color:#666;">Waiting for Level 1...</p> </div>
-    <div id="lvl3" class="level-container"> <p style="text-align:center; color:#666;">Waiting for Level 2...</p> </div>
-    
-    <!-- NEW: All Active List -->
-    <div id="allActive" class="level-container"> <p style="text-align:center; color:#666;">No Active Members Yet.</p> </div>
+    <!-- TABS -->
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('lvl1')" id="btnLvl1">Level 1</button>
+        <button class="tab-btn" onclick="switchTab('lvl2')" id="btnLvl2">Level 2</button>
+        <button class="tab-btn" onclick="switchTab('lvl3')" id="btnLvl3">Level 3</button>
+        <button class="tab-btn" onclick="switchTab('allActive')" id="btnAllActive" style="border-color:var(--active-color)">Active List</button>
+    </div>
+
+    <!-- LISTS -->
+    <div id="lvl1" class="list-section active"> <div style="text-align:center; padding:20px; color:#666;">Loading...</div> </div>
+    <div id="lvl2" class="list-section"></div>
+    <div id="lvl3" class="list-section"></div>
+    <div id="allActive" class="list-section"></div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
@@ -95,26 +229,17 @@
 
         let COMMISSION = { level1: 0, level2: 0, level3: 0 };
         let currentUserCode = null;
-        
-        // Statistics Object
-        let stats = {
-            active: 0,
-            pending: 0,
-            profit: 0,
-            lvl1: 0,
-            lvl2: 0,
-            lvl3: 0
-        };
-
         let isVoiceReady = false;
 
+        let stats = { active: 0, pending: 0, profit: 0, lvl1: 0, lvl2: 0, lvl3: 0 };
+
+        // VOICE FEATURE
         function unlockAudio() {
             if(isVoiceReady) return;
             window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); 
             isVoiceReady = true;
             speakNow("Your team report is ready");
         }
-
         function speakNow(text) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(text);
@@ -122,15 +247,12 @@
             window.speechSynthesis.speak(u);
         }
 
-        // 1. Get Commission Settings
+        // LOAD SETTINGS
         db.ref('settings/commissions').on('value', (snap) => {
-            if(snap.exists()) { 
-                COMMISSION = snap.val(); 
-                if(currentUserCode) reloadAllData(); 
-            }
+            if(snap.exists()) { COMMISSION = snap.val(); if(currentUserCode) reloadAllData(); }
         });
 
-        // 2. Auth Check
+        // AUTH
         auth.onAuthStateChanged((user) => {
             if (user) {
                 if(isVoiceReady) speakNow("Your team report is ready");
@@ -145,14 +267,12 @@
         });
 
         function reloadAllData() {
-            // Reset Data
             stats = { active: 0, pending: 0, profit: 0, lvl1: 0, lvl2: 0, lvl3: 0 };
             document.getElementById('lvl1').innerHTML = "";
             document.getElementById('lvl2').innerHTML = "";
             document.getElementById('lvl3').innerHTML = "";
             document.getElementById('allActive').innerHTML = "";
             updateDisplay();
-            
             startLoadingTeam(currentUserCode);
         }
 
@@ -164,142 +284,138 @@
             document.getElementById('btnLvl1').innerText = `Level 1 (${stats.lvl1})`;
             document.getElementById('btnLvl2').innerText = `Level 2 (${stats.lvl2})`;
             document.getElementById('btnLvl3').innerText = `Level 3 (${stats.lvl3})`;
-            document.getElementById('btnAllActive').innerText = `All Active (${stats.active})`;
         }
 
+        // --- TEAM LOADING LOGIC ---
         function startLoadingTeam(myCode) {
-            // Load Level 1
             db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (snapshot) => {
                 const lvl1Container = document.getElementById('lvl1');
-                lvl1Container.innerHTML = ""; // Clear to prevent duplicates on update
-                // Note: Clearing L1 container means we need to be careful not to clear L2/L3 logic if relying on array persistence,
-                // but for this structure, we will just re-trigger loadLevel2 with new list.
-                
+                lvl1Container.innerHTML = "";
                 let level1Codes = [];
+
                 if(snapshot.exists()) {
-                    snapshot.forEach(child => { 
-                        const user = child.val(); 
-                        renderMember(user, 1, lvl1Container); 
+                    snapshot.forEach(child => {
+                        const user = child.val();
+                        renderMember(user, 1, lvl1Container);
                         if(user.ownCode) level1Codes.push(user.ownCode);
                     });
                     loadLevel2(level1Codes);
                 } else {
-                    lvl1Container.innerHTML = "<p style='text-align:center; color:#555; padding:20px;'>No Direct Referrals.</p>";
-                    document.getElementById('lvl2').innerHTML = "<p style='text-align:center; color:#555; padding:20px;'>No Level 2 Members.</p>";
-                    document.getElementById('lvl3').innerHTML = "<p style='text-align:center; color:#555; padding:20px;'>No Level 3 Members.</p>";
+                    showEmptyMsg('lvl1', "No Level 1 Members");
                 }
             });
         }
 
-        // Helper to avoid attaching too many listeners
         let processedL2 = new Set();
         let processedL3 = new Set();
 
         function loadLevel2(parentCodes) {
             const lvl2Container = document.getElementById('lvl2');
-            if(lvl2Container.innerHTML.includes("Waiting")) lvl2Container.innerHTML = "";
-            
+            lvl2Container.innerHTML = "";
             parentCodes.forEach(code => {
-                if(processedL2.has(code)) return; // Avoid double listener
+                if(processedL2.has(code)) return;
                 processedL2.add(code);
-
-                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => { 
-                    const user = snap.val(); 
-                    renderMember(user, 2, lvl2Container); 
-                    if(user.ownCode) loadLevel3([user.ownCode]); 
-                }); 
+                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => {
+                    const user = snap.val();
+                    renderMember(user, 2, lvl2Container);
+                    if(user.ownCode) loadLevel3([user.ownCode]);
+                });
             });
         }
 
         function loadLevel3(parentCodes) {
             const lvl3Container = document.getElementById('lvl3');
-            if(lvl3Container.innerHTML.includes("Waiting")) lvl3Container.innerHTML = "";
-
-            parentCodes.forEach(code => { 
+            lvl3Container.innerHTML = "";
+            parentCodes.forEach(code => {
                 if(processedL3.has(code)) return;
                 processedL3.add(code);
-
-                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => { 
-                    renderMember(snap.val(), 3, lvl3Container); 
-                }); 
+                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', (snap) => {
+                    renderMember(snap.val(), 3, lvl3Container);
+                });
             });
         }
 
         function renderMember(user, level, container) {
-            // Calculate Profit & Status
             let profit = 0;
-            let isActive = (user.status === 'active');
-            let statusHtml = "";
-            let profitBadge = "";
+            const isActive = (user.status === 'active');
+            
+            let statusClass = isActive ? "is-active" : "is-pending";
+            let icon = isActive ? "fa-user-check" : "fa-user-clock";
+            let pillClass = isActive ? "pill-active" : "pill-pending";
+            let pillText = isActive ? "Active" : "Pending";
+            let profitHtml = "";
 
             if(isActive) {
                 stats.active++;
-                if(level === 1) profit = COMMISSION.level1;
-                if(level === 2) profit = COMMISSION.level2;
-                if(level === 3) profit = COMMISSION.level3;
+                if(level === 1) profit = COMMISSION.level1 || 0;
+                if(level === 2) profit = COMMISSION.level2 || 0;
+                if(level === 3) profit = COMMISSION.level3 || 0;
                 stats.profit += profit;
-                
-                statusHtml = `<span class="status-badge active-bg">Active</span>`;
-                profitBadge = `<div class="profit-tag">+ ৳${profit}</div>`;
+                profitHtml = `<div class="profit-badge">+ ৳${profit}</div>`;
             } else {
                 stats.pending++;
-                statusHtml = `<span class="status-badge inactive-bg">Pending</span>`;
-                profitBadge = `<div class="profit-tag" style="background:#444; color:#aaa;">No Profit</div>`;
             }
 
-            // Level Counters
             if(level === 1) stats.lvl1++;
             if(level === 2) stats.lvl2++;
             if(level === 3) stats.lvl3++;
 
-            // Update Top Header Stats
             updateDisplay();
 
-            // Generate HTML
-            const hiddenPhone = user.phone ? user.phone.toString().substring(0, 3) + "*****" + user.phone.toString().substring(user.phone.toString().length - 3) : "N/A";
-            
-            const html = `
-            <div class="member">
-                ${profitBadge}
-                <div class="member-info">
-                    <h4>${user.firstName || 'User'}</h4>
-                    <small><span class="lvl-tag">L${level}</span> ${hiddenPhone}</small>
-                </div>
-                <div>${statusHtml}</div>
-            </div>`;
+            // Phone masking (017****123)
+            let phone = user.phone ? user.phone.toString() : "N/A";
+            if(phone.length > 6) phone = phone.substring(0,3) + "****" + phone.substring(phone.length-3);
 
-            // 1. Add to specific Level Tab (Mixed Active & Pending)
-            if(container.innerHTML.includes("No") || container.innerHTML.includes("Waiting")) container.innerHTML = "";
+            // Display ID logic: user.ownCode (Referral Code)
+            let userIdDisplay = user.ownCode ? user.ownCode : "Pending ID";
+
+            const html = `
+                <div class="member-card ${statusClass}">
+                    ${profitHtml}
+                    <div class="user-left">
+                        <div class="user-avatar" style="color:${isActive ? '#00f260':'#ff4757'}">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        <div class="user-details">
+                            <h4>${user.firstName || 'Unknown User'}</h4>
+                            <div class="info-badges">
+                                <span class="badge id-badge"><i class="fas fa-id-card"></i> ${userIdDisplay}</span>
+                                <span class="badge phone-badge"><i class="fas fa-phone-alt"></i> ${phone}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status-pill ${pillClass}">
+                        ${pillText}
+                    </div>
+                </div>
+            `;
+
             container.insertAdjacentHTML('beforeend', html);
 
-            // 2. SPECIAL: If Active, ADD to "All Active" Tab as well
+            // Add to All Active Tab only if active
             if(isActive) {
                 const allActiveContainer = document.getElementById('allActive');
-                if(allActiveContainer.innerHTML.includes("No")) allActiveContainer.innerHTML = "";
-                // We append the exact same HTML to the aggregated list
                 allActiveContainer.insertAdjacentHTML('beforeend', html);
             }
         }
 
         function switchTab(tabId) {
-            // Hide all containers
-            document.querySelectorAll('.level-container').forEach(div => div.classList.remove('active'));
-            // Remove active class from buttons
+            document.querySelectorAll('.list-section').forEach(div => div.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            
-            // Show target
             document.getElementById(tabId).classList.add('active');
             
-            // Highlight button
-            if(tabId === 'lvl1') document.getElementById('btnLvl1').classList.add('active');
-            if(tabId === 'lvl2') document.getElementById('btnLvl2').classList.add('active');
-            if(tabId === 'lvl3') document.getElementById('btnLvl3').classList.add('active');
-            if(tabId === 'allActive') document.getElementById('btnAllActive').classList.add('active');
+            // Map button ID
+            let btnId = 'btn' + tabId.charAt(0).toUpperCase() + tabId.slice(1);
+            document.getElementById(btnId).classList.add('active');
         }
 
-        function copyCode() { 
-            navigator.clipboard.writeText(document.getElementById('myCode').innerText); 
-            alert("Code Copied!"); 
+        function showEmptyMsg(divId, msg) {
+            document.getElementById(divId).innerHTML = `<div style="text-align:center; padding:20px; color:#666;">${msg}</div>`;
+        }
+
+        function copyCode() {
+            navigator.clipboard.writeText(document.getElementById('myCode').innerText);
+            alert("Referral Code Copied!");
         }
     </script>
 </body>
