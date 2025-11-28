@@ -12,34 +12,39 @@
         .header { display: flex; align-items: center; margin-bottom: 20px; }
         .back { color: #aaa; text-decoration: none; font-size: 1.1rem; }
 
-        /* USER STATS */
+        /* USER STATS BOX */
         .my-stats {
             background: linear-gradient(135deg, #f1c40f, #f39c12);
             padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 30px;
             color: black; box-shadow: 0 10px 30px rgba(241, 196, 15, 0.3);
         }
 
-        /* LEVEL CARD */
+        /* VIP CARD STYLE */
         .vip-card {
             background: #1a1a2e; padding: 20px; border-radius: 15px; margin-bottom: 15px;
             border: 1px solid rgba(255,255,255,0.1); position: relative;
             transition: 0.3s;
         }
-        .vip-card.completed { border-color: #00f260; background: #102a1d; }
-        .vip-card.locked { opacity: 0.6; border: 1px dashed #555; }
+        
+        /* Different States */
+        .vip-card.completed { border: 1px solid #00f260; background: rgba(0, 242, 96, 0.05); }
+        .vip-card.locked { opacity: 0.7; border: 1px dashed #555; }
         
         .v-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .v-badge { background: #333; color: #f1c40f; padding: 5px 10px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; }
+        .v-badge { background: #333; color: #f1c40f; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
         
-        .progress-bar { background: #333; height: 8px; border-radius: 4px; overflow: hidden; margin: 10px 0; }
-        .fill { height: 100%; background: #00f260; width: 0%; transition: 1s; }
+        /* PROGRESS BAR */
+        .progress-bg { background: #333; height: 10px; border-radius: 5px; overflow: hidden; margin: 15px 0 5px 0; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #f1c40f, #f39c12); width: 0%; transition: width 1s ease-in-out; }
+        .completed .progress-fill { background: #00f260; }
 
-        .status-tag {
-            display: block; width: 100%; text-align: center; padding: 10px;
-            border-radius: 8px; font-weight: bold; margin-top: 15px;
+        /* STATUS TAGS */
+        .status-text {
+            font-size: 0.85rem; font-weight: bold; text-align: center; margin-top: 15px; padding: 8px; border-radius: 8px;
         }
-        .tag-success { background: rgba(0, 242, 96, 0.2); color: #00f260; border: 1px solid #00f260; }
-        .tag-locked { background: rgba(255, 255, 255, 0.05); color: #aaa; }
+        .text-locked { background: rgba(255,255,255,0.05); color: #aaa; }
+        .text-success { background: rgba(0, 242, 96, 0.2); color: #00f260; }
+        .text-running { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
 
     </style>
 </head>
@@ -49,18 +54,25 @@
         <a href="home.html" class="back"><i class="fas fa-arrow-left"></i> Dashboard</a>
     </div>
 
+    <!-- Active Referral Counter -->
     <div class="my-stats">
-        <small style="opacity:0.8;">Active Referrals</small>
-        <h1 style="margin:0; font-size:3rem;" id="myRef">Loading...</h1>
+        <small style="font-weight:600; text-transform:uppercase;">My Active Team</small>
+        <h1 style="margin:5px 0; font-size:3.5rem;" id="myRef">0</h1>
+        <small>Active Members</small>
     </div>
 
-    <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">VIP Levels</h3>
-    <div id="levelContainer">Loading levels...</div>
+    <h3 style="border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:20px;">VIP Progress</h3>
+    
+    <!-- All Levels will load here -->
+    <div id="levelContainer">
+        <p style="text-align:center; color:#777;">Loading VIP Levels...</p>
+    </div>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <script>
         const firebaseConfig = {
           apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
@@ -76,140 +88,140 @@
         const db = firebase.database();
 
         let currentUser = null;
-        let myActiveCount = 0; // Only Active Users
-        let claimedLevels = {};
-        let allLevelsData = [];
+        let myActiveCount = 0;
+        let claimedLevels = {}; // To store claimed status
+        let vipLevelsData = []; // To store admin settings
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
-                initSystem();
+                loadData();
             } else {
-                window.location.href = 'login_register.html';
+                window.location.href = 'login.html';
             }
         });
 
-        function initSystem() {
-            // 1. Load Admin Level Settings
-            db.ref('settings/vip_levels').orderByChild('level').on('value', (snap) => {
-                allLevelsData = [];
-                if(snap.exists()) {
-                    snap.forEach(c => allLevelsData.push(c.val()));
-                    allLevelsData.sort((a,b) => a.level - b.level);
+        function loadData() {
+            // 1. Load Admin Settings (VIP Levels)
+            db.ref('settings/vip_levels').on('value', (snap) => {
+                vipLevelsData = [];
+                if(snap.exists()){
+                    snap.forEach(c => vipLevelsData.push(c.val()));
+                    // Sort Levels (1, 2, 3...)
+                    vipLevelsData.sort((a,b) => a.level - b.level);
                 }
-                checkUserProgress();
-            });
-
-            // 2. Load User Claim History
-            db.ref('users/' + currentUser.uid + '/claimed_levels').on('value', (snap) => {
-                claimedLevels = snap.val() || {};
-                checkUserProgress();
-            });
-
-            // 3. Load & Count ONLY ACTIVE Referrals
-            db.ref('users/' + currentUser.uid + '/ownCode').once('value', (s) => {
-                const code = s.val();
-                if(code) {
-                    db.ref('users').orderByChild('referredBy').equalTo(code).on('value', (team) => {
-                        let activeCounter = 0;
-
-                        if(team.exists()) {
-                            team.forEach(child => {
-                                const member = child.val();
-                                // CHECK STATUS HERE
-                                if(member.status === 'active') {
-                                    activeCounter++;
-                                }
-                            });
-                        }
-
-                        myActiveCount = activeCounter;
-                        document.getElementById('myRef').innerText = myActiveCount;
-                        checkUserProgress(); // Re-check levels with new count
-                    });
-                } else {
-                    document.getElementById('myRef').innerText = "0";
-                }
+                getUserStats();
             });
         }
 
-        // 4. Main Logic: Check Progress with Active Count
-        function checkUserProgress() {
+        function getUserStats() {
+            // 2. Load User's Claimed History
+            db.ref('users/' + currentUser.uid + '/claimed_levels').on('value', (snap) => {
+                claimedLevels = snap.val() || {};
+                
+                // 3. Count Active Referrals
+                db.ref('users/' + currentUser.uid + '/ownCode').once('value', (s) => {
+                    const code = s.val();
+                    if(code) {
+                        db.ref('users').orderByChild('referredBy').equalTo(code).on('value', (teamSnap) => {
+                            let count = 0;
+                            if(teamSnap.exists()) {
+                                teamSnap.forEach(member => {
+                                    // IMPORTANT: Only count if status is active
+                                    if(member.val().status === 'active') {
+                                        count++;
+                                    }
+                                });
+                            }
+                            myActiveCount = count;
+                            document.getElementById('myRef').innerText = myActiveCount;
+                            renderLevels(); // Update UI
+                        });
+                    } else {
+                        renderLevels();
+                    }
+                });
+            });
+        }
+
+        function renderLevels() {
             const container = document.getElementById('levelContainer');
             container.innerHTML = "";
 
-            if(allLevelsData.length === 0) {
-                container.innerHTML = "<p style='text-align:center; color:#aaa;'>No VIP levels active.</p>";
+            if(vipLevelsData.length === 0) {
+                container.innerHTML = "<p style='text-align:center;'>No VIP levels set by Admin.</p>";
                 return;
             }
 
-            allLevelsData.forEach(l => {
-                // Calculate progress based on ACTIVE count
-                const progress = Math.min((myActiveCount / l.target) * 100, 100);
-                const isClaimed = claimedLevels['level'+l.level] === true;
-                const isUnlocked = myActiveCount >= l.target;
+            vipLevelsData.forEach(lvl => {
+                // Calculation
+                const percentage = Math.min((myActiveCount / lvl.target) * 100, 100);
+                const isUnlocked = myActiveCount >= lvl.target;
+                const isClaimed = claimedLevels['level' + lvl.level] === true;
 
-                // Auto Claim if Unlocked & Not Claimed
-                if (isUnlocked && !isClaimed) {
-                    autoClaimReward(l.level, l.bonus);
+                // Auto Claim Logic
+                if(isUnlocked && !isClaimed) {
+                    claimReward(lvl.level, lvl.bonus);
                 }
 
-                let statusHtml = "";
-                let cardClass = "";
-
-                if (isClaimed) {
+                // UI Logic
+                let cardClass = "locked";
+                let statusBadge = `<div class="status-text text-locked"><i class="fas fa-lock"></i> LOCKED</div>`;
+                
+                if(isClaimed) {
                     cardClass = "completed";
-                    statusHtml = `<div class="status-tag tag-success"><i class="fas fa-check-circle"></i> REWARD RECEIVED</div>`;
-                } else {
-                    cardClass = "locked";
-                    statusHtml = `<div class="status-tag tag-locked"><i class="fas fa-lock"></i> LOCKED</div>`;
+                    statusBadge = `<div class="status-text text-success"><i class="fas fa-check-circle"></i> COMPLETED & PAID</div>`;
+                } else if (!isClaimed && !isUnlocked) {
+                    // Running
+                    statusBadge = `<div class="status-text text-running">${myActiveCount} / ${lvl.target} Active Members</div>`;
                 }
 
                 const html = `
                     <div class="vip-card ${cardClass}">
                         <div class="v-header">
-                            <span class="v-badge">LEVEL ${l.level}</span>
-                            <span style="color:#f1c40f; font-weight:bold;">Reward: ৳${l.bonus}</span>
+                            <span class="v-badge">LEVEL ${lvl.level}</span>
+                            <span style="color:#f1c40f; font-weight:bold; font-size:1.1rem;">৳${lvl.bonus}</span>
                         </div>
-                        <p style="font-size:0.9rem; margin:5px 0;">Target: ${l.target} Active Members</p>
                         
-                        <div class="progress-bar">
-                            <div class="fill" style="width:${progress}%"></div>
+                        <div style="font-size:0.9rem; color:#ccc; margin-bottom:5px;">
+                            Target: <span style="color:white;">${lvl.target} Active Referrals</span>
                         </div>
-                        <small style="float:right; color:#aaa;">${myActiveCount} / ${l.target}</small>
-                        <div style="clear:both;"></div>
+
+                        <div class="progress-bg">
+                            <div class="progress-fill" style="width: ${percentage}%"></div>
+                        </div>
                         
-                        ${statusHtml}
+                        ${statusBadge}
                     </div>
                 `;
                 container.innerHTML += html;
             });
         }
 
-        // 5. Auto Claim Function
-        function autoClaimReward(level, amount) {
-            const levelKey = 'level' + level;
+        // Function to Auto-Add Balance
+        function claimReward(levelNum, amount) {
+            const levelKey = 'level' + levelNum;
+            
+            // Local check to prevent infinite loop before DB update
             if(claimedLevels[levelKey]) return;
+            claimedLevels[levelKey] = true; 
 
-            // Mark locally to prevent loop
-            claimedLevels[levelKey] = true;
-
-            db.ref('users/' + currentUser.uid).transaction((user) => {
+            db.ref('users/' + currentUser.uid).transaction(user => {
                 if (user) {
                     if (!user.claimed_levels) user.claimed_levels = {};
-                    if (user.claimed_levels[levelKey]) return; // Stop if already on server
+                    if (user.claimed_levels[levelKey]) return; // Already claimed in DB
 
                     user.balance = (user.balance || 0) + amount;
                     user.claimed_levels[levelKey] = true;
                 }
                 return user;
-            }, (error, committed) => {
-                if (committed) {
-                    console.log(`Level ${level} Reward Auto-Added!`);
+            }, (error, committed, snapshot) => {
+                if(committed) {
+                    // Optional: Show a popup notification
+                    // alert(`Congratulation! Level ${levelNum} Unlocked. ৳${amount} Added!`);
                 }
             });
         }
-
     </script>
 </body>
 </html>
