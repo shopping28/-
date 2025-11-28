@@ -12,39 +12,37 @@
         .header { display: flex; align-items: center; margin-bottom: 20px; }
         .back { color: #aaa; text-decoration: none; font-size: 1.1rem; }
 
-        /* USER STATS BOX */
+        /* ACTIVE TEAM CARD */
         .my-stats {
             background: linear-gradient(135deg, #f1c40f, #f39c12);
             padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 30px;
             color: black; box-shadow: 0 10px 30px rgba(241, 196, 15, 0.3);
         }
 
-        /* VIP CARD STYLE */
+        /* VIP LEVEL CARD */
         .vip-card {
-            background: #1a1a2e; padding: 20px; border-radius: 15px; margin-bottom: 15px;
+            background: #1a1a2e; padding: 20px; border-radius: 15px; margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.1); position: relative;
             transition: 0.3s;
         }
         
-        /* Different States */
+        /* Styles based on status */
         .vip-card.completed { border: 1px solid #00f260; background: rgba(0, 242, 96, 0.05); }
-        .vip-card.locked { opacity: 0.7; border: 1px dashed #555; }
-        
-        .v-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .v-badge { background: #333; color: #f1c40f; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
-        
-        /* PROGRESS BAR */
-        .progress-bg { background: #333; height: 10px; border-radius: 5px; overflow: hidden; margin: 15px 0 5px 0; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #f1c40f, #f39c12); width: 0%; transition: width 1s ease-in-out; }
-        .completed .progress-fill { background: #00f260; }
+        .vip-card.locked { opacity: 0.8; border: 1px dashed #444; }
 
-        /* STATUS TAGS */
-        .status-text {
-            font-size: 0.85rem; font-weight: bold; text-align: center; margin-top: 15px; padding: 8px; border-radius: 8px;
+        .v-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .v-badge { background: #333; color: #f1c40f; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+        
+        .progress-bg { background: #333; height: 10px; border-radius: 5px; overflow: hidden; margin: 15px 0 5px 0; }
+        .progress-fill { height: 100%; background: #f1c40f; width: 0%; transition: width 0.5s ease; }
+        
+        .status-msg {
+            text-align: center; font-weight: bold; font-size: 0.85rem; padding: 8px; 
+            border-radius: 6px; margin-top: 15px; display: block;
         }
-        .text-locked { background: rgba(255,255,255,0.05); color: #aaa; }
-        .text-success { background: rgba(0, 242, 96, 0.2); color: #00f260; }
-        .text-running { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
+        .msg-lock { background: rgba(255,255,255,0.1); color: #aaa; }
+        .msg-done { background: rgba(0, 242, 96, 0.2); color: #00f260; }
+        .msg-run { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
 
     </style>
 </head>
@@ -54,18 +52,17 @@
         <a href="home.html" class="back"><i class="fas fa-arrow-left"></i> Dashboard</a>
     </div>
 
-    <!-- Active Referral Counter -->
     <div class="my-stats">
         <small style="font-weight:600; text-transform:uppercase;">My Active Team</small>
-        <h1 style="margin:5px 0; font-size:3.5rem;" id="myRef">0</h1>
-        <small>Active Members</small>
+        <h1 style="margin:5px 0; font-size:3.5rem;" id="myRef">Loading...</h1>
+        <small>Only Active Members Counted</small>
     </div>
 
-    <h3 style="border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:20px;">VIP Progress</h3>
+    <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">All VIP Levels</h3>
     
-    <!-- All Levels will load here -->
+    <!-- এই ডিভ এর ভেতর জাভাস্ক্রিপ্ট দিয়ে সব লেভেল বসানো হবে -->
     <div id="levelContainer">
-        <p style="text-align:center; color:#777;">Loading VIP Levels...</p>
+        <p style="text-align:center; color:#777;">Checking levels...</p>
     </div>
 
     <!-- Firebase SDK -->
@@ -89,37 +86,47 @@
 
         let currentUser = null;
         let myActiveCount = 0;
-        let claimedLevels = {}; // To store claimed status
-        let vipLevelsData = []; // To store admin settings
+        let claimedLevels = {};
+        let vipLevelsData = [];
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
-                loadData();
+                startSystem();
             } else {
-                window.location.href = 'login.html';
+                window.location.href = 'login_register.html';
             }
         });
 
-        function loadData() {
-            // 1. Load Admin Settings (VIP Levels)
-            db.ref('settings/vip_levels').on('value', (snap) => {
-                vipLevelsData = [];
-                if(snap.exists()){
-                    snap.forEach(c => vipLevelsData.push(c.val()));
-                    // Sort Levels (1, 2, 3...)
-                    vipLevelsData.sort((a,b) => a.level - b.level);
+        function startSystem() {
+            // ১. অ্যাডমিন থেকে সব লেভেল লোড করা
+            db.ref('settings/vip_levels').on('value', (snapshot) => {
+                vipLevelsData = []; // লিস্ট ক্লিয়ার
+                
+                if (snapshot.exists()) {
+                    snapshot.forEach((child) => {
+                        const data = child.val();
+                        // ডাটা সঠিক কিনা চেক করা
+                        if(data.level && data.target && data.bonus) {
+                            vipLevelsData.push(data);
+                        }
+                    });
+
+                    // ২. লেভেল অনুযায়ী সাজানো (১, ২, ৩...)
+                    vipLevelsData.sort((a, b) => Number(a.level) - Number(b.level));
                 }
-                getUserStats();
+
+                // ডাটা লোড হওয়ার পর ইউজারের স্ট্যাটাস চেক
+                checkUserStatus();
             });
         }
 
-        function getUserStats() {
-            // 2. Load User's Claimed History
+        function checkUserStatus() {
+            // ইউজারের ক্লেইম করা লেভেলগুলো লোড
             db.ref('users/' + currentUser.uid + '/claimed_levels').on('value', (snap) => {
                 claimedLevels = snap.val() || {};
                 
-                // 3. Count Active Referrals
+                // ইউজারের এক্টিভ রেফারেল কাউন্ট করা
                 db.ref('users/' + currentUser.uid + '/ownCode').once('value', (s) => {
                     const code = s.val();
                     if(code) {
@@ -127,7 +134,6 @@
                             let count = 0;
                             if(teamSnap.exists()) {
                                 teamSnap.forEach(member => {
-                                    // IMPORTANT: Only count if status is active
                                     if(member.val().status === 'active') {
                                         count++;
                                     }
@@ -135,91 +141,86 @@
                             }
                             myActiveCount = count;
                             document.getElementById('myRef').innerText = myActiveCount;
-                            renderLevels(); // Update UI
+                            
+                            // সব ডাটা রেডি, এখন শো করাও
+                            renderAllLevels();
                         });
                     } else {
-                        renderLevels();
+                        document.getElementById('myRef').innerText = "0";
+                        renderAllLevels();
                     }
                 });
             });
         }
 
-        function renderLevels() {
+        // ৩. ফাইনাল রেন্ডারিং ফাংশন
+        function renderAllLevels() {
             const container = document.getElementById('levelContainer');
-            container.innerHTML = "";
+            container.innerHTML = ""; // আগের সব ক্লিয়ার
 
-            if(vipLevelsData.length === 0) {
-                container.innerHTML = "<p style='text-align:center;'>No VIP levels set by Admin.</p>";
+            if (vipLevelsData.length === 0) {
+                container.innerHTML = "<p style='text-align:center;'>No VIP Levels Found.</p>";
                 return;
             }
 
+            // লুপ চালিয়ে সব কার্ড তৈরি
             vipLevelsData.forEach(lvl => {
-                // Calculation
                 const percentage = Math.min((myActiveCount / lvl.target) * 100, 100);
                 const isUnlocked = myActiveCount >= lvl.target;
                 const isClaimed = claimedLevels['level' + lvl.level] === true;
 
-                // Auto Claim Logic
-                if(isUnlocked && !isClaimed) {
-                    claimReward(lvl.level, lvl.bonus);
+                // অটো ক্লেইম লজিক
+                if (isUnlocked && !isClaimed) {
+                    autoClaim(lvl.level, lvl.bonus);
                 }
 
-                // UI Logic
+                // কার্ডের ডিজাইন ঠিক করা
                 let cardClass = "locked";
-                let statusBadge = `<div class="status-text text-locked"><i class="fas fa-lock"></i> LOCKED</div>`;
-                
-                if(isClaimed) {
+                let statusHtml = `<span class="status-msg msg-lock"><i class="fas fa-lock"></i> Locked</span>`;
+                let progressColor = "#f1c40f";
+
+                if (isClaimed) {
                     cardClass = "completed";
-                    statusBadge = `<div class="status-text text-success"><i class="fas fa-check-circle"></i> COMPLETED & PAID</div>`;
+                    statusHtml = `<span class="status-msg msg-done"><i class="fas fa-check-circle"></i> Reward Received</span>`;
+                    progressColor = "#00f260";
                 } else if (!isClaimed && !isUnlocked) {
-                    // Running
-                    statusBadge = `<div class="status-text text-running">${myActiveCount} / ${lvl.target} Active Members</div>`;
+                    statusHtml = `<span class="status-msg msg-run">${myActiveCount} / ${lvl.target} Members</span>`;
                 }
 
+                // HTML তৈরি
                 const html = `
                     <div class="vip-card ${cardClass}">
                         <div class="v-header">
                             <span class="v-badge">LEVEL ${lvl.level}</span>
-                            <span style="color:#f1c40f; font-weight:bold; font-size:1.1rem;">৳${lvl.bonus}</span>
+                            <span style="color:#f1c40f; font-weight:bold;">Reward: ৳${lvl.bonus}</span>
                         </div>
+                        <p style="font-size:0.9rem; color:#ccc; margin:5px 0;">Target: ${lvl.target} Active Referrals</p>
                         
-                        <div style="font-size:0.9rem; color:#ccc; margin-bottom:5px;">
-                            Target: <span style="color:white;">${lvl.target} Active Referrals</span>
-                        </div>
-
                         <div class="progress-bg">
-                            <div class="progress-fill" style="width: ${percentage}%"></div>
+                            <div class="progress-fill" style="width:${percentage}%; background:${progressColor};"></div>
                         </div>
                         
-                        ${statusBadge}
+                        ${statusHtml}
                     </div>
                 `;
-                container.innerHTML += html;
+                container.innerHTML += html; // একের পর এক যুক্ত হবে
             });
         }
 
-        // Function to Auto-Add Balance
-        function claimReward(levelNum, amount) {
-            const levelKey = 'level' + levelNum;
-            
-            // Local check to prevent infinite loop before DB update
-            if(claimedLevels[levelKey]) return;
-            claimedLevels[levelKey] = true; 
+        function autoClaim(lvlNum, amount) {
+            const key = 'level' + lvlNum;
+            if (claimedLevels[key]) return;
+            claimedLevels[key] = true; // লোকাল লক
 
-            db.ref('users/' + currentUser.uid).transaction(user => {
-                if (user) {
-                    if (!user.claimed_levels) user.claimed_levels = {};
-                    if (user.claimed_levels[levelKey]) return; // Already claimed in DB
+            db.ref('users/' + currentUser.uid).transaction(u => {
+                if (u) {
+                    if (!u.claimed_levels) u.claimed_levels = {};
+                    if (u.claimed_levels[key]) return;
 
-                    user.balance = (user.balance || 0) + amount;
-                    user.claimed_levels[levelKey] = true;
+                    u.balance = (u.balance || 0) + amount;
+                    u.claimed_levels[key] = true;
                 }
-                return user;
-            }, (error, committed, snapshot) => {
-                if(committed) {
-                    // Optional: Show a popup notification
-                    // alert(`Congratulation! Level ${levelNum} Unlocked. ৳${amount} Added!`);
-                }
+                return u;
             });
         }
     </script>
