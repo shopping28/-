@@ -3,74 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP Zone</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>VIP Premium Zone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; min-height: 100vh; }
-        
-        .header { display: flex; align-items: center; margin-bottom: 20px; }
-        .back { color: #aaa; text-decoration: none; font-size: 1.1rem; }
-
-        /* ACTIVE TEAM CARD */
-        .my-stats {
-            background: linear-gradient(135deg, #f1c40f, #f39c12);
-            padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 30px;
-            color: black; box-shadow: 0 10px 30px rgba(241, 196, 15, 0.3);
+        :root {
+            --primary: #f1c40f;
+            --success: #00e676;
+            --dark: #121212;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --glass: rgba(255, 255, 255, 0.1);
         }
 
-        /* VIP LEVEL CARD */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: radial-gradient(circle at top, #1a1a2e, #0f0c29); 
+            color: white; 
+            font-family: 'Poppins', sans-serif; 
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* HEADER */
+        .top-nav {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 25px;
+        }
+        .back-btn {
+            background: var(--glass); width: 40px; height: 40px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; text-decoration: none; transition: 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: black; }
+        .page-title { font-size: 1.2rem; font-weight: 600; }
+
+        /* STATS CARD (Hero Section) */
+        .hero-card {
+            background: linear-gradient(135deg, #FFD700, #F37335);
+            border-radius: 20px; padding: 25px; text-align: center;
+            box-shadow: 0 10px 30px rgba(243, 115, 53, 0.3);
+            margin-bottom: 30px; position: relative; overflow: hidden;
+        }
+        .hero-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2), transparent);
+            animation: rotate 10s linear infinite;
+        }
+        .hero-content { position: relative; z-index: 2; color: #000; }
+        .hero-count { font-size: 3.5rem; font-weight: 800; margin: 5px 0; line-height: 1; }
+        .hero-label { font-size: 0.9rem; font-weight: 600; letter-spacing: 1px; opacity: 0.8; }
+
+        /* LEVEL LIST CONTAINER */
+        .section-title { margin-bottom: 15px; font-size: 1.1rem; color: #ccc; border-left: 4px solid var(--primary); padding-left: 10px; }
+        
+        /* VIP CARD DESIGN */
         .vip-card {
-            background: #1a1a2e; padding: 20px; border-radius: 15px; margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.1); position: relative;
-            transition: 0.3s;
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px; padding: 20px; margin-bottom: 20px;
+            position: relative; overflow: hidden; transition: transform 0.3s;
         }
         
-        /* Styles based on status */
-        .vip-card.completed { border: 1px solid #00f260; background: rgba(0, 242, 96, 0.05); }
-        .vip-card.locked { opacity: 0.8; border: 1px dashed #444; }
+        /* States */
+        .vip-card.locked { opacity: 0.7; border-left: 5px solid #555; }
+        .vip-card.running { border: 1px solid var(--primary); box-shadow: 0 0 15px rgba(241, 196, 15, 0.1); }
+        .vip-card.completed { 
+            background: linear-gradient(145deg, rgba(0, 230, 118, 0.1), rgba(0,0,0,0));
+            border: 1px solid var(--success);
+        }
 
-        .v-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .v-badge { background: #333; color: #f1c40f; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
-        
-        .progress-bg { background: #333; height: 10px; border-radius: 5px; overflow: hidden; margin: 15px 0 5px 0; }
-        .progress-fill { height: 100%; background: #f1c40f; width: 0%; transition: width 0.5s ease; }
-        
-        .status-msg {
-            text-align: center; font-weight: bold; font-size: 0.85rem; padding: 8px; 
-            border-radius: 6px; margin-top: 15px; display: block;
+        /* Card Header */
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .lvl-badge { 
+            background: #222; padding: 5px 15px; border-radius: 20px; 
+            font-size: 0.8rem; font-weight: bold; color: var(--primary); 
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .msg-lock { background: rgba(255,255,255,0.1); color: #aaa; }
-        .msg-done { background: rgba(0, 242, 96, 0.2); color: #00f260; }
-        .msg-run { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
+        .reward-amount { font-size: 1.2rem; font-weight: 700; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+
+        /* Progress Bar */
+        .progress-container {
+            background: rgba(255,255,255,0.1); height: 8px; border-radius: 10px;
+            overflow: hidden; margin: 15px 0 10px 0;
+        }
+        .progress-bar {
+            height: 100%; width: 0%; border-radius: 10px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Bar Colors */
+        .locked .progress-bar { background: #555; }
+        .running .progress-bar { background: linear-gradient(90deg, #f1c40f, #ffeb3b); box-shadow: 0 0 10px #f1c40f; }
+        .completed .progress-bar { background: var(--success); box-shadow: 0 0 10px var(--success); }
+
+        /* Footer Info */
+        .card-footer { display: flex; justify-content: space-between; font-size: 0.8rem; color: #aaa; }
+        
+        /* Status Tags */
+        .status-pill {
+            display: block; text-align: center; margin-top: 15px; padding: 8px;
+            font-size: 0.8rem; font-weight: bold; border-radius: 8px; text-transform: uppercase;
+        }
+        .st-lock { background: rgba(255,255,255,0.05); color: #777; }
+        .st-run { background: rgba(241, 196, 15, 0.1); color: var(--primary); }
+        .st-done { background: rgba(0, 230, 118, 0.1); color: var(--success); }
+
+        /* Icons */
+        .icon-box { 
+            width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; margin-right: 10px;
+        }
+
+        /* Animation */
+        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .vip-card { animation: popIn 0.5s ease-out forwards; }
 
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <a href="home.html" class="back"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    <!-- Header -->
+    <div class="top-nav">
+        <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <span class="page-title">VIP Dashboard</span>
     </div>
 
-    <div class="my-stats">
-        <small style="font-weight:600; text-transform:uppercase;">My Active Team</small>
-        <h1 style="margin:5px 0; font-size:3.5rem;" id="myRef">Loading...</h1>
-        <small>Only Active Members Counted</small>
+    <!-- User Active Stats -->
+    <div class="hero-card">
+        <div class="hero-content">
+            <div class="hero-label">ACTIVE TEAM MEMBERS</div>
+            <div class="hero-count" id="myRef">0</div>
+            <small style="opacity:0.8;">Keep referring to unlock more!</small>
+        </div>
     </div>
 
-    <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">All VIP Levels</h3>
+    <h4 class="section-title">Unlock Levels</h4>
     
-    <!-- এই ডিভ এর ভেতর জাভাস্ক্রিপ্ট দিয়ে সব লেভেল বসানো হবে -->
+    <!-- Level Container -->
     <div id="levelContainer">
-        <p style="text-align:center; color:#777;">Checking levels...</p>
+        <div style="text-align:center; padding:40px; color:#666;">
+            <i class="fas fa-circle-notch fa-spin fa-2x"></i><br><br>Loading Data...
+        </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK & Logic -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
+        // CONFIG
         const firebaseConfig = {
           apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
           authDomain: "art-paid-work001.firebaseapp.com",
@@ -92,136 +176,144 @@
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
-                startSystem();
+                initVipSystem();
             } else {
                 window.location.href = 'login_register.html';
             }
         });
 
-        function startSystem() {
-            // ১. অ্যাডমিন থেকে সব লেভেল লোড করা
-            db.ref('settings/vip_levels').on('value', (snapshot) => {
-                vipLevelsData = []; // লিস্ট ক্লিয়ার
-                
-                if (snapshot.exists()) {
-                    snapshot.forEach((child) => {
-                        const data = child.val();
-                        // ডাটা সঠিক কিনা চেক করা
-                        if(data.level && data.target && data.bonus) {
-                            vipLevelsData.push(data);
-                        }
-                    });
-
-                    // ২. লেভেল অনুযায়ী সাজানো (১, ২, ৩...)
-                    vipLevelsData.sort((a, b) => Number(a.level) - Number(b.level));
+        function initVipSystem() {
+            // 1. Get Levels
+            db.ref('settings/vip_levels').on('value', (snap) => {
+                vipLevelsData = [];
+                if(snap.exists()){
+                    snap.forEach(c => vipLevelsData.push(c.val()));
+                    vipLevelsData.sort((a,b) => a.level - b.level);
                 }
-
-                // ডাটা লোড হওয়ার পর ইউজারের স্ট্যাটাস চেক
-                checkUserStatus();
+                getUserData();
             });
         }
 
-        function checkUserStatus() {
-            // ইউজারের ক্লেইম করা লেভেলগুলো লোড
-            db.ref('users/' + currentUser.uid + '/claimed_levels').on('value', (snap) => {
-                claimedLevels = snap.val() || {};
+        function getUserData() {
+            // 2. Get Claims
+            db.ref('users/' + currentUser.uid + '/claimed_levels').on('value', (s) => {
+                claimedLevels = s.val() || {};
                 
-                // ইউজারের এক্টিভ রেফারেল কাউন্ট করা
-                db.ref('users/' + currentUser.uid + '/ownCode').once('value', (s) => {
-                    const code = s.val();
+                // 3. Get Active Referrals
+                db.ref('users/' + currentUser.uid + '/ownCode').once('value', (codeSnap) => {
+                    const code = codeSnap.val();
                     if(code) {
-                        db.ref('users').orderByChild('referredBy').equalTo(code).on('value', (teamSnap) => {
+                        db.ref('users').orderByChild('referredBy').equalTo(code).on('value', (team) => {
                             let count = 0;
-                            if(teamSnap.exists()) {
-                                teamSnap.forEach(member => {
-                                    if(member.val().status === 'active') {
-                                        count++;
-                                    }
+                            if(team.exists()) {
+                                team.forEach(m => {
+                                    if(m.val().status === 'active') count++;
                                 });
                             }
                             myActiveCount = count;
-                            document.getElementById('myRef').innerText = myActiveCount;
                             
-                            // সব ডাটা রেডি, এখন শো করাও
-                            renderAllLevels();
+                            // Animate Number
+                            animateValue("myRef", 0, myActiveCount, 1000);
+                            renderUI();
                         });
                     } else {
-                        document.getElementById('myRef').innerText = "0";
-                        renderAllLevels();
+                        renderUI();
                     }
                 });
             });
         }
 
-        // ৩. ফাইনাল রেন্ডারিং ফাংশন
-        function renderAllLevels() {
+        function renderUI() {
             const container = document.getElementById('levelContainer');
-            container.innerHTML = ""; // আগের সব ক্লিয়ার
+            container.innerHTML = "";
 
-            if (vipLevelsData.length === 0) {
-                container.innerHTML = "<p style='text-align:center;'>No VIP Levels Found.</p>";
+            if(vipLevelsData.length === 0) {
+                container.innerHTML = "<p style='text-align:center; color:#555;'>No levels configured.</p>";
                 return;
             }
 
-            // লুপ চালিয়ে সব কার্ড তৈরি
-            vipLevelsData.forEach(lvl => {
-                const percentage = Math.min((myActiveCount / lvl.target) * 100, 100);
+            vipLevelsData.forEach((lvl, index) => {
+                // Logic
+                const percent = Math.min((myActiveCount / lvl.target) * 100, 100);
                 const isUnlocked = myActiveCount >= lvl.target;
-                const isClaimed = claimedLevels['level' + lvl.level] === true;
+                const isClaimed = claimedLevels['level'+lvl.level] === true;
 
-                // অটো ক্লেইম লজিক
-                if (isUnlocked && !isClaimed) {
-                    autoClaim(lvl.level, lvl.bonus);
-                }
+                if(isUnlocked && !isClaimed) autoClaim(lvl.level, lvl.bonus);
 
-                // কার্ডের ডিজাইন ঠিক করা
-                let cardClass = "locked";
-                let statusHtml = `<span class="status-msg msg-lock"><i class="fas fa-lock"></i> Locked</span>`;
-                let progressColor = "#f1c40f";
+                // Styling determination
+                let stateClass = "locked";
+                let statusHtml = `<div class="status-pill st-lock"><i class="fas fa-lock"></i> Locked</div>`;
+                let icon = `<i class="fas fa-lock" style="color:#777"></i>`;
+                let progressText = `${myActiveCount}/${lvl.target}`;
 
                 if (isClaimed) {
-                    cardClass = "completed";
-                    statusHtml = `<span class="status-msg msg-done"><i class="fas fa-check-circle"></i> Reward Received</span>`;
-                    progressColor = "#00f260";
+                    stateClass = "completed";
+                    statusHtml = `<div class="status-pill st-done"><i class="fas fa-check-circle"></i> Paid Successfully</div>`;
+                    icon = `<i class="fas fa-gift" style="color:#00e676"></i>`;
                 } else if (!isClaimed && !isUnlocked) {
-                    statusHtml = `<span class="status-msg msg-run">${myActiveCount} / ${lvl.target} Members</span>`;
+                    stateClass = "running";
+                    statusHtml = `<div class="status-pill st-run"><i class="fas fa-running"></i> In Progress</div>`;
+                    icon = `<i class="fas fa-star" style="color:#f1c40f"></i>`;
                 }
 
-                // HTML তৈরি
+                // Add Animation Delay for staggered effect
+                const delay = index * 0.1; 
+
                 const html = `
-                    <div class="vip-card ${cardClass}">
-                        <div class="v-header">
-                            <span class="v-badge">LEVEL ${lvl.level}</span>
-                            <span style="color:#f1c40f; font-weight:bold;">Reward: ৳${lvl.bonus}</span>
+                    <div class="vip-card ${stateClass}" style="animation-delay: ${delay}s">
+                        <div class="card-top">
+                            <div style="display:flex; align-items:center;">
+                                <div class="icon-box" style="background:rgba(255,255,255,0.05);">${icon}</div>
+                                <span class="lvl-badge">LEVEL ${lvl.level}</span>
+                            </div>
+                            <span class="reward-amount">৳${lvl.bonus}</span>
                         </div>
-                        <p style="font-size:0.9rem; color:#ccc; margin:5px 0;">Target: ${lvl.target} Active Referrals</p>
-                        
-                        <div class="progress-bg">
-                            <div class="progress-fill" style="width:${percentage}%; background:${progressColor};"></div>
+
+                        <div class="card-footer">
+                            <span>Target: ${lvl.target} Active</span>
+                            <span>${Math.floor(percent)}%</span>
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${percent}%"></div>
                         </div>
                         
                         ${statusHtml}
                     </div>
                 `;
-                container.innerHTML += html; // একের পর এক যুক্ত হবে
+                container.innerHTML += html;
             });
         }
 
-        function autoClaim(lvlNum, amount) {
-            const key = 'level' + lvlNum;
-            if (claimedLevels[key]) return;
-            claimedLevels[key] = true; // লোকাল লক
+        function autoClaim(lvl, amount) {
+            const k = 'level'+lvl;
+            if(claimedLevels[k]) return;
+            claimedLevels[k] = true;
 
-            db.ref('users/' + currentUser.uid).transaction(u => {
-                if (u) {
-                    if (!u.claimed_levels) u.claimed_levels = {};
-                    if (u.claimed_levels[key]) return;
-
+            db.ref('users/'+currentUser.uid).transaction(u => {
+                if(u) {
+                    if(!u.claimed_levels) u.claimed_levels = {};
+                    if(u.claimed_levels[k]) return;
                     u.balance = (u.balance || 0) + amount;
-                    u.claimed_levels[key] = true;
+                    u.claimed_levels[k] = true;
                 }
                 return u;
             });
+        }
+
+        // Cool Number Animation
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
         }
     </script>
 </body>
