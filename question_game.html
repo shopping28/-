@@ -66,13 +66,12 @@
             <button class="btn-opt" onclick="submitAns('D')" id="btnD">Option D</button>
         </div>
     </div>
-
-    <script type="module">
+ <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getDatabase, ref, get, update, set, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", // আপনার কনফিগ ঠিক আছে
+            apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
             authDomain: "art-paid-work001.firebaseapp.com",
             databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com",
             projectId: "art-paid-work001",
@@ -84,93 +83,123 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- SETTINGS ---
+        // --- 1. USER IDENTITY ---
         let userId = localStorage.getItem("game_uid");
-        if(!userId) { userId = "u"+Math.floor(Math.random()*999999); localStorage.setItem("game_uid", userId); }
+        if(!userId) { 
+            userId = "u" + Math.floor(Math.random() * 999999); 
+            localStorage.setItem("game_uid", userId); 
+        }
         document.getElementById("uName").innerText = userId.substring(0,6);
 
-        // 5 Minutes Cycle Logic
-        const CYCLE_MS = 5 * 60 * 1000; // 5 Minutes
-        const READ_MS = 10 * 1000;      // 10 Seconds
-        const ANS_MS = 30 * 1000;       // Ends at 30 Seconds (Duration 20s)
-        
-        let config = { startTime: 0, resultTime: 0 };
-        let myQuestions = []; 
-        let currentQData = null;
-        let isAnswered = false;
-
-        // --- STARTUP ---
-        // 1. Load Config -> 2. Load Questions -> 3. Start Loop
+        // --- 2. AUTO REGISTER & LIVE STATUS CHECK ---
         const waitTitle = document.getElementById("waitTitle");
         const waitSub = document.getElementById("waitSub");
+        let isActive = false;
 
-        onValue(ref(db, 'game_config'), (snap) => {
-            config = snap.val();
-            if(!config) return;
+        // চেক করুন ইউজার ডাটাবেসে আছে কিনা, না থাকলে অ্যাড করুন
+        get(ref(db, `users/${userId}`)).then(snapshot => {
+            if (!snapshot.exists()) {
+                set(ref(db, `users/${userId}`), {
+                    name: "Player " + userId.substring(0,4),
+                    account_status: "pending", // প্রথমে Pending থাকবে
+                    balance: 0
+                });
+            }
+        });
+
+        // লাইভ স্ট্যাটাস চেক (অ্যাডমিন Active করলেই সাথে সাথে গেম খুলবে)
+        onValue(ref(db, `users/${userId}/account_status`), (snap) => {
+            const status = snap.val();
             
-            // Check if user is active
-            get(ref(db, `users/${userId}/account_status`)).then(uSnap => {
-                if(uSnap.val() !== 'active') {
-                    waitTitle.innerText = "ACCOUNT LOCKED";
-                    waitTitle.style.color = "red";
-                    waitSub.innerText = "Contact Admin to Activate";
-                } else {
+            if (status === 'active') {
+                isActive = true;
+                // Active হলে গেমের কনফিগারেশন লোড শুরু হবে
+                waitTitle.innerText = "CONNECTING...";
+                waitTitle.style.color = "white";
+                waitSub.innerText = "Loading Game Data...";
+                initGameSystem();
+            } else {
+                isActive = false;
+                // Active না হলে লক স্ক্রিন দেখাবে
+                waitTitle.innerText = "ACCOUNT LOCKED";
+                waitTitle.style.color = "red";
+                waitSub.innerText = "Contact Admin to Activate";
+                document.getElementById("waitLayer").classList.remove("hidden");
+                document.getElementById("gameLayer").classList.add("hidden");
+            }
+        });
+
+        // --- 3. GAME SYSTEM (ONLY RUNS IF ACTIVE) ---
+        let config = null;
+        let myQuestions = [];
+        let loadedQIdx = -1;
+
+        // 5 Minutes Cycle Logic
+        const CYCLE_MS = 5 * 60 * 1000; 
+        const READ_MS = 10 * 1000;      
+        const ANS_MS = 30 * 1000;       
+
+        function initGameSystem() {
+            onValue(ref(db, 'game_config'), (snap) => {
+                config = snap.val();
+                if(config && isActive) {
                     prepareQuestions();
                 }
             });
-        });
+        }
 
         async function prepareQuestions() {
-            // Check if questions already assigned
             const qOrderRef = ref(db, `users_game_data/${userId}/q_order`);
             const snap = await get(qOrderRef);
 
             if(snap.exists()) {
                 myQuestions = snap.val();
-                startGameLoop();
+                startGameLoop(); // প্রশ্ন রেডি থাকলে গেম লুপ শুরু
             } else {
-                waitSub.innerText = "Assigning Questions...";
-                // Fetch ALL questions from DB
+                waitSub.innerText = "Downloading Questions...";
                 const allQSnap = await get(ref(db, 'questions'));
                 if(allQSnap.exists()) {
                     let allKeys = Object.keys(allQSnap.val());
-                    // Shuffle Array
-                    allKeys.sort(() => Math.random() - 0.5);
-                    // Take first 10
-                    myQuestions = allKeys.slice(0, 10);
-                    // Save to DB
-                    await set(qOrderRef, myQuestions);
-                    startGameLoop();
+                    if(allKeys.length > 0) {
+                        allKeys.sort(() => Math.random() - 0.5);
+                        myQuestions = allKeys.slice(0, 10);
+                        await set(qOrderRef, myQuestions);
+                        startGameLoop();
+                    } else {
+                        waitSub.innerText = "Error: No Questions in DB!";
+                    }
                 } else {
-                    waitTitle.innerText = "NO QUESTIONS FOUND";
-                    waitSub.innerText = "Admin needs to add questions.";
+                    waitSub.innerText = "Error: Database Empty!";
                 }
             }
         }
 
         function startGameLoop() {
-            setInterval(() => {
+            // আগের লুপ ক্লিয়ার করা যাতে ডবল না চলে
+            if(window.gameInterval) clearInterval(window.gameInterval);
+
+            window.gameInterval = setInterval(() => {
+                if(!isActive || !config) return;
+
                 const now = Date.now();
                 const start = config.startTime;
 
-                // A. BEFORE GAME STARTS
+                // A. BEFORE GAME
                 if (now < start) {
                     showWaitScreen("GAME STARTS IN", start - now, "Get Ready...");
                     return;
                 }
 
-                // B. GAME IS RUNNING
+                // B. GAME RUNNING
                 const timePassed = now - start;
-                const totalGameTime = 10 * CYCLE_MS; // 50 mins total
+                const totalGameTime = 10 * CYCLE_MS; 
 
                 if (timePassed < totalGameTime) {
                     document.getElementById("waitLayer").classList.add("hidden");
                     document.getElementById("gameLayer").classList.remove("hidden");
 
-                    // Calculate Current Question Number (0 to 9)
                     const qIdx = Math.floor(timePassed / CYCLE_MS);
                     const timeInCycle = timePassed % CYCLE_MS;
-
                     renderGamePhase(qIdx, timeInCycle);
                 } 
                 // C. GAME OVER
@@ -178,23 +207,21 @@
                     showWaitScreen("GAME OVER", 0, "Check Leaderboard");
                     document.getElementById("gameLayer").classList.add("hidden");
                 }
-
             }, 1000);
         }
 
-        let loadedQIdx = -1;
+        let isAnswered = false;
+        let currentQData = null;
 
         function renderGamePhase(idx, timeInCycle) {
-            // 1. Fetch Data if new question
             if(loadedQIdx !== idx) {
                 loadedQIdx = idx;
                 isAnswered = false;
                 resetUI();
-                
                 document.getElementById("qIndex").innerText = idx + 1;
-                const qId = myQuestions[idx];
                 
-                // Fetch Question Text
+                // Fetch Question
+                const qId = myQuestions[idx];
                 if(qId) {
                     get(ref(db, `questions/${qId}`)).then(s => {
                         currentQData = s.val();
@@ -213,37 +240,30 @@
             const gameLayer = document.getElementById("gameLayer");
             const waitLayer = document.getElementById("waitLayer");
 
-            // --- PHASE 1: READING (0s - 10s) ---
+            // PHASE 1: READ (0-10s)
             if (timeInCycle < READ_MS) {
                 waitLayer.classList.add("hidden");
                 gameLayer.classList.remove("hidden");
-                
-                let timeLeft = Math.ceil((READ_MS - timeInCycle) / 1000);
-                timerEl.innerText = timeLeft;
-                timerEl.style.color = "#00f0ff"; // Blue
+                timerEl.innerText = Math.ceil((READ_MS - timeInCycle) / 1000);
+                timerEl.style.color = "#00f0ff";
                 phaseEl.innerText = "READ THE QUESTION";
-                
                 qBox.classList.remove("blur");
-                optBox.classList.remove("show"); // Hide Options
+                optBox.classList.remove("show");
             }
-            // --- PHASE 2: ANSWERING (10s - 30s) ---
+            // PHASE 2: ANSWER (10-30s)
             else if (timeInCycle < ANS_MS) {
-                let timeLeft = Math.ceil((ANS_MS - timeInCycle) / 1000);
-                timerEl.innerText = timeLeft;
-                timerEl.style.color = "#ff0055"; // Red
-                phaseEl.innerText = "QUICK! CHOOSE ANSWER";
-                
-                qBox.classList.add("blur"); // Blur Question
-                optBox.classList.add("show"); // Show Options
+                timerEl.innerText = Math.ceil((ANS_MS - timeInCycle) / 1000);
+                timerEl.style.color = "#ff0055";
+                phaseEl.innerText = "ANSWER NOW";
+                qBox.classList.add("blur");
+                optBox.classList.add("show");
             }
-            // --- PHASE 3: WAITING (30s - 5:00m) ---
+            // PHASE 3: WAIT (30s - 5m)
             else {
-                // Hide Game UI, Show Waiting Overlay for next Q
                 gameLayer.classList.add("hidden");
                 waitLayer.classList.remove("hidden");
-                
                 let nextQTime = (CYCLE_MS - timeInCycle);
-                showWaitScreen("NEXT QUESTION IN", nextQTime, `Question ${idx+2} Coming Up...`);
+                showWaitScreen("NEXT QUESTION IN", nextQTime, `Prepare for Q${idx+2}...`);
             }
         }
 
@@ -253,54 +273,37 @@
 
             const isCorrect = (choice === currentQData.answer);
             const btn = document.getElementById("btn"+choice);
-            
-            // UI Feedback
-            if(isCorrect) btn.classList.add("correct");
-            else btn.classList.add("wrong");
+            if(isCorrect) btn.classList.add("correct"); else btn.classList.add("wrong");
 
-            // Send to Admin Panel
-            const answerPath = `users_game_data/${userId}/answers/${loadedQIdx}`;
-            update(ref(db, answerPath), {
+            update(ref(db, `users_game_data/${userId}/answers/${loadedQIdx}`), {
                 questionId: currentQData.id,
                 selected: choice,
                 isCorrect: isCorrect,
                 timestamp: Date.now()
             });
 
-            // Update Score if correct
             if(isCorrect) {
-                const scoreRef = ref(db, `users_game_data/${userId}/score`);
-                get(scoreRef).then(snap => {
-                    let s = snap.val() || 0;
-                    set(scoreRef, s + 1);
+                get(ref(db, `users_game_data/${userId}/score`)).then(snap => {
+                    set(ref(db, `users_game_data/${userId}/score`), (snap.val() || 0) + 1);
                 });
             }
         };
 
         function resetUI() {
-            document.querySelectorAll('.btn-opt').forEach(b => {
-                b.className = 'btn-opt'; // Reset colors
-            });
-            document.getElementById("qBox").innerText = "Decrypting Question...";
+            document.querySelectorAll('.btn-opt').forEach(b => b.className = 'btn-opt');
+            document.getElementById("qBox").innerText = "Loading...";
         }
 
         function showWaitScreen(title, ms, sub) {
             document.getElementById("waitTitle").innerText = title;
             document.getElementById("waitSub").innerText = sub;
-            
-            // Format Time
-            let seconds = Math.floor((ms / 1000) % 60);
-            let minutes = Math.floor((ms / (1000 * 60)) % 60);
-            let hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
-
-            let str = "";
-            if(hours > 0) str += hours + ":";
-            str += (minutes < 10 ? "0" : "") + minutes + ":";
-            str += (seconds < 10 ? "0" : "") + seconds;
-            
-            document.getElementById("mainCountdown").innerText = str;
+            let totalSec = Math.floor(ms / 1000);
+            let h = Math.floor(totalSec / 3600);
+            let m = Math.floor((totalSec % 3600) / 60);
+            let s = totalSec % 60;
+            document.getElementById("mainCountdown").innerText = 
+                `${h}:${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
         }
-
     </script>
 </body>
 </html>
