@@ -3,73 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Quiz - Time Fixed</title>
+    <title>Cyber Quiz - Debug Mode</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        :root { --bg: #050511; --primary: #7000ff; --accent: #00f0ff; --glass: rgba(255, 255, 255, 0.05); }
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body { background: var(--bg); font-family: 'Poppins', sans-serif; color: white; height: 100vh; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        body { background: #050511; color: white; font-family: 'Poppins', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        
+        /* Debug Box */
+        #debugStatus {
+            position: absolute; top: 10px; left: 10px; background: rgba(255, 0, 0, 0.2); 
+            border: 1px solid red; padding: 10px; font-size: 12px; z-index: 1000; max-width: 300px;
+        }
 
-        /* HUD */
-        .hud { position: fixed; top: 0; width: 100%; padding: 15px; display: flex; justify-content: space-between; background: rgba(0,0,0,0.5); z-index: 10; }
-        .timer-big { font-family: 'Orbitron'; font-size: 2.5rem; color: var(--accent); margin: 20px 0; text-shadow: 0 0 15px var(--accent); }
-        .phase-badge { padding: 5px 15px; border-radius: 20px; background: #333; font-size: 0.9rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
-
-        /* QUESTION AREA */
-        .game-area { width: 90%; max-width: 500px; text-align: center; position: relative; }
-        .q-card { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; min-height: 150px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 20px; transition: 0.3s; }
-        .q-card.blur { filter: blur(10px); opacity: 0.5; }
-
-        /* OPTIONS */
-        .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; display: none; }
-        .opt-grid.show { display: grid; animation: popIn 0.3s; }
-        .btn-opt { padding: 20px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 10px; font-size: 1rem; cursor: pointer; }
-        .btn-opt:active { transform: scale(0.95); }
-        .btn-opt.correct { background: rgba(0, 255, 0, 0.3); border-color: lime; }
-        .btn-opt.wrong { background: rgba(255, 0, 0, 0.3); border-color: red; }
-
-        /* WAIT SCREEN */
-        .wait-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 20; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .hidden { display: none !important; }
-
-        @keyframes popIn { from{transform: scale(0.8); opacity:0;} to{transform: scale(1); opacity:1;} }
+        .container { text-align: center; }
+        .big-text { font-family: 'Orbitron'; font-size: 3rem; margin: 20px 0; color: #00f0ff; }
+        .status { padding: 5px 15px; background: #333; border-radius: 5px; }
+        
+        .game-ui { display: none; width: 90%; max-width: 500px; border: 1px solid #333; padding: 20px; border-radius: 10px; }
+        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: #222; border: 1px solid #444; color: white; cursor: pointer; }
+        .btn.correct { background: green; } .btn.wrong { background: red; }
     </style>
 </head>
 <body>
 
-    <!-- 1. WAITING / LOADING SCREEN -->
-    <div id="waitLayer" class="wait-overlay">
-        <i class="fas fa-clock fa-spin" style="font-size:3rem; color:var(--primary); margin-bottom:20px;"></i>
-        <h2 id="waitTitle">CONNECTING...</h2>
-        <div class="timer-big" id="mainCountdown">00:00:00</div>
-        <p id="waitSub">Please wait for the server</p>
+    <!-- Debug Log Box -->
+    <div id="debugStatus">System Status: Initializing...</div>
+
+    <!-- 1. WAITING SCREEN -->
+    <div id="waitScreen" class="container">
+        <h2>PLAYER ID: <span id="dispID" style="color:yellow">...</span></h2>
+        <div class="big-text" id="timer">--:--:--</div>
+        <p class="status" id="mainStatus">Connecting to Server...</p>
+        <button onclick="localStorage.clear(); location.reload();" style="margin-top:20px; padding:5px;">Reset ID</button>
     </div>
 
     <!-- 2. GAME UI -->
-    <div id="gameLayer" class="game-area hidden">
-        <div class="hud">
-            <span><i class="fas fa-user"></i> <span id="uName">...</span></span>
-            <span>Q: <span id="qIndex">1</span>/10</span>
+    <div id="gameUI" class="game-ui">
+        <div style="display:flex; justify-content:space-between;">
+            <span>Q: <span id="qNum">1</span>/10</span>
+            <span id="phase">READ</span>
         </div>
-
-        <div class="timer-big" id="gameTimer">10</div>
-        <div class="phase-badge" id="phaseText">READING PHASE</div>
-
-        <div class="q-card" id="qBox">Loading Question...</div>
-
-        <div class="opt-grid" id="optBox">
-            <button class="btn-opt" onclick="submitAns('A')" id="btnA">Option A</button>
-            <button class="btn-opt" onclick="submitAns('B')" id="btnB">Option B</button>
-            <button class="btn-opt" onclick="submitAns('C')" id="btnC">Option C</button>
-            <button class="btn-opt" onclick="submitAns('D')" id="btnD">Option D</button>
+        <h2 id="qText" style="margin:20px 0; min-height:60px;">Loading...</h2>
+        <div id="opts">
+            <button class="btn" id="btnA" onclick="ans('A')">A</button>
+            <button class="btn" id="btnB" onclick="ans('B')">B</button>
+            <button class="btn" id="btnC" onclick="ans('C')">C</button>
+            <button class="btn" id="btnD" onclick="ans('D')">D</button>
         </div>
     </div>
- <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getDatabase, ref, get, update, set, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        // CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
             authDomain: "art-paid-work001.firebaseapp.com",
@@ -82,227 +68,160 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        const log = (msg) => document.getElementById('debugStatus').innerHTML += "<br>" + msg;
 
-        // --- 1. USER IDENTITY ---
-        let userId = localStorage.getItem("game_uid");
-        if(!userId) { 
-            userId = "u" + Math.floor(Math.random() * 999999); 
-            localStorage.setItem("game_uid", userId); 
-        }
-        document.getElementById("uName").innerText = userId.substring(0,6);
+        // 1. USER SETUP
+        let uid = localStorage.getItem("game_uid");
+        if(!uid) { uid = "u"+Math.floor(Math.random()*999); localStorage.setItem("game_uid", uid); }
+        document.getElementById("dispID").innerText = uid;
+        log("User ID: " + uid);
 
-        // --- 2. AUTO REGISTER & LIVE STATUS CHECK ---
-        const waitTitle = document.getElementById("waitTitle");
-        const waitSub = document.getElementById("waitSub");
-        let isActive = false;
-
-        // চেক করুন ইউজার ডাটাবেসে আছে কিনা, না থাকলে অ্যাড করুন
-        get(ref(db, `users/${userId}`)).then(snapshot => {
-            if (!snapshot.exists()) {
-                set(ref(db, `users/${userId}`), {
-                    name: "Player " + userId.substring(0,4),
-                    account_status: "pending", // প্রথমে Pending থাকবে
-                    balance: 0
-                });
+        // Register User
+        get(ref(db, `users/${uid}`)).then(s => {
+            if(!s.exists()) {
+                set(ref(db, `users/${uid}`), { name: "Player "+uid, account_status: "pending", balance: 0 });
+                log("User Created. Status: PENDING");
+            } else {
+                log("User Found. Current Status: " + s.val().account_status);
             }
         });
 
-        // লাইভ স্ট্যাটাস চেক (অ্যাডমিন Active করলেই সাথে সাথে গেম খুলবে)
-        onValue(ref(db, `users/${userId}/account_status`), (snap) => {
-            const status = snap.val();
-            
-            if (status === 'active') {
+        // 2. LISTEN FOR STATUS & CONFIG
+        let isActive = false;
+        let config = null;
+        let myQ = [];
+
+        onValue(ref(db, `users/${uid}/account_status`), snap => {
+            const st = snap.val();
+            log(`Account Updated: ${st}`);
+            if(st === 'active') {
                 isActive = true;
-                // Active হলে গেমের কনফিগারেশন লোড শুরু হবে
-                waitTitle.innerText = "CONNECTING...";
-                waitTitle.style.color = "white";
-                waitSub.innerText = "Loading Game Data...";
-                initGameSystem();
+                document.getElementById('mainStatus').innerText = "Account Active! Waiting for Schedule...";
+                document.getElementById('mainStatus').style.color = "lightgreen";
+                loadConfig();
             } else {
                 isActive = false;
-                // Active না হলে লক স্ক্রিন দেখাবে
-                waitTitle.innerText = "ACCOUNT LOCKED";
-                waitTitle.style.color = "red";
-                waitSub.innerText = "Contact Admin to Activate";
-                document.getElementById("waitLayer").classList.remove("hidden");
-                document.getElementById("gameLayer").classList.add("hidden");
+                document.getElementById('mainStatus').innerText = "ACCOUNT LOCKED (Ask Admin)";
+                document.getElementById('mainStatus').style.color = "red";
+                document.getElementById('gameUI').style.display = 'none';
+                document.getElementById('waitScreen').style.display = 'block';
             }
         });
 
-        // --- 3. GAME SYSTEM (ONLY RUNS IF ACTIVE) ---
-        let config = null;
-        let myQuestions = [];
-        let loadedQIdx = -1;
-
-        // 5 Minutes Cycle Logic
-        const CYCLE_MS = 5 * 60 * 1000; 
-        const READ_MS = 10 * 1000;      
-        const ANS_MS = 30 * 1000;       
-
-        function initGameSystem() {
-            onValue(ref(db, 'game_config'), (snap) => {
+        function loadConfig() {
+            onValue(ref(db, 'game_config'), snap => {
                 config = snap.val();
-                if(config && isActive) {
+                if(config) {
+                    log(`Config Loaded. Start: ${new Date(config.startTime).toLocaleTimeString()}`);
                     prepareQuestions();
+                } else {
+                    log("ERROR: No Game Schedule Found in Admin!");
                 }
             });
         }
 
         async function prepareQuestions() {
-            const qOrderRef = ref(db, `users_game_data/${userId}/q_order`);
-            const snap = await get(qOrderRef);
-
+            const qRef = ref(db, `users_game_data/${uid}/q_order`);
+            const snap = await get(qRef);
             if(snap.exists()) {
-                myQuestions = snap.val();
-                startGameLoop(); // প্রশ্ন রেডি থাকলে গেম লুপ শুরু
+                myQ = snap.val();
+                log(`Loaded ${myQ.length} Questions.`);
+                startGameLoop();
             } else {
-                waitSub.innerText = "Downloading Questions...";
-                const allQSnap = await get(ref(db, 'questions'));
-                if(allQSnap.exists()) {
-                    let allKeys = Object.keys(allQSnap.val());
-                    if(allKeys.length > 0) {
-                        allKeys.sort(() => Math.random() - 0.5);
-                        myQuestions = allKeys.slice(0, 10);
-                        await set(qOrderRef, myQuestions);
-                        startGameLoop();
-                    } else {
-                        waitSub.innerText = "Error: No Questions in DB!";
-                    }
+                log("Downloading Questions...");
+                const all = await get(ref(db, 'questions'));
+                if(all.exists()) {
+                    let keys = Object.keys(all.val());
+                    keys.sort(()=>Math.random()-0.5);
+                    myQ = keys.slice(0, 10);
+                    await set(qRef, myQ);
+                    log("Questions Assigned.");
+                    startGameLoop();
                 } else {
-                    waitSub.innerText = "Error: Database Empty!";
+                    log("ERROR: No Questions in Database!");
                 }
             }
         }
 
+        // 3. GAME LOOP
         function startGameLoop() {
-            // আগের লুপ ক্লিয়ার করা যাতে ডবল না চলে
-            if(window.gameInterval) clearInterval(window.gameInterval);
-
-            window.gameInterval = setInterval(() => {
+            if(window.loop) clearInterval(window.loop);
+            window.loop = setInterval(() => {
                 if(!isActive || !config) return;
-
+                
                 const now = Date.now();
                 const start = config.startTime;
 
-                // A. BEFORE GAME
-                if (now < start) {
-                    showWaitScreen("GAME STARTS IN", start - now, "Get Ready...");
-                    return;
-                }
-
-                // B. GAME RUNNING
-                const timePassed = now - start;
-                const totalGameTime = 10 * CYCLE_MS; 
-
-                if (timePassed < totalGameTime) {
-                    document.getElementById("waitLayer").classList.add("hidden");
-                    document.getElementById("gameLayer").classList.remove("hidden");
-
-                    const qIdx = Math.floor(timePassed / CYCLE_MS);
-                    const timeInCycle = timePassed % CYCLE_MS;
-                    renderGamePhase(qIdx, timeInCycle);
-                } 
-                // C. GAME OVER
-                else {
-                    showWaitScreen("GAME OVER", 0, "Check Leaderboard");
-                    document.getElementById("gameLayer").classList.add("hidden");
+                if(now < start) {
+                    // Waiting
+                    let diff = start - now;
+                    let m = Math.floor(diff/60000);
+                    let s = Math.floor((diff%60000)/1000);
+                    document.getElementById('timer').innerText = `${m}:${s<10?'0'+s:s}`;
+                    document.getElementById('mainStatus').innerText = "Game Starts Soon...";
+                } else {
+                    // Game Running
+                    document.getElementById('waitScreen').style.display = 'none';
+                    document.getElementById('gameUI').style.display = 'block';
+                    
+                    let passed = now - start;
+                    let idx = Math.floor(passed / (5*60000)); // 5 min cycle
+                    if(idx < 10) renderQ(idx, passed % (5*60000));
+                    else {
+                        document.getElementById('gameUI').style.display = 'none';
+                        document.getElementById('waitScreen').style.display = 'block';
+                        document.getElementById('mainStatus').innerText = "GAME OVER";
+                    }
                 }
             }, 1000);
         }
 
-        let isAnswered = false;
-        let currentQData = null;
+        let currIdx = -1;
+        let qData = null;
+        let answered = false;
 
-        function renderGamePhase(idx, timeInCycle) {
-            if(loadedQIdx !== idx) {
-                loadedQIdx = idx;
-                isAnswered = false;
-                resetUI();
-                document.getElementById("qIndex").innerText = idx + 1;
-                
-                // Fetch Question
-                const qId = myQuestions[idx];
-                if(qId) {
-                    get(ref(db, `questions/${qId}`)).then(s => {
-                        currentQData = s.val();
-                        document.getElementById("qBox").innerText = currentQData.question;
-                        ['A','B','C','D'].forEach(opt => {
-                            document.getElementById('btn'+opt).innerText = currentQData.options[opt];
-                        });
-                    });
-                }
-            }
-
-            const timerEl = document.getElementById("gameTimer");
-            const phaseEl = document.getElementById("phaseText");
-            const qBox = document.getElementById("qBox");
-            const optBox = document.getElementById("optBox");
-            const gameLayer = document.getElementById("gameLayer");
-            const waitLayer = document.getElementById("waitLayer");
-
-            // PHASE 1: READ (0-10s)
-            if (timeInCycle < READ_MS) {
-                waitLayer.classList.add("hidden");
-                gameLayer.classList.remove("hidden");
-                timerEl.innerText = Math.ceil((READ_MS - timeInCycle) / 1000);
-                timerEl.style.color = "#00f0ff";
-                phaseEl.innerText = "READ THE QUESTION";
-                qBox.classList.remove("blur");
-                optBox.classList.remove("show");
-            }
-            // PHASE 2: ANSWER (10-30s)
-            else if (timeInCycle < ANS_MS) {
-                timerEl.innerText = Math.ceil((ANS_MS - timeInCycle) / 1000);
-                timerEl.style.color = "#ff0055";
-                phaseEl.innerText = "ANSWER NOW";
-                qBox.classList.add("blur");
-                optBox.classList.add("show");
-            }
-            // PHASE 3: WAIT (30s - 5m)
-            else {
-                gameLayer.classList.add("hidden");
-                waitLayer.classList.remove("hidden");
-                let nextQTime = (CYCLE_MS - timeInCycle);
-                showWaitScreen("NEXT QUESTION IN", nextQTime, `Prepare for Q${idx+2}...`);
-            }
-        }
-
-        window.submitAns = function(choice) {
-            if(isAnswered || !currentQData) return;
-            isAnswered = true;
-
-            const isCorrect = (choice === currentQData.answer);
-            const btn = document.getElementById("btn"+choice);
-            if(isCorrect) btn.classList.add("correct"); else btn.classList.add("wrong");
-
-            update(ref(db, `users_game_data/${userId}/answers/${loadedQIdx}`), {
-                questionId: currentQData.id,
-                selected: choice,
-                isCorrect: isCorrect,
-                timestamp: Date.now()
-            });
-
-            if(isCorrect) {
-                get(ref(db, `users_game_data/${userId}/score`)).then(snap => {
-                    set(ref(db, `users_game_data/${userId}/score`), (snap.val() || 0) + 1);
+        function renderQ(idx, timeMs) {
+            if(currIdx !== idx) {
+                currIdx = idx;
+                answered = false;
+                // Load Q
+                log("Loading Q: " + (idx+1));
+                document.getElementById('qNum').innerText = idx+1;
+                document.querySelectorAll('.btn').forEach(b=>b.style.background='#222');
+                get(ref(db, `questions/${myQ[idx]}`)).then(s=>{
+                    qData = s.val();
+                    document.getElementById('qText').innerText = qData.question;
+                    ['A','B','C','D'].forEach(o => document.getElementById('btn'+o).innerText = qData.options[o]);
                 });
             }
-        };
 
-        function resetUI() {
-            document.querySelectorAll('.btn-opt').forEach(b => b.className = 'btn-opt');
-            document.getElementById("qBox").innerText = "Loading...";
+            // Phase
+            let sec = timeMs/1000;
+            if(sec < 10) { // Read
+                document.getElementById('phase').innerText = `READ (${10-Math.floor(sec)})`;
+                document.getElementById('opts').style.pointerEvents = 'none';
+                document.getElementById('opts').style.opacity = '0.5';
+            } else if (sec < 30) { // Answer
+                document.getElementById('phase').innerText = `ANSWER (${30-Math.floor(sec)})`;
+                document.getElementById('qText').style.filter = 'blur(5px)';
+                document.getElementById('opts').style.pointerEvents = 'all';
+                document.getElementById('opts').style.opacity = '1';
+            } else { // Wait
+                document.getElementById('phase').innerText = "WAITING NEXT...";
+                document.getElementById('gameUI').style.display = 'none';
+                document.getElementById('waitScreen').style.display = 'block';
+                document.getElementById('timer').innerText = "NEXT Q SOON";
+            }
         }
 
-        function showWaitScreen(title, ms, sub) {
-            document.getElementById("waitTitle").innerText = title;
-            document.getElementById("waitSub").innerText = sub;
-            let totalSec = Math.floor(ms / 1000);
-            let h = Math.floor(totalSec / 3600);
-            let m = Math.floor((totalSec % 3600) / 60);
-            let s = totalSec % 60;
-            document.getElementById("mainCountdown").innerText = 
-                `${h}:${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
+        window.ans = (opt) => {
+            if(answered) return;
+            answered = true;
+            let correct = (opt === qData.answer);
+            document.getElementById('btn'+opt).style.background = correct ? 'green' : 'red';
+            update(ref(db, `users_game_data/${uid}/answers/${currIdx}`), {
+                ans: opt, correct: correct
+            });
         }
     </script>
 </body>
