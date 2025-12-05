@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* DARK PREMIUM THEME (SAME AS DASHBOARD) */
+        body { background: #0f0c29; font-family: 'Poppins', sans-serif; margin: 0; color: white; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        .header {
+            padding: 20px;
+            display: flex; align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        .back-btn { font-size: 1.2rem; color: white; text-decoration: none; margin-right: 15px; }
+
+        .container {
+            flex: 1;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            padding: 20px; text-align: center;
+        }
+
+        .icon-box {
+            font-size: 4rem; color: #fccb90; margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float { 0% {transform: translateY(0px);} 50% {transform: translateY(-10px);} 100% {transform: translateY(0px);} }
+
+        h1 { margin: 0; font-size: 1.8rem; background: linear-gradient(to right, #fccb90, #d57eeb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        p { color: #aaa; margin-top: 10px; font-size: 0.9rem; }
+
+        /* External Link Card */
+        .reg-card {
+            background: rgba(255,255,255,0.1);
+            padding: 25px; border-radius: 20px;
+            width: 100%; max-width: 350px;
+            margin-top: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .btn-external {
+            display: block; width: 100%;
+            padding: 15px 0; border-radius: 30px;
+            background: linear-gradient(45deg, #00f260, #0575e6);
+            color: white; font-weight: bold; text-decoration: none;
+            margin-top: 20px; box-shadow: 0 5px 15px rgba(0, 242, 96, 0.4);
+            transition: 0.3s;
+        }
+        .btn-external:active { transform: scale(0.98); }
+
+        .divider { margin: 25px 0; border-top: 1px solid rgba(255,255,255,0.1); position: relative; }
+        .divider span { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #0f0c29; padding: 0 10px; color: #555; font-size: 0.8rem; }
+
+        .btn-start {
+            width: 100%; padding: 12px; border: 2px solid #ff416c;
+            background: transparent; color: #ff416c; border-radius: 10px;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .btn-start:hover { background: #ff416c; color: white; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header with Back Button -->
+    <div class="header">
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i></a> <!-- index.html বা আপনার ড্যাশবোর্ড ফাইলের নাম দিন -->
+        <h3>Quiz Zone</h3>
+    </div>
+
+    <div class="container">
+        <div class="icon-box"><i class="fas fa-gamepad"></i></div>
+        <h1>Mega Quiz Contest</h1>
+        <p>Participate in our quiz and win exclusive rewards. Registration is mandatory.</p>
+
+        <div class="reg-card">
+            <i class="fas fa-user-plus" style="font-size: 2rem; color: #00f260;"></i>
+            <h3 style="margin: 10px 0;">Registration Required</h3>
+            <small style="color: #ccc;">গেমটি খেলার জন্য আমাদের অফিসিয়াল সাইটে রেজিস্ট্রেশন করুন।</small>
+            
+            <!-- EXTERNAL LINK HERE -->
+            <!-- নিচের href="" এর মধ্যে আপনার রেজিস্ট্রেশন ওয়েবসাইটের লিংক বসান -->
+            <a href="https://YOUR_EXTERNAL_WEBSITE_LINK_HERE.com" target="_blank" class="btn-external">
+                Go to Registration <i class="fas fa-external-link-alt"></i>
+            </a>
+
+            <div class="divider"><span>ALREADY REGISTERED?</span></div>
+
+            <!-- Start Game Button -->
+            <button class="btn-start" onclick="startGame()">
+                Start Quiz Game
+            </button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", projectId: "art-paid-work001", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Check if user is logged in
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'login_register.html';
+            }
+        });
+
+        function startGame() {
+            // আপনি চাইলে এখানে চেক করতে পারেন ইউজার আসলেই রেজিস্ট্রেশন করেছে কিনা (যদি API থাকে)।
+            // আপাতত সরাসরি গেম পেজে নিয়ে যাবে।
+            
+            if(confirm("আপনি কি রেজিস্ট্রেশন সম্পন্ন করেছেন?")) {
+                // এখানে গেমের মূল পেজের নাম দিন (যেমন: play_quiz.html)
+                // অথবা যদি এখানেই গেম লোড করতে চান তবে কোড বসাতে হবে।
+                window.location.href = 'play_quiz.html'; 
+            }
+        }
+    </script>
+</body>
+</html>
