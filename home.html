@@ -100,17 +100,11 @@
             <i class="fas fa-crown icon c-vip"></i><div>VIP Level</div>
             <div class="lock-layer" id="lock_vip"><i class="fas fa-lock"></i><span>Activate First</span></div>
         </div>
-        
-        <!-- QUIZ GAME CARD WITH REAL TIMER -->
-        <div class="card" onclick="window.location.href='question_game.html'">
-            <i class="fas fa-gamepad icon" style="color:#e0c3fc;"></i><div>Quiz Game</div>
-            <!-- ID added here to update time -->
-            <div class="lock-layer quiz-timer-layer" id="quizLockLayer">
-                <i class="fas fa-clock" style="color:#e0c3fc;"></i>
-                <span id="quizTimerText">Loading...</span>
-            </div>
+         <div class="card" onclick="checkAccess('question_game.html')">
+            <i class="fas fa-crown icon c-vip"></i><div>quiz game </div>
+            <div class="lock-layer" id="lock_vip"><i class="fas fa-lock"></i><span>Activate First</span></div>
         </div>
-
+        
         <div class="card" onclick="window.location.href='weekly.html'">
             <i class="fas fa-calendar-week icon" style="color:#fff;"></i><div>Weekly</div>
             <div class="lock-layer"><i class="fas fa-clock"></i><span>16 Days</span></div>
