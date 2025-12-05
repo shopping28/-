@@ -46,14 +46,6 @@
         .lock-layer i { font-size: 1.5rem; color: #e74c3c; margin-bottom: 5px; }
         .lock-layer span { font-size: 0.7rem; color: #aaa; font-weight: bold; }
         
-        /* Updated Quiz Timer Style */
-        .quiz-timer-layer {
-            background: rgba(15, 12, 41, 0.85);
-        }
-        .quiz-timer-layer span {
-            color: #00f260; font-family: monospace; font-size: 0.9rem;
-        }
-
         .c-task { color: #ff9a9e; } .c-team { color: #a18cd1; } .c-with { color: #84fab0; } .c-vip { color: #fccb90; }
 
         .profile-btn {
@@ -100,9 +92,11 @@
             <i class="fas fa-crown icon c-vip"></i><div>VIP Level</div>
             <div class="lock-layer" id="lock_vip"><i class="fas fa-lock"></i><span>Activate First</span></div>
         </div>
-         <div class="card" onclick="checkAccess('question_game.html')">
-            <i class="fas fa-crown icon c-vip"></i><div>quiz game </div>
-            <div class="lock-layer" id="lock_vip"><i class="fas fa-lock"></i><span>Activate First</span></div>
+        
+        <!-- UPDATED QUIZ CARD: Added unique ID 'lock_quiz' -->
+        <div class="card" onclick="checkAccess('question_game.html')">
+            <i class="fas fa-gamepad icon c-vip"></i><div>Quiz Game</div>
+            <div class="lock-layer" id="lock_quiz"><i class="fas fa-lock"></i><span>Activate First</span></div>
         </div>
         
         <div class="card" onclick="window.location.href='weekly.html'">
@@ -136,47 +130,7 @@
         let isVoiceReady = false;
         let pendingMsg = "";
 
-        // --- 1. QUIZ TIMER LOGIC (NEW) ---
-        // Fetch start time from Firebase game_config
-        db.ref('game_config').on('value', (snapshot) => {
-            const config = snapshot.val();
-            if (config && config.startTime) {
-                startQuizCountdown(config.startTime);
-            } else {
-                document.getElementById('quizTimerText').innerText = "Not Scheduled";
-            }
-        });
-
-        function startQuizCountdown(startTime) {
-            // Update every second
-            setInterval(() => {
-                const now = new Date().getTime();
-                const distance = startTime - now;
-
-                if (distance < 0) {
-                    // GAME STARTED (Live)
-                    const lockLayer = document.getElementById('quizLockLayer');
-                    lockLayer.innerHTML = '<i class="fas fa-broadcast-tower"></i><span>LIVE NOW</span>';
-                    // Optional: Make it look active (Greenish overlay)
-                    lockLayer.style.background = 'rgba(0, 242, 96, 0.8)';
-                    lockLayer.querySelector('i').style.color = 'black';
-                    lockLayer.querySelector('span').style.color = 'black';
-                } else {
-                    // COUNTDOWN
-                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                    // Show as "2d 10h 30m 05s"
-                    document.getElementById('quizTimerText').innerText = 
-                        `${days}d ${hours}h ${minutes}m ${seconds}s`;
-                }
-            }, 1000);
-        }
-        // ---------------------------------
-
-        // --- 2. AUDIO & USER DATA ---
+        // --- AUDIO & USER DATA ---
         function unlockAudio() {
             if(isVoiceReady) return;
             const synth = window.speechSynthesis;
@@ -211,8 +165,6 @@
                             if(!localStorage.getItem('activation_voice_played')) {
                                 speak("Your account active successful so start network marketing journey");
                                 localStorage.setItem('activation_voice_played', 'true');
-                            } else {
-                                setTimeout(() => { speak("Account is open"); }, 1000);
                             }
                         }
                     }
@@ -233,18 +185,25 @@
         function updateUI(status) {
             const badge = document.getElementById('userStatus');
             const banner = document.getElementById('activateBanner');
-            const locks = ['lock_task', 'lock_team', 'lock_withdraw', 'lock_vip'];
+            // ADDED 'lock_quiz' TO THIS ARRAY
+            const locks = ['lock_task', 'lock_team', 'lock_withdraw', 'lock_vip', 'lock_quiz'];
 
             if (status === 'active') {
                 badge.innerText = "ACTIVE";
                 badge.className = "badge act";
                 banner.style.display = 'none';
-                locks.forEach(id => document.getElementById(id).style.display = 'none');
+                locks.forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) el.style.display = 'none';
+                });
             } else {
                 badge.innerText = "INACTIVE";
                 badge.className = "badge inact";
                 banner.style.display = 'flex';
-                locks.forEach(id => document.getElementById(id).style.display = 'flex');
+                locks.forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) el.style.display = 'flex';
+                });
             }
         }
 
