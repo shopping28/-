@@ -3,161 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>VIP Club Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* DARK PREMIUM THEME */
-        body {
+        /* BASE RESET */
+        body { 
             background: #0f0c29; 
-            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
-            font-family: 'Poppins', sans-serif;
-            color: white;
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
             height: 100vh;
-            margin: 0;
+            color: white; 
+            overflow: hidden; /* No scrollbars */
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- ADVANCED BACKGROUND ANIMATION --- */
+        .animation-wrapper {
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
+            transform: rotate(-15deg); /* Tilted look */
+            z-index: 1;
+            opacity: 0.4; /* Opacity adjusted for perfect blend */
+            pointer-events: none;
         }
 
-        /* ICON ANIMATION (Gold for VIP) */
-        .vip-icon {
-            font-size: 4rem;
-            background: -webkit-linear-gradient(#f1c40f, #f39c12);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 10px rgba(241, 196, 15, 0.3));
-        }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-
-        h1 { margin: 0; font-size: 2rem; letter-spacing: 1px; }
-        p { color: #aaa; margin-bottom: 40px; font-size: 0.9rem; }
-
-        /* COUNTDOWN BOXES */
-        .countdown {
+        .row {
+            white-space: nowrap;
             display: flex;
-            gap: 15px;
-            margin-bottom: 40px;
-        }
-        .time-box {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 15px;
-            min-width: 70px;
-            border: 1px solid rgba(241, 196, 15, 0.2); /* Gold Border */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        .time-val {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #f1c40f; /* Gold Text */
-            display: block;
-        }
-        .time-label {
-            font-size: 0.7rem;
-            color: #ccc;
-            text-transform: uppercase;
+            padding: 15px 0;
         }
 
-        /* BUTTON */
-        .btn {
-            padding: 12px 40px;
-            border: 2px solid #f1c40f;
-            color: #f1c40f;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
-            transition: 0.3s;
-            background: rgba(255,255,255,0.05);
+        .row div {
+            font-size: 3rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            padding-right: 50px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
-        .btn:hover {
-            background: #f1c40f;
-            color: #000;
-            box-shadow: 0 0 20px #f1c40f;
+
+        /* TEXT STYLES */
+        .text-outline {
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2); /* Hollow effect */
         }
         
-        .lock-msg {
-            background: rgba(231, 76, 60, 0.2);
-            color: #e74c3c;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-bottom: 20px;
-            border: 1px solid #e74c3c;
+        .text-gold {
+            color: #f1c40f;
+            text-shadow: 0 0 15px rgba(241, 196, 15, 0.4);
         }
+
+        /* ANIMATION SPEEDS */
+        .move-left { animation: marquee 25s linear infinite; }
+        .move-right { animation: marquee-rev 25s linear infinite; }
+
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes marquee-rev { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+
+        /* DARK OVERLAY (To make card readable) */
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(15,12,41,0.4) 0%, rgba(15,12,41,0.95) 80%);
+            z-index: 2;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            position: absolute; top: 20px; left: 20px; z-index: 100;
+        }
+        .back-btn { 
+            font-size: 1.2rem; color: white; cursor: pointer; 
+            background: rgba(255,255,255,0.1); 
+            width: 45px; height: 45px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            transition: 0.3s;
+        }
+        .back-btn:active { transform: scale(0.9); }
+
+        /* --- MAIN CARD --- */
+        .vip-card {
+            position: relative;
+            z-index: 10;
+            background: rgba(20, 20, 35, 0.65); /* Glass Dark */
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
+            width: 85%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px); /* Heavy Blur */
+            animation: float 5s ease-in-out infinite;
+        }
+
+        .icon-box {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: -webkit-linear-gradient(#f1c40f, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(241, 196, 15, 0.3));
+        }
+
+        h2 { font-size: 1.8rem; margin: 0 0 10px; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
+        p { font-size: 0.9rem; color: #ccc; margin-bottom: 30px; line-height: 1.6; }
+
+        /* BUTTON */
+        .tg-btn {
+            background: linear-gradient(90deg, #0088cc, #005f8f);
+            color: white; text-decoration: none;
+            padding: 16px 0; width: 100%; display: block;
+            border-radius: 50px; font-weight: bold; font-size: 1rem;
+            box-shadow: 0 5px 20px rgba(0, 136, 204, 0.4);
+            transition: 0.3s; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .tg-btn:active { transform: scale(0.98); }
+        .tg-btn i { margin-right: 8px; }
+
+        @keyframes float { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-10px);} }
 
     </style>
 </head>
 <body>
 
-    <div class="vip-icon">
-        <i class="fas fa-crown"></i>
-    </div>
-
-    <h1>VIP Club</h1>
-    <p>Exclusive Events & High Rewards</p>
-
-    <div class="lock-msg">
-        <i class="fas fa-lock"></i> MEMBERSHIP LOCKED
-    </div>
-
-    <div class="countdown">
-        <div class="time-box">
-            <span class="time-val" id="days">21</span>
-            <span class="time-label">Days</span>
-        </div>
-        <div class="time-box">
-            <span class="time-val" id="hours">00</span>
-            <span class="time-label">Hours</span>
-        </div>
-        <div class="time-box">
-            <span class="time-val" id="minutes">00</span>
-            <span class="time-label">Mins</span>
-        </div>
-        <div class="time-box">
-            <span class="time-val" id="seconds">00</span>
-            <span class="time-label">Secs</span>
+    <!-- Back Button -->
+    <div class="header">
+        <div class="back-btn" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i>
         </div>
     </div>
 
-    <a href="home.html" class="btn">Go Back</a>
+    <!-- BACKGROUND ANIMATION TEXT -->
+    <div class="animation-wrapper">
+        <!-- Row 1 -->
+        <div class="row move-left">
+            <div>
+                <span class="text-gold">SHOPPING28</span> 
+                <span class="text-outline">CREATOR YOUR ON FUTURE JOURNEY</span>
+                <span class="text-gold">SHOPPING28</span> 
+                <span class="text-outline">CREATOR YOUR ON FUTURE JOURNEY</span>
+            </div>
+            <div>
+                <span class="text-gold">SHOPPING28</span> 
+                <span class="text-outline">CREATOR YOUR ON FUTURE JOURNEY</span>
+                <span class="text-gold">SHOPPING28</span> 
+                <span class="text-outline">CREATOR YOUR ON FUTURE JOURNEY</span>
+            </div>
+        </div>
 
-    <script>
-        // 1. Set the date we're counting down to (21 days from now)
-        const now = new Date().getTime();
-        const countDownDate = new Date(now + (21 * 24 * 60 * 60 * 1000)).getTime();
+        <!-- Row 2 -->
+        <div class="row move-right">
+            <div>
+                <span class="text-outline">SO HARD WORK AND CREATE</span>
+                <span class="text-gold">MARKETING FUTURE</span>
+                <span class="text-outline">SO HARD WORK AND CREATE</span>
+                <span class="text-gold">MARKETING FUTURE</span>
+            </div>
+            <div>
+                <span class="text-outline">SO HARD WORK AND CREATE</span>
+                <span class="text-gold">MARKETING FUTURE</span>
+                <span class="text-outline">SO HARD WORK AND CREATE</span>
+                <span class="text-gold">MARKETING FUTURE</span>
+            </div>
+        </div>
 
-        // 2. Update the count down every 1 second
-        const x = setInterval(function() {
+        <!-- Row 3 -->
+        <div class="row move-left">
+            <div>
+                <span class="text-gold">SHOPPING28</span> 
+                <span class="text-outline">CREATOR YOUR ON FUTURE JOURNEY</span>
+                <span class="text-gold">SHOPPING28</span> 
+                <span class="text-outline">CREATOR YOUR ON FUTURE JOURNEY</span>
+            </div>
+            <div>
+                <span class="text-gold">SHOPPING28</span> 
+                <span class="text-outline">CREATOR YOUR ON FUTURE JOURNEY</span>
+                <span class="text-gold">SHOPPING28</span> 
+                <span class="text-outline">CREATOR YOUR ON FUTURE JOURNEY</span>
+            </div>
+        </div>
+        
+        <!-- Row 4 -->
+        <div class="row move-right">
+            <div>
+                <span class="text-outline">SO HARD WORK AND CREATE</span>
+                <span class="text-gold">MARKETING FUTURE</span>
+                <span class="text-outline">SO HARD WORK AND CREATE</span>
+                <span class="text-gold">MARKETING FUTURE</span>
+            </div>
+            <div>
+                <span class="text-outline">SO HARD WORK AND CREATE</span>
+                <span class="text-gold">MARKETING FUTURE</span>
+                <span class="text-outline">SO HARD WORK AND CREATE</span>
+                <span class="text-gold">MARKETING FUTURE</span>
+            </div>
+        </div>
 
-            const currentTime = new Date().getTime();
-            const distance = countDownDate - currentTime;
+          <!-- Row 5 -->
+          <div class="row move-left">
+            <div>
+                <span class="text-gold">SHOPPING28</span> 
+                <span class="text-outline">CREATOR YOUR ON FUTURE JOURNEY</span>
+                <span class="text-gold">SHOPPING28</span> 
+                <span class="text-outline">CREATOR YOUR ON FUTURE JOURNEY</span>
+            </div>
+            <div>
+                <span class="text-gold">SHOPPING28</span> 
+                <span class="text-outline">CREATOR YOUR ON FUTURE JOURNEY</span>
+                <span class="text-gold">SHOPPING28</span> 
+                <span class="text-outline">CREATOR YOUR ON FUTURE JOURNEY</span>
+            </div>
+        </div>
+    </div>
 
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    <!-- Overlay to dim background -->
+    <div class="overlay"></div>
 
-            document.getElementById("days").innerHTML = days;
-            document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
-            document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
-            document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
+    <!-- MAIN CARD -->
+    <div class="vip-card">
+        <div class="icon-box">
+            <i class="fas fa-crown"></i>
+        </div>
+        
+        <h2>VIP Club</h2>
+        <p>
+            Welcome to <b>Shopping28</b> VIP Zone.<br>
+            To build your future & unlock premium jobs, contact Admin.
+        </p>
 
-            if (distance < 0) {
-                clearInterval(x);
-                document.querySelector(".countdown").innerHTML = "CLUB IS OPEN!";
-            }
-        }, 1000);
-    </script>
+        <a href="https://t.me/RAFSAN_ART_CREATOR" target="_blank" class="tg-btn">
+            <i class="fab fa-telegram-plane"></i> Message Admin
+        </a>
+    </div>
 
 </body>
 </html>
