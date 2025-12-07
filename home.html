@@ -93,7 +93,6 @@
             <div class="lock-layer" id="lock_vip"><i class="fas fa-lock"></i><span>Activate First</span></div>
         </div>
         
-        <!-- UPDATED QUIZ CARD: Added unique ID 'lock_quiz' -->
         <div class="card" onclick="checkAccess('question_game.html')">
             <i class="fas fa-gamepad icon c-vip"></i><div>Quiz Game</div>
             <div class="lock-layer" id="lock_quiz"><i class="fas fa-lock"></i><span>Activate First</span></div>
@@ -107,10 +106,13 @@
             <i class="fas fa-calendar-alt icon" style="color:#fff;"></i><div>Monthly</div>
             <div class="lock-layer"><i class="fas fa-clock"></i><span>16 Days</span></div>
         </div>
-        <div class="card" onclick="window.location.href='vip_club.html'">
+
+        <!-- UPDATED VIP CLUB CARD: Now checks for activation -->
+        <div class="card" onclick="checkAccess('vip_club.html')">
             <i class="fas fa-gem icon" style="color:#f1c40f;"></i><div>VIP Club</div>
-            <div class="lock-layer"><i class="fas fa-clock"></i><span>21 Days</span></div>
+            <div class="lock-layer" id="lock_vip_club"><i class="fas fa-lock"></i><span>Activate First</span></div>
         </div>
+
     </div>
 
     <!-- Hidden audio trigger -->
@@ -185,8 +187,9 @@
         function updateUI(status) {
             const badge = document.getElementById('userStatus');
             const banner = document.getElementById('activateBanner');
-            // ADDED 'lock_quiz' TO THIS ARRAY
-            const locks = ['lock_task', 'lock_team', 'lock_withdraw', 'lock_vip', 'lock_quiz'];
+            
+            // ADDED 'lock_vip_club' TO THE LOCKS ARRAY
+            const locks = ['lock_task', 'lock_team', 'lock_withdraw', 'lock_vip', 'lock_quiz', 'lock_vip_club'];
 
             if (status === 'active') {
                 badge.innerText = "ACTIVE";
