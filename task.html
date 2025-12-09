@@ -3,148 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Tasks</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Task28 - Premium Earning</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; }
-        .header { display: flex; align-items: center; margin-bottom: 20px; }
-        .back { color: #aaa; text-decoration: none; font-size: 1.1rem; }
-        .balance-show { text-align: center; background: #1a1a2e; padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
-        .task-item { background: #1a1a2e; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,25F5,255,0.05); }
-        .task-left h4 { margin: 0 0 5px 0; }
-        .badge { background: rgba(0,242,96,0.1); color: #00f260; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; }
-        button.task-btn { border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; min-width: 110px; text-align: center; }
-        .start-btn { background: linear-gradient(45deg, #00f260, #0575E6); color: white; }
-        .wait-btn { background: #4a4a4a; color: #ccc; cursor: not-allowed; font-size: 0.9rem; }
-        #toast { visibility: hidden; min-width: 250px; background-color: #00f260; color: #000; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 1; bottom: 30px; left: 50%; transform: translateX(-50%); font-weight: bold; }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        /* --- RESET & BASIC SETUP --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #0f0c29;
+            background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- ANIMATED BACKGROUND BUBBLES --- */
+        .circles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Behind everything */
+        }
+
+        .circles li {
+            position: absolute;
+            display: block;
+            list-style: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            animation: animate 25s linear infinite;
+            bottom: -150px;
+            border-radius: 50%;
+        }
+
+        .circles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+        .circles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+        .circles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+        .circles li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+        .circles li:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+        .circles li:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+        .circles li:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+        .circles li:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
+        .circles li:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
+        .circles li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+
+        @keyframes animate {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+        }
+
+        /* --- GLASS HEADER --- */
+        header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .home-btn {
+            text-decoration: none;
+            color: #fff;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
+        }
+
+        .home-btn:hover {
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+            padding-bottom: 70px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        /* --- GLASS CARD --- */
+        .container {
+            padding: 20px;
+            margin-top: -50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff4757;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+        }
+
+        .price-tag {
+            font-size: 45px;
+            font-weight: 700;
+            color: #2ed573;
+            margin: 15px 0;
+            text-shadow: 0 0 20px rgba(46, 213, 115, 0.4);
+        }
+
+        .price-tag span {
+            font-size: 16px;
+            color: rgba(255,255,255,0.6);
+            font-weight: 400;
+        }
+
+        .task-info {
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.08); /* Transparent white */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .task-item i {
+            font-size: 22px;
+            color: #00f2fe;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+        }
+        
+        .task-item strong {
+            display: block;
+            color: #fff;
+        }
+
+        .task-item p {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* --- NEON BUTTON --- */
+        .cta-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, #11998e, #38ef7d);
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            box-shadow: 0 0 20px rgba(56, 239, 125, 0.4);
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+
+        .cta-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(56, 239, 125, 0.7);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+        }
+
+        /* Mobile Fix */
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 2rem; }
+            .glass-card { padding: 25px 20px; }
+        }
     </style>
 </head>
 <body>
-    <div class="header"><a href="home.html" class="back"><i class="fas fa-arrow-left"></i> Dashboard</a></div>
-    <div class="balance-show">
-        <small style="color:#aaa;">Your Balance</small>
-        <h2 style="margin:5px; color:#00f260;">৳ <span id="liveBal">0.00</span></h2>
+
+    <!-- Animated Background Bubbles -->
+    <ul class="circles">
+        <li></li><li></li><li></li><li></li><li></li>
+        <li></li><li></li><li></li><li></li><li></li>
+    </ul>
+
+    <!-- Navigation -->
+    <header>
+        <div class="logo">Task28</div>
+        <a href="home.html" class="home-btn">
+            <i class="fas fa-arrow-left"></i> Home
+        </a>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Start Earning Today</h1>
+        <p>Complete simple tasks and get paid instantly.</p>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="glass-card">
+            <div class="badge">Hot Offer</div>
+            
+            <h3>Create Gmail Account</h3>
+            <div class="price-tag">
+                8৳ <span>/ per Account</span>
+            </div>
+
+            <div class="task-info">
+                <div class="task-item">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <strong>Free Registration</strong>
+                        <p>No investment needed.</p>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <strong>Simple Task</strong>
+                        <p>Just create a verified Gmail.</p>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <i class="fas fa-wallet"></i>
+                    <div>
+                        <strong>Fast Payment</strong>
+                        <p>Withdraw your earnings easily.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main CTA Button -->
+            <a href="https://task28.github.io/-/" class="cta-btn">
+                Fast Register Now <i class="fas fa-arrow-right"></i>
+            </a>
+            
+            <p style="margin-top: 15px; font-size: 12px; color: rgba(255,255,255,0.4);">
+                *Terms and conditions apply.
+            </p>
+        </div>
     </div>
-    <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">Available Tasks</h3>
-    <div id="taskList"><p style="text-align:center; color:#666;">Loading tasks...</p></div>
-    <div id="toast"></div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script>
-        // --- ফাইনাল ডিবাগিং কোড ---
-        const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
-        let currentUser = null;
+    <footer>
+        <p>&copy; 2024 Task28. All rights reserved.</p>
+    </footer>
 
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                console.log("স্টেপ ১: ব্যবহারকারী সফলভাবে লগইন করেছে। UID:", user.uid);
-                currentUser = user;
-                loadBalance();
-                loadTasksForUser();
-            } else {
-                console.error("গুরুতর সমস্যা: ব্যবহারকারী লগইন করেনি। login_register.html এ পাঠানো হচ্ছে।");
-                window.location.href = 'login_register.html';
-            }
-        });
-
-        function loadBalance() {
-            if (!currentUser) return;
-            db.ref('users/' + currentUser.uid + '/balance').on('value', (snap) => {
-                document.getElementById('liveBal').innerText = (snap.val() || 0).toFixed(2);
-            });
-        }
-
-        async function loadTasksForUser() {
-            if (!currentUser) return;
-            const list = document.getElementById('taskList');
-            list.innerHTML = "";
-
-            const tasksSnapshot = await db.ref('tasks').once('value');
-            if (!tasksSnapshot.exists()) {
-                list.innerHTML = '<p>No tasks available.</p>'; return;
-            }
-            const allTasks = tasksSnapshot.val();
-
-            const completedRef = db.ref(`users/${currentUser.uid}/completed_tasks`);
-            console.log("স্টেপ ২: এই পথ থেকে ডাটা পড়া হচ্ছে:", completedRef.toString());
-            const completedSnapshot = await completedRef.once('value');
-            const completedTasks = completedSnapshot.val() || {};
-            console.log("স্টেপ ৩: ব্যবহারকারীর সম্পন্ন করা টাস্কের তালিকা:", completedTasks);
-
-            for (const key in allTasks) {
-                const t = allTasks[key];
-                const item = document.createElement('div');
-                item.className = 'task-item';
-                item.innerHTML = `<div class="task-left"><h4>${t.title}</h4><span class="badge">+ ৳${t.reward}</span></div><button class="task-btn" id="btn-${key}"></button>`;
-                list.appendChild(item);
-                updateButtonState(item.querySelector(`#btn-${key}`), key, t, completedTasks[key]);
-            }
-        }
-
-        function updateButtonState(btn, key, taskData, completionTime) {
-            if (completionTime) {
-                const timeLimit = 36 * 60 * 60 * 1000;
-                const timePassed = Date.now() - completionTime;
-                if (timePassed < timeLimit) {
-                    const remaining = timeLimit - timePassed;
-                    const h = Math.floor(remaining / 3600000);
-                    const m = Math.floor((remaining % 3600000) / 60000);
-                    btn.className = "task-btn wait-btn";
-                    btn.disabled = true;
-                    btn.innerText = `Wait ${h}h ${m}m`;
-                } else {
-                    setStartButton(btn, key, taskData);
-                }
-            } else {
-                setStartButton(btn, key, taskData);
-            }
-        }
-
-        function setStartButton(btn, key, taskData) {
-            btn.className = "task-btn start-btn";
-            btn.innerText = "START";
-            btn.disabled = false;
-            btn.onclick = () => visitAndClaim(key, taskData.reward, taskData.link);
-        }
-
-        function visitAndClaim(key, reward, link) {
-            const btn = document.getElementById(`btn-${key}`);
-            btn.disabled = true;
-
-            if (link && link.startsWith('http')) window.open(link, '_blank');
-
-            const completedRef = db.ref(`users/${currentUser.uid}/completed_tasks/${key}`);
-            console.log("স্টেপ ৪: এই পথে ডাটা লেখার চেষ্টা করা হচ্ছে:", completedRef.toString());
-
-            db.ref('users/' + currentUser.uid + '/balance').transaction((bal) => (bal || 0) + reward)
-            .then(() => completedRef.set(firebase.database.ServerValue.TIMESTAMP))
-            .then(() => {
-                console.log("স্টেপ ৫ (সফল): ডাটাবেসে সফলভাবে লেখা হয়েছে।");
-                showToast(`৳${reward} claimed!`);
-                loadTasksForUser(); // সফল হলে লিস্ট আবার লোড হবে
-            })
-            .catch((error) => {
-                console.error("স্টেপ ৫ (ব্যর্থ): ডাটাবেসে লিখতে সমস্যা হয়েছে!", error.message);
-                showToast("Error! Claim Failed.");
-                btn.disabled = false;
-            });
-        }
-
-        function showToast(message) {
-            const x = document.getElementById("toast");
-            x.innerText = message;
-            x.className = "show";
-            setTimeout(() => { x.className = x.className.replace("show", ""); }, 3000);
-        }
-    </script>
 </body>
 </html>
