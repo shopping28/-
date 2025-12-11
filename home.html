@@ -59,6 +59,7 @@
 
     <div class="header">
         <div>
+            <!-- লোডিং আইডি এখানে ঠিক আছে -->
             <h2 style="margin:0;">Hi, <span id="userName">Loading...</span></h2>
             <span id="userStatus" class="badge inact">Checking...</span>
         </div>
@@ -107,7 +108,6 @@
             <div class="lock-layer"><i class="fas fa-clock"></i><span>16 Days</span></div>
         </div>
 
-        <!-- UPDATED VIP CLUB CARD: Now checks for activation -->
         <div class="card" onclick="checkAccess('vip_club.html')">
             <i class="fas fa-gem icon" style="color:#f1c40f;"></i><div>VIP Club</div>
             <div class="lock-layer" id="lock_vip_club"><i class="fas fa-lock"></i><span>Activate First</span></div>
@@ -115,16 +115,30 @@
 
     </div>
 
-    <!-- Hidden audio trigger -->
     <div id="voiceTrigger" style="display:none;"></div>
 
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
-        firebase.initializeApp(firebaseConfig);
+        // আপনার কনফিগারেশন
+        const firebaseConfig = { 
+            apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", 
+            authDomain: "art-paid-work001.firebaseapp.com", 
+            databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", 
+            projectId: "art-paid-work001", 
+            storageBucket: "art-paid-work001.firebasestorage.app", 
+            messagingSenderId: "524647364992", 
+            appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" 
+        };
+        
+        // ফায়ারবেস ইনিশিয়ালাইজেশন চেক
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
         const auth = firebase.auth();
         const db = firebase.database();
 
@@ -132,7 +146,7 @@
         let isVoiceReady = false;
         let pendingMsg = "";
 
-        // --- AUDIO & USER DATA ---
+        // --- AUDIO FUNCTIONS ---
         function unlockAudio() {
             if(isVoiceReady) return;
             const synth = window.speechSynthesis;
@@ -153,33 +167,61 @@
             window.speechSynthesis.speak(utterance);
         }
 
+        // --- MAIN LOGIC ---
         auth.onAuthStateChanged((user) => {
             if (user) {
+                console.log("User Logged In:", user.uid);
+
+                // ইউজারের ডাটা ফেচ করা
                 db.ref('users/' + user.uid).on('value', (snapshot) => {
                     const data = snapshot.val();
-                    if(data) {
-                        document.getElementById('userName').innerText = data.firstName;
-                        currentUserStatus = data.status;
-                        updateUI(currentUserStatus);
-                        if(data.profilePic) document.getElementById('profileBtn').innerHTML = `<img src="${data.profilePic}">`;
+                    console.log("Database Data:", data); // কনসোলে ডাটা চেক করুন
 
+                    if(data) {
+                        // যদি ডাটা পাওয়া যায়
+                        // 1. নাম সেট করা (যদি firstName না থাকে তবে 'User' দেখাবে)
+                        document.getElementById('userName').innerText = data.firstName || "User";
+                        
+                        // 2. স্ট্যাটাস আপডেট
+                        currentUserStatus = data.status || 'inactive';
+                        updateUI(currentUserStatus);
+
+                        // 3. প্রোফাইল পিকচার
+                        if(data.profilePic) {
+                            document.getElementById('profileBtn').innerHTML = `<img src="${data.profilePic}">`;
+                        }
+
+                        // 4. ভয়েস মেসেজ
                         if(currentUserStatus === 'active') {
                             if(!localStorage.getItem('activation_voice_played')) {
                                 speak("Your account active successful so start network marketing journey");
                                 localStorage.setItem('activation_voice_played', 'true');
                             }
                         }
+                    } else {
+                        // যদি ডাটাবেসে এই ইউজারের কোনো ডাটা না থাকে
+                        console.log("Data is null for this user");
+                        document.getElementById('userName').innerText = "No Data";
+                        updateUI('inactive');
                     }
+                }, (error) => {
+                    // যদি ডাটাবেস এরর দেয়
+                    console.error("Database Error:", error);
+                    alert("Data Load Error: " + error.message);
                 });
 
+                // উইথড্র রিকোয়েস্ট চেক
                 db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).on('child_changed', (snapshot) => {
                     const req = snapshot.val();
-                    if(req.status === 'approved') {
+                    if(req && req.status === 'approved') {
                         speak("Your withdraw successfully accept then you work first and more withdraw and more earning best of luck for shopping28 and the art community");
                         if("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
                     }
                 });
+
             } else {
+                // ইউজার লগইন না থাকলে
+                console.log("No user logged in");
                 window.location.href = 'login_register.html';
             }
         });
@@ -187,14 +229,16 @@
         function updateUI(status) {
             const badge = document.getElementById('userStatus');
             const banner = document.getElementById('activateBanner');
-            
-            // ADDED 'lock_vip_club' TO THE LOCKS ARRAY
             const locks = ['lock_task', 'lock_team', 'lock_withdraw', 'lock_vip', 'lock_quiz', 'lock_vip_club'];
+
+            // UI Elements আছে কিনা চেক করে নেওয়া ভালো, যাতে এরর না দেয়
+            if(!badge || !banner) return;
 
             if (status === 'active') {
                 badge.innerText = "ACTIVE";
                 badge.className = "badge act";
                 banner.style.display = 'none';
+                
                 locks.forEach(id => {
                     const el = document.getElementById(id);
                     if(el) el.style.display = 'none';
@@ -203,6 +247,7 @@
                 badge.innerText = "INACTIVE";
                 badge.className = "badge inact";
                 banner.style.display = 'flex';
+                
                 locks.forEach(id => {
                     const el = document.getElementById(id);
                     if(el) el.style.display = 'flex';
