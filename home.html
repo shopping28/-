@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Dashboard</title>
+    <title>Dashboard | Colorful Premium</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* === THEME VARIABLES === */
+        /* === COLORFUL THEME VARIABLES === */
         :root {
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.2);
             --text-white: #ffffff;
+            --text-gray: #e0e0e0;
             --neon-blue: #00f2ff;
+            --neon-pink: #ff0099;
+            --neon-purple: #9d00ff;
         }
 
         body {
@@ -20,137 +25,141 @@
             color: var(--text-white); 
             min-height: 100vh;
             font-family: 'Outfit', sans-serif;
-            background: #0f0c29; 
+            /* Animated Gradient Background */
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #3a1c71, #d76d77, #ffaf7b);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* === BACKGROUND GRAPHICS (ANIMATED BLOBS) === */
-        .bg-blob {
-            position: fixed;
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Animated Glowing Orbs (Floating Colors) */
+        .orb {
+            position: absolute;
             border-radius: 50%;
-            filter: blur(80px);
+            filter: blur(60px);
             z-index: -1;
             opacity: 0.6;
-            animation: floatBlob 10s infinite alternate ease-in-out;
+            animation: float 10s infinite alternate;
         }
-        
-        .blob-1 { top: -100px; left: -50px; width: 300px; height: 300px; background: #764ba2; }
-        .blob-2 { bottom: 10%; right: -50px; width: 350px; height: 350px; background: #005c97; animation-delay: 2s; }
-        .blob-3 { top: 40%; left: 30%; width: 200px; height: 200px; background: #ff0084; opacity: 0.3; animation-delay: 4s; }
+        .orb-1 { width: 200px; height: 200px; background: var(--neon-purple); top: 10%; left: -50px; }
+        .orb-2 { width: 250px; height: 250px; background: var(--neon-blue); bottom: 20%; right: -60px; animation-delay: 2s; }
+        .orb-3 { width: 150px; height: 150px; background: var(--neon-pink); top: 40%; left: 40%; animation-delay: 4s; opacity: 0.4; }
 
-        @keyframes floatBlob {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(30px, -30px) scale(1.1); }
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-40px) scale(1.1); }
         }
 
         /* === HEADER === */
         .header {
-            padding: 25px 25px; 
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
+            padding: 20px 25px; 
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
             display: flex; 
             justify-content: space-between; 
             align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid var(--glass-border);
             position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
         
-        .header h2 { font-size: 1.6rem; font-weight: 800; margin: 0; }
+        .header h2 { font-size: 1.4rem; font-weight: 800; margin: 0; }
         .header h2 span { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
 
-        .badge { padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; display: inline-block; margin-top: 5px; letter-spacing: 1px; }
-        .inact { background: #ff4757; color: white; box-shadow: 0 0 15px #ff4757; }
-        .act { background: #2ed573; color: white; box-shadow: 0 0 15px #2ed573; }
+        /* === BADGE === */
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; display: inline-block; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .inact { background: #ff4d4d; color: white; box-shadow: 0 0 15px #ff4d4d; }
+        .act { background: #00f260; color: #00441b; box-shadow: 0 0 15px #00f260; }
 
+        /* === PROFILE PIC === */
         .profile-btn {
-            width: 55px; height: 55px; 
-            background: rgba(255,255,255,0.1); border-radius: 50%;
+            width: 50px; height: 50px; 
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
             display: flex; justify-content: center; align-items: center; 
-            border: 2px solid rgba(255,255,255,0.5); cursor: pointer;
-            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+            border: 2px solid white; 
+            cursor: pointer; overflow: hidden;
+            box-shadow: 0 0 15px rgba(255,255,255,0.3);
+            transition: 0.3s;
         }
-        .profile-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .profile-btn:active { transform: scale(0.9); }
+        .profile-btn img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* === LIST CONTAINER === */
-        .list-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px; /* Gap increased */
-            padding: 25px 20px;
+        /* === ACTIVATE BANNER === */
+        .activate-box {
+            margin: 25px 20px; padding: 20px; 
+            background: linear-gradient(135deg, #ff0099, #493240);
+            border-radius: 20px; 
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; 
+            box-shadow: 0 10px 20px rgba(255, 0, 153, 0.4);
+            border: 1px solid rgba(255,255,255,0.3);
+            position: relative; overflow: hidden;
         }
-
-        /* === BIGGER WIDE CARD STYLE === */
-        .wide-card {
-            width: 100%;
-            padding: 35px 30px; /* SIZE INCREASED HERE */
-            box-sizing: border-box;
-            border-radius: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between; 
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4); /* Deeper shadow */
-            border: 1px solid rgba(255,255,255,0.15);
-            transition: transform 0.2s ease;
+        .activate-box::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 3s infinite;
         }
+        @keyframes shimmer { 0% {left: -100%;} 100% {left: 200%;} }
 
-        .wide-card:active { transform: scale(0.96); }
-
-        .card-content { display: flex; align-items: center; gap: 20px; z-index: 2; }
+        /* === GRID & CARDS === */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; }
         
-        /* Bigger Icons and Text */
-        .card-icon { font-size: 2.5rem; color: white; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
-        .card-text { font-size: 1.4rem; font-weight: 800; color: white; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        
-        .arrow-icon { font-size: 1.2rem; color: rgba(255,255,255,0.8); z-index: 2; }
-
-        /* === PREMIUM GRADIENTS === */
-        .bg-activate { background: linear-gradient(135deg, #FF0080 0%, #7928CA 100%); }
-        .bg-task { background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%); }
-        .bg-team { background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); } /* Fresh Green */
-        .bg-with { background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%); } /* Blue */
-        .bg-vip { background: linear-gradient(135deg, #F2994A 0%, #F2C94C 100%); } /* Gold */
-        .bg-quiz { background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%); } /* Deep Purple */
-        .bg-time { background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%); } /* Aqua Deep */
-        .bg-club { background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%); } /* Orange Pink */
-
-        /* === ANIMATIONS (Selight / Shine) === */
-        .shine-anim::before {
-            content: '';
-            position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
-            transform: skewX(-25deg);
-            animation: shine 3.5s infinite;
-            z-index: 1;
+        .card {
+            background: var(--glass-bg); 
+            padding: 20px 10px; 
+            border-radius: 20px; 
+            text-align: center;
+            border: 1px solid var(--glass-border); 
+            position: relative; overflow: hidden; 
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-
-        .float-anim { animation: float 6s ease-in-out infinite; }
         
-        @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .card:hover { transform: translateY(-5px); border-color: var(--neon-blue); box-shadow: 0 0 20px rgba(0, 242, 255, 0.3); }
+        .card:active { transform: scale(0.95); }
+
+        .card i.icon { font-size: 2.2rem; margin-bottom: 10px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
+        
+        .card div { font-size: 0.9rem; font-weight: 600; color: var(--text-white); letter-spacing: 0.5px; }
+
+        /* Colorful Icons */
+        .c-task { color: #ffe259; background: linear-gradient(to bottom, #ffe259, #ffa751); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .c-team { color: #56CCF2; background: linear-gradient(to bottom, #56CCF2, #2F80ED); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .c-with { color: #00f260; background: linear-gradient(to bottom, #00f260, #0575E6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .c-vip { color: #DA22FF; background: linear-gradient(to bottom, #DA22FF, #9733EE); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         /* === LOCK LAYER === */
         .lock-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.7); 
-            display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(4px); z-index: 10;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px); z-index: 10; border-radius: 20px;
         }
-        .lock-layer i { font-size: 1.5rem; color: #ff6b6b; margin-right: 10px; }
-        .lock-layer span { font-size: 1rem; color: #fff; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+        .lock-layer i { font-size: 1.5rem; color: #ff4d4d; margin-bottom: 5px; animation: shake 2s infinite; }
+        @keyframes shake { 0%, 100% {transform: rotate(0deg);} 25% {transform: rotate(-10deg);} 75% {transform: rotate(10deg);} }
+        .lock-layer span { font-size: 0.7rem; color: #fff; font-weight: bold; }
 
+        /* Particles Container */
+        #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none; }
     </style>
 </head>
 <body onclick="unlockAudio()">
 
-    <!-- BACKGROUND GRAPHICS (Glowing Blobs) -->
-    <div class="bg-blob blob-1"></div>
-    <div class="bg-blob blob-2"></div>
-    <div class="bg-blob blob-3"></div>
+    <!-- Background Elements -->
+    <div id="particles-js"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
 
     <div class="header">
         <div>
@@ -162,112 +171,83 @@
         </div>
     </div>
 
-    <!-- LIST CONTAINER -->
-    <div class="list-container">
-
-        <!-- ACTIVATE -->
-        <div id="activateBanner" class="wide-card bg-activate shine-anim float-anim" onclick="window.location.href='account_active.html'">
-            <div class="card-content">
-                <i class="fas fa-rocket card-icon"></i>
-                <div>
-                    <div class="card-text">ACTIVATE NOW</div>
-                    <small style="color:rgba(255,255,255,0.9); font-size:0.85rem; font-weight:600;">Start Earning Journey</small>
-                </div>
-            </div>
-            <i class="fas fa-chevron-right arrow-icon"></i>
+    <div id="activateBanner" class="activate-box" onclick="window.location.href='account_active.html'">
+        <div>
+            <b style="font-size:1.2rem; color: white;">ACTIVATE NOW</b><br>
+            <small style="color: #eee;">Start Your Earning Journey</small>
         </div>
+        <i class="fas fa-rocket fa-spin" style="font-size: 1.8rem; --fa-animation-duration: 3s; color: white;"></i>
+    </div>
 
-        <!-- DAILY TASK -->
-        <div class="wide-card bg-task shine-anim" onclick="checkAccess('task.html')">
-            <div class="card-content">
-                <i class="fas fa-clipboard-check card-icon"></i>
-                <div class="card-text">Daily Task</div>
-            </div>
+    <div class="grid">
+        <div class="card" onclick="checkAccess('task.html')">
+            <i class="fas fa-clipboard-check icon c-task"></i><div>Daily Task</div>
             <div class="lock-layer" id="lock_task"><i class="fas fa-lock"></i><span>Locked</span></div>
-            <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
-
-        <!-- MY TEAM -->
-        <div class="wide-card bg-team shine-anim" onclick="checkAccess('my_team.html')">
-            <div class="card-content">
-                <i class="fas fa-users card-icon"></i>
-                <div class="card-text">My Team</div>
-            </div>
+        <div class="card" onclick="checkAccess('my_team.html')">
+            <i class="fas fa-users icon c-team"></i><div>My Team</div>
             <div class="lock-layer" id="lock_team"><i class="fas fa-lock"></i><span>Locked</span></div>
-            <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
-
-        <!-- WITHDRAW -->
-        <div class="wide-card bg-with shine-anim" onclick="checkAccess('withdraw.html')">
-            <div class="card-content">
-                <i class="fas fa-wallet card-icon"></i>
-                <div class="card-text">Withdraw</div>
-            </div>
+        <div class="card" onclick="checkAccess('withdraw.html')">
+            <i class="fas fa-wallet icon c-with"></i><div>Withdraw</div>
             <div class="lock-layer" id="lock_withdraw"><i class="fas fa-lock"></i><span>Locked</span></div>
-            <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
-
-        <!-- VIP LEVEL -->
-        <div class="wide-card bg-vip shine-anim" onclick="checkAccess('vip_level.html')">
-            <div class="card-content">
-                <i class="fas fa-crown card-icon"></i>
-                <div class="card-text">VIP Level</div>
-            </div>
+        <div class="card" onclick="checkAccess('vip_level.html')">
+            <i class="fas fa-crown icon c-vip"></i><div>VIP Level</div>
             <div class="lock-layer" id="lock_vip"><i class="fas fa-lock"></i><span>Locked</span></div>
-            <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
-
-        <!-- QUIZ GAME -->
-        <div class="wide-card bg-quiz shine-anim" onclick="checkAccess('question_game.html')">
-            <div class="card-content">
-                <i class="fas fa-gamepad card-icon"></i>
-                <div class="card-text">Quiz Game</div>
-            </div>
+        
+        <div class="card" onclick="checkAccess('question_game.html')">
+            <i class="fas fa-gamepad icon" style="color: #ff9966;"></i><div>Quiz Game</div>
             <div class="lock-layer" id="lock_quiz"><i class="fas fa-lock"></i><span>Locked</span></div>
-            <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
-
-        <!-- WEEKLY -->
-        <div class="wide-card bg-time shine-anim" onclick="window.location.href='weekly.html'">
-            <div class="card-content">
-                <i class="fas fa-calendar-week card-icon"></i>
-                <div class="card-text">Weekly</div>
-            </div>
+        
+        <div class="card" onclick="window.location.href='weekly.html'">
+            <i class="fas fa-gift icon" style="color: #ff5e62;"></i><div>Weekly</div>
             <div class="lock-layer"><i class="fas fa-clock"></i><span>16 Days</span></div>
-            <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
-
-        <!-- MONTHLY -->
-        <div class="wide-card bg-time shine-anim" onclick="window.location.href='monthly.html'">
-            <div class="card-content">
-                <i class="fas fa-calendar-alt card-icon"></i>
-                <div class="card-text">Monthly</div>
-            </div>
+        <div class="card" onclick="window.location.href='monthly.html'">
+            <i class="fas fa-calendar-alt icon" style="color: #56CCF2;"></i><div>Monthly</div>
             <div class="lock-layer"><i class="fas fa-clock"></i><span>16 Days</span></div>
-            <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
 
-        <!-- VIP CLUB -->
-        <div class="wide-card bg-club shine-anim" onclick="checkAccess('vip_club.html')">
-            <div class="card-content">
-                <i class="fas fa-gem card-icon"></i>
-                <div class="card-text">VIP Club</div>
-            </div>
+        <div class="card" onclick="checkAccess('vip_club.html')">
+            <i class="fas fa-gem icon" style="color:#f1c40f;"></i><div>VIP Club</div>
             <div class="lock-layer" id="lock_vip_club"><i class="fas fa-lock"></i><span>Locked</span></div>
-            <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
-
     </div>
 
     <div id="voiceTrigger" style="display:none;"></div>
 
-    <!-- Firebase SDK (NO CHANGE) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <!-- Particles JS Library -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
     <script>
-        /* === JAVASCRIPT LOGIC (SAME) === */
+        // --- 1. PARTICLES ANIMATION CONFIG (UPDATED) ---
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 60, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#ffffff" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.3, "random": true },
+                "size": { "value": 3, "random": true },
+                "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.2, "width": 1 },
+                "move": { "enable": true, "speed": 2, "direction": "none", "random": true, "out_mode": "out" }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": { "onhover": { "enable": true, "mode": "repulse" }, "onclick": { "enable": true, "mode": "push" } },
+                "modes": { "repulse": { "distance": 100, "duration": 0.4 } }
+            },
+            "retina_detect": true
+        });
+
+        // --- 2. FIREBASE & LOGIC (NO CHANGES) ---
         const firebaseConfig = { 
             apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", 
             authDomain: "art-paid-work001.firebaseapp.com", 
@@ -316,15 +296,19 @@
                         currentUserStatus = data.status || 'inactive';
                         updateUI(currentUserStatus);
                         if(data.profilePic) { document.getElementById('profileBtn').innerHTML = `<img src="${data.profilePic}">`; }
-                        if(currentUserStatus === 'active' && !localStorage.getItem('activation_voice_played')) {
-                            speak("Your account active successful so start network marketing journey");
-                            localStorage.setItem('activation_voice_played', 'true');
+
+                        if(currentUserStatus === 'active') {
+                            if(!localStorage.getItem('activation_voice_played')) {
+                                speak("Your account active successful so start network marketing journey");
+                                localStorage.setItem('activation_voice_played', 'true');
+                            }
                         }
                     } else {
                         document.getElementById('userName').innerText = "No Data";
                         updateUI('inactive');
                     }
                 });
+
                 db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).on('child_changed', (snapshot) => {
                     const req = snapshot.val();
                     if(req && req.status === 'approved') {
