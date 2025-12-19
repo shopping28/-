@@ -3,39 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Forsage Style</title>
-    <!-- Google Fonts: Inter (Forsage uses similar fonts) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Dashboard | ShoppingFree</title>
+    <!-- Google Fonts: Inter for Tech Look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- FORSAGE INSPIRED THEME --- */
+        /* === THEME VARIABLES === */
         :root {
-            --bg-color: #0d0d0d;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --primary-gradient: linear-gradient(90deg, #5c24fc 0%, #9d00ff 100%);
-            --active-glow: #00ff9d;
-            --inactive-glow: #ff2b2b;
+            --hue-1: 270; /* Primary Hue */
+            --hue-2: 340; /* Secondary Hue */
+            --bg-base: hsl(var(--hue-1), 30%, 10%);
+            --bg-gradient: linear-gradient(to bottom, hsl(var(--hue-1), 40%, 12%), hsl(var(--hue-2), 30%, 8%));
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --primary-glow: hsl(var(--hue-1), 70%, 50%);
+            --secondary-glow: hsl(var(--hue-2), 70%, 50%);
             --text-main: #ffffff;
             --text-sec: #8da1c5;
         }
 
-        body { 
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(92, 36, 252, 0.2) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(157, 0, 255, 0.15) 0%, transparent 40%);
-            font-family: 'Inter', sans-serif; 
+        body {
             margin: 0; 
             padding-bottom: 90px; 
             color: var(--text-main); 
             min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-base);
+            background-image: var(--bg-gradient);
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
-        
-        /* HEADER DESIGN */
+
+        /* === HEADER === */
         .header {
             padding: 20px 25px; 
-            background: rgba(13, 13, 13, 0.8);
+            background: rgba(13, 13, 13, 0.7);
             backdrop-filter: blur(15px);
             display: flex; 
             justify-content: space-between; 
@@ -44,25 +45,27 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
         
         .header h2 {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 700;
             letter-spacing: 0.5px;
+            margin: 0;
         }
 
         .header h2 span {
-            background: linear-gradient(to right, #fff, #a5a5a5);
+            background: linear-gradient(to right, var(--primary-glow), var(--secondary-glow));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
-        /* STATUS BADGE */
+
+        /* === STATUS BADGE === */
         .badge { 
             padding: 6px 14px; 
             border-radius: 30px; 
-            font-size: 0.65rem; 
+            font-size: 0.7rem; 
             font-weight: 800; 
             margin-top: 6px; 
             display: inline-block; 
@@ -82,44 +85,47 @@
             box-shadow: 0 0 10px rgba(0, 255, 157, 0.2);
         }
 
-        /* PROFILE PICTURE */
+        /* === PROFILE PICTURE === */
         .profile-btn {
             width: 48px; height: 48px; 
-            background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 50%;
             display: flex; justify-content: center; align-items: center; 
-            border: 2px solid rgba(255,255,255,0.1); 
+            border: 1px solid rgba(255,255,255,0.1); 
             cursor: pointer; overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
         }
-        .profile-btn:active { transform: scale(0.9); }
+        .profile-btn:hover { transform: scale(1.05); }
         .profile-btn img { width: 100%; height: 100%; object-fit: cover; }
         .profile-btn i { color: #8da1c5; font-size: 1.2rem; }
 
-        /* ACTIVATION BANNER */
+        /* === ACTIVATE BANNER === */
         .activate-box {
             margin: 25px 20px; 
             padding: 20px; 
-            background: var(--primary-gradient);
+            background: linear-gradient(to right, var(--primary-glow), var(--secondary-glow));
             border-radius: 16px; 
             display: flex; justify-content: space-between; align-items: center;
             position: relative; overflow: hidden;
             cursor: pointer; 
-            box-shadow: 0 10px 25px rgba(92, 36, 252, 0.3);
+            box-shadow: 0 10px 25px rgba(157, 0, 255, 0.3);
             border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
         }
-        .activate-box::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
-            animation: rotate 6s linear infinite;
-        }
-        @keyframes rotate { 0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);} }
+        .activate-box:hover { transform: translateY(-3px); }
         
         .activate-box div { position: relative; z-index: 2; }
-        .activate-box i { position: relative; z-index: 2; font-size: 1.5rem; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 50%; }
+        .activate-box i { 
+            position: relative; z-index: 2; 
+            font-size: 1.5rem; 
+            background: rgba(255,255,255,0.2); 
+            padding: 10px; 
+            border-radius: 50%; 
+            color: white;
+        }
 
-        /* GRID LAYOUT */
+        /* === GRID LAYOUT === */
         .grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -127,7 +133,7 @@
             padding: 0 20px; 
         }
         
-        /* CARD DESIGN (Forsage Style) */
+        /* === CARD DESIGN === */
         .card {
             background: var(--card-bg); 
             padding: 25px 15px; 
@@ -136,7 +142,7 @@
             border: 1px solid var(--card-border); 
             position: relative; 
             overflow: hidden; 
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease, border-color 0.3s ease;
             backdrop-filter: blur(5px);
             display: flex;
             flex-direction: column;
@@ -147,33 +153,31 @@
         
         .card:hover { 
             border-color: rgba(255,255,255,0.3); 
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateY(-3px);
+            transform: translateY(-5px);
         }
-        .card:active { transform: scale(0.98); }
 
-        /* Icons with Glow */
+        /* === ICONS === */
         .card i.icon { 
-            font-size: 1.8rem; 
+            font-size: 2rem; 
             margin-bottom: 12px; 
-            filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
         
         .card div {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--text-sec);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        /* COLORS FOR ICONS */
-        .c-task { color: #f9d423; background: -webkit-linear-gradient(#f9d423, #ff4e50); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } 
-        .c-team { color: #00c6ff; background: -webkit-linear-gradient(#00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } 
-        .c-with { color: #00f260; background: -webkit-linear-gradient(#00f260, #0575e6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } 
-        .c-vip { color: #833ab4; background: -webkit-linear-gradient(#fd1d1d, #833ab4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* === ICON COLORS === */
+        .c-task { color: #f9d423; } 
+        .c-team { color: #00c6ff; } 
+        .c-with { color: #00f260; } 
+        .c-vip { color: #e056fd; }
 
-        /* LOCK LAYER */
+        /* === LOCK LAYER === */
         .lock-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(13, 13, 13, 0.85); 
@@ -185,7 +189,7 @@
             font-size: 1.4rem; 
             color: #ff4d4d; 
             margin-bottom: 8px; 
-            filter: drop-shadow(0 0 10px red);
+            text-shadow: 0 0 10px red;
         }
         .lock-layer span { 
             font-size: 0.7rem; 
@@ -194,17 +198,28 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
-        /* Remove default link styles if any */
-        a { text-decoration: none; }
 
+        /* === ANIMATED BACKGROUND (Particles) === */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1; /* Behind all content */
+        }
+
+        /* === UTILITIES === */
+        a { text-decoration: none; color: inherit; }
     </style>
 </head>
-<body onclick="unlockAudio()">
+<body>
+
+    <!-- Animated Particles Background -->
+    <div id="particles-js"></div>
 
     <div class="header">
         <div>
-            <!-- লোডিং আইডি এখানে ঠিক আছে -->
             <h2 style="margin:0;">Hi, <span id="userName">Loading...</span></h2>
             <span id="userStatus" class="badge inact">Checking...</span>
         </div>
@@ -216,59 +231,61 @@
     <div id="activateBanner" class="activate-box" onclick="window.location.href='account_active.html'">
         <div>
             <b style="font-size:1.1rem; color: white;">ACTIVATE ACCOUNT</b><br>
-            <small style="color: rgba(255,255,255,0.8);">Start Your Earnings Now</small>
+            <small style="color: rgba(255,255,255,0.8);">Unlock All Features Now</small>
         </div>
         <i class="fas fa-rocket" style="color: white;"></i>
     </div>
 
     <div class="grid">
-        <div class="card" onclick="checkAccess('task.html')">
+        <a href="#" class="card" onclick="checkAccess('task.html')">
             <i class="fas fa-clipboard-list icon c-task"></i><div>Daily Task</div>
             <div class="lock-layer" id="lock_task"><i class="fas fa-lock"></i><span>Locked</span></div>
-        </div>
-        <div class="card" onclick="checkAccess('my_team.html')">
+        </a>
+        <a href="#" class="card" onclick="checkAccess('my_team.html')">
             <i class="fas fa-users icon c-team"></i><div>My Team</div>
             <div class="lock-layer" id="lock_team"><i class="fas fa-lock"></i><span>Locked</span></div>
-        </div>
-        <div class="card" onclick="checkAccess('withdraw.html')">
+        </a>
+        <a href="#" class="card" onclick="checkAccess('withdraw.html')">
             <i class="fas fa-wallet icon c-with"></i><div>Withdraw</div>
             <div class="lock-layer" id="lock_withdraw"><i class="fas fa-lock"></i><span>Locked</span></div>
-        </div>
-        <div class="card" onclick="checkAccess('vip_level.html')">
+        </a>
+        <a href="#" class="card" onclick="checkAccess('vip_level.html')">
             <i class="fas fa-crown icon c-vip"></i><div>VIP Level</div>
             <div class="lock-layer" id="lock_vip"><i class="fas fa-lock"></i><span>Locked</span></div>
-        </div>
+        </a>
         
-        <div class="card" onclick="checkAccess('question_game.html')">
-            <i class="fas fa-gamepad icon" style="color: #ff00cc;"></i><div>Quiz Game</div>
+        <a href="#" class="card" onclick="checkAccess('question_game.html')">
+            <i class="fas fa-gamepad icon c-vip"></i><div>Quiz Game</div>
             <div class="lock-layer" id="lock_quiz"><i class="fas fa-lock"></i><span>Locked</span></div>
-        </div>
+        </a>
         
-        <div class="card" onclick="window.location.href='weekly.html'">
+        <a href="weekly.html" class="card">
             <i class="fas fa-calendar-week icon" style="color:#ffffff;"></i><div>Weekly</div>
             <div class="lock-layer"><i class="fas fa-clock"></i><span>16 Days</span></div>
-        </div>
-        <div class="card" onclick="window.location.href='monthly.html'">
+        </a>
+        <a href="monthly.html" class="card">
             <i class="fas fa-calendar-alt icon" style="color:#ffffff;"></i><div>Monthly</div>
             <div class="lock-layer"><i class="fas fa-clock"></i><span>16 Days</span></div>
-        </div>
+        </a>
 
-        <div class="card" onclick="checkAccess('vip_club.html')">
+        <a href="#" class="card" onclick="checkAccess('vip_club.html')">
             <i class="fas fa-gem icon" style="color:#f1c40f;"></i><div>VIP Club</div>
             <div class="lock-layer" id="lock_vip_club"><i class="fas fa-lock"></i><span>Locked</span></div>
-        </div>
-
+        </a>
     </div>
 
     <div id="voiceTrigger" style="display:none;"></div>
 
-    <!-- Firebase SDK (Jemon chilo temoni ache) -->
+    <!-- Firebase SDK (Keep as is) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <!-- Particles.js Library -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
     <script>
-        // আপনার কনফিগারেশন (যেইটা ছিল সেটাই রাখা হয়েছে)
+        /* === FIREBASE INITIALIZATION (Keep as is) === */
         const firebaseConfig = { 
             apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", 
             authDomain: "art-paid-work001.firebaseapp.com", 
@@ -279,7 +296,6 @@
             appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" 
         };
         
-        // ফায়ারবেস ইনিশিয়ালাইজেশন চেক
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -291,7 +307,7 @@
         let isVoiceReady = false;
         let pendingMsg = "";
 
-        // --- AUDIO FUNCTIONS ---
+        /* === AUDIO FUNCTIONS (Keep as is) === */
         function unlockAudio() {
             if(isVoiceReady) return;
             const synth = window.speechSynthesis;
@@ -312,12 +328,11 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // --- MAIN LOGIC (NO CHANGES) ---
+        /* === FIREBASE AUTH (Keep as is) === */
         auth.onAuthStateChanged((user) => {
             if (user) {
                 console.log("User Logged In:", user.uid);
 
-                // ইউজারের ডাটা ফেচ করা
                 db.ref('users/' + user.uid).on('value', (snapshot) => {
                     const data = snapshot.val();
                     console.log("Database Data:", data); 
@@ -362,6 +377,7 @@
             }
         });
 
+        /* === UI UPDATE (Keep as is) === */
         function updateUI(status) {
             const badge = document.getElementById('userStatus');
             const banner = document.getElementById('activateBanner');
@@ -390,6 +406,7 @@
             }
         }
 
+        /* === ACCESS CHECK (Keep as is) === */
         function checkAccess(url) {
             if (currentUserStatus === 'active') {
                 window.location.href = url;
@@ -398,6 +415,25 @@
                 alert("⛔ ACCOUNT LOCKED!\n\nApni Account Active koren nai.");
             }
         }
+
+        /* === PARTICLES JS CONFIG === */
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#9d00ff" },
+                shape: { type: "circle", stroke: { width: 0, color: "#000000" }, polygon: { nb_sides: 5 }, image: { src: "img/github.svg", width: 100, height: 100 } },
+                opacity: { value: 0.5, random: false, anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false } },
+                size: { value: 3, random: true, anim: { enable: false, speed: 40, size_min: 0.1, sync: false } },
+                line_linked: { enable: true, distance: 150, color: "#9d00ff", opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 3, direction: "none", random: false, straight: false, out_mode: "out", bounce: false, attract: { enable: false, rotateX: 600, rotateY: 1200 } }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" }, resize: true },
+                modes: { grab: { distance: 140, line_linked: { opacity: 1 } }, bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 }, repulse: { distance: 200, duration: 0.4 }, push: { particles_nb: 4 }, remove: { particles_nb: 2 } }
+            },
+            retina_detect: true
+        });
     </script>
 </body>
 </html>
