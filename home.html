@@ -3,56 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Dashboard | Forsage Style</title>
+    <!-- Google Fonts: Inter (Forsage uses similar fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* DARK PREMIUM THEME */
-        body { background: #0f0c29; font-family: 'Poppins', sans-serif; margin: 0; padding-bottom: 80px; color: white; }
+        /* --- FORSAGE INSPIRED THEME --- */
+        :root {
+            --bg-color: #0d0d0d;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary-gradient: linear-gradient(90deg, #5c24fc 0%, #9d00ff 100%);
+            --active-glow: #00ff9d;
+            --inactive-glow: #ff2b2b;
+            --text-main: #ffffff;
+            --text-sec: #8da1c5;
+        }
+
+        body { 
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(92, 36, 252, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(157, 0, 255, 0.15) 0%, transparent 40%);
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding-bottom: 90px; 
+            color: var(--text-main); 
+            min-height: 100vh;
+        }
         
+        /* HEADER DESIGN */
         .header {
-            padding: 20px; background: linear-gradient(to right, #24243e, #0f0c29);
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            padding: 20px 25px; 
+            background: rgba(13, 13, 13, 0.8);
+            backdrop-filter: blur(15px);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
-        .badge { padding: 5px 12px; border-radius: 15px; font-size: 0.7rem; font-weight: bold; margin-top: 5px; display: inline-block; }
-        .inact { background: #e74c3c; color: white; box-shadow: 0 0 10px #e74c3c; }
-        .act { background: #00f260; color: black; box-shadow: 0 0 10px #00f260; }
+        .header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
 
-        /* Activation Banner */
+        .header h2 span {
+            background: linear-gradient(to right, #fff, #a5a5a5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* STATUS BADGE */
+        .badge { 
+            padding: 6px 14px; 
+            border-radius: 30px; 
+            font-size: 0.65rem; 
+            font-weight: 800; 
+            margin-top: 6px; 
+            display: inline-block; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .inact { 
+            background: rgba(255, 43, 43, 0.1); 
+            color: #ff4d4d; 
+            border: 1px solid rgba(255, 43, 43, 0.3);
+            box-shadow: 0 0 10px rgba(255, 43, 43, 0.2);
+        }
+        .act { 
+            background: rgba(0, 255, 157, 0.1); 
+            color: #00ff9d; 
+            border: 1px solid rgba(0, 255, 157, 0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 157, 0.2);
+        }
+
+        /* PROFILE PICTURE */
+        .profile-btn {
+            width: 48px; height: 48px; 
+            background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; 
+            border: 2px solid rgba(255,255,255,0.1); 
+            cursor: pointer; overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+        .profile-btn:active { transform: scale(0.9); }
+        .profile-btn img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-btn i { color: #8da1c5; font-size: 1.2rem; }
+
+        /* ACTIVATION BANNER */
         .activate-box {
-            margin: 20px; padding: 15px; background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            border-radius: 15px; display: flex; justify-content: space-between; align-items: center;
-            animation: pulse 2s infinite; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
+            margin: 25px 20px; 
+            padding: 20px; 
+            background: var(--primary-gradient);
+            border-radius: 16px; 
+            display: flex; justify-content: space-between; align-items: center;
+            position: relative; overflow: hidden;
+            cursor: pointer; 
+            box-shadow: 0 10px 25px rgba(92, 36, 252, 0.3);
+            border: 1px solid rgba(255,255,255,0.2);
         }
-        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.02);} 100% {transform: scale(1);} }
+        .activate-box::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+            animation: rotate 6s linear infinite;
+        }
+        @keyframes rotate { 0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);} }
+        
+        .activate-box div { position: relative; z-index: 2; }
+        .activate-box i { position: relative; z-index: 2; font-size: 1.5rem; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 50%; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-        
-        .card {
-            background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center;
-            border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; transition: 0.3s;
+        /* GRID LAYOUT */
+        .grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            padding: 0 20px; 
         }
-        .card:active { transform: scale(0.95); }
-        .card i.icon { font-size: 2rem; margin-bottom: 10px; }
         
+        /* CARD DESIGN (Forsage Style) */
+        .card {
+            background: var(--card-bg); 
+            padding: 25px 15px; 
+            border-radius: 16px; 
+            text-align: center;
+            border: 1px solid var(--card-border); 
+            position: relative; 
+            overflow: hidden; 
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 110px;
+        }
+        
+        .card:hover { 
+            border-color: rgba(255,255,255,0.3); 
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-3px);
+        }
+        .card:active { transform: scale(0.98); }
+
+        /* Icons with Glow */
+        .card i.icon { 
+            font-size: 1.8rem; 
+            margin-bottom: 12px; 
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
+        }
+        
+        .card div {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* COLORS FOR ICONS */
+        .c-task { color: #f9d423; background: -webkit-linear-gradient(#f9d423, #ff4e50); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } 
+        .c-team { color: #00c6ff; background: -webkit-linear-gradient(#00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } 
+        .c-with { color: #00f260; background: -webkit-linear-gradient(#00f260, #0575e6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } 
+        .c-vip { color: #833ab4; background: -webkit-linear-gradient(#fd1d1d, #833ab4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* LOCK LAYER */
         .lock-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 12, 41, 0.9); display: flex; flex-direction: column; align-items: center; justify-content: center;
-            backdrop-filter: blur(3px); z-index: 10;
+            background: rgba(13, 13, 13, 0.85); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(4px); 
+            z-index: 10;
         }
-        .lock-layer i { font-size: 1.5rem; color: #e74c3c; margin-bottom: 5px; }
-        .lock-layer span { font-size: 0.7rem; color: #aaa; font-weight: bold; }
+        .lock-layer i { 
+            font-size: 1.4rem; 
+            color: #ff4d4d; 
+            margin-bottom: 8px; 
+            filter: drop-shadow(0 0 10px red);
+        }
+        .lock-layer span { 
+            font-size: 0.7rem; 
+            color: #fff; 
+            font-weight: 700; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
         
-        .c-task { color: #ff9a9e; } .c-team { color: #a18cd1; } .c-with { color: #84fab0; } .c-vip { color: #fccb90; }
+        /* Remove default link styles if any */
+        a { text-decoration: none; }
 
-        .profile-btn {
-            width: 45px; height: 45px; background: #1a1a2e; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; border: 2px solid #333; cursor: pointer; overflow: hidden;
-        }
-        .profile-btn img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body onclick="unlockAudio()">
@@ -70,60 +215,60 @@
 
     <div id="activateBanner" class="activate-box" onclick="window.location.href='account_active.html'">
         <div>
-            <b style="font-size:1.1rem;">Activate Account</b><br>
-            <small style="color:#eee;">Unlock All Features Now</small>
+            <b style="font-size:1.1rem; color: white;">ACTIVATE ACCOUNT</b><br>
+            <small style="color: rgba(255,255,255,0.8);">Start Your Earnings Now</small>
         </div>
-        <i class="fas fa-chevron-right"></i>
+        <i class="fas fa-rocket" style="color: white;"></i>
     </div>
 
     <div class="grid">
         <div class="card" onclick="checkAccess('task.html')">
-            <i class="fas fa-tasks icon c-task"></i><div>Daily Task</div>
-            <div class="lock-layer" id="lock_task"><i class="fas fa-lock"></i><span>Activate First</span></div>
+            <i class="fas fa-clipboard-list icon c-task"></i><div>Daily Task</div>
+            <div class="lock-layer" id="lock_task"><i class="fas fa-lock"></i><span>Locked</span></div>
         </div>
         <div class="card" onclick="checkAccess('my_team.html')">
             <i class="fas fa-users icon c-team"></i><div>My Team</div>
-            <div class="lock-layer" id="lock_team"><i class="fas fa-lock"></i><span>Activate First</span></div>
+            <div class="lock-layer" id="lock_team"><i class="fas fa-lock"></i><span>Locked</span></div>
         </div>
         <div class="card" onclick="checkAccess('withdraw.html')">
             <i class="fas fa-wallet icon c-with"></i><div>Withdraw</div>
-            <div class="lock-layer" id="lock_withdraw"><i class="fas fa-lock"></i><span>Activate First</span></div>
+            <div class="lock-layer" id="lock_withdraw"><i class="fas fa-lock"></i><span>Locked</span></div>
         </div>
         <div class="card" onclick="checkAccess('vip_level.html')">
             <i class="fas fa-crown icon c-vip"></i><div>VIP Level</div>
-            <div class="lock-layer" id="lock_vip"><i class="fas fa-lock"></i><span>Activate First</span></div>
+            <div class="lock-layer" id="lock_vip"><i class="fas fa-lock"></i><span>Locked</span></div>
         </div>
         
         <div class="card" onclick="checkAccess('question_game.html')">
-            <i class="fas fa-gamepad icon c-vip"></i><div>Quiz Game</div>
-            <div class="lock-layer" id="lock_quiz"><i class="fas fa-lock"></i><span>Activate First</span></div>
+            <i class="fas fa-gamepad icon" style="color: #ff00cc;"></i><div>Quiz Game</div>
+            <div class="lock-layer" id="lock_quiz"><i class="fas fa-lock"></i><span>Locked</span></div>
         </div>
         
         <div class="card" onclick="window.location.href='weekly.html'">
-            <i class="fas fa-calendar-week icon" style="color:#fff;"></i><div>Weekly</div>
+            <i class="fas fa-calendar-week icon" style="color:#ffffff;"></i><div>Weekly</div>
             <div class="lock-layer"><i class="fas fa-clock"></i><span>16 Days</span></div>
         </div>
         <div class="card" onclick="window.location.href='monthly.html'">
-            <i class="fas fa-calendar-alt icon" style="color:#fff;"></i><div>Monthly</div>
+            <i class="fas fa-calendar-alt icon" style="color:#ffffff;"></i><div>Monthly</div>
             <div class="lock-layer"><i class="fas fa-clock"></i><span>16 Days</span></div>
         </div>
 
         <div class="card" onclick="checkAccess('vip_club.html')">
             <i class="fas fa-gem icon" style="color:#f1c40f;"></i><div>VIP Club</div>
-            <div class="lock-layer" id="lock_vip_club"><i class="fas fa-lock"></i><span>Activate First</span></div>
+            <div class="lock-layer" id="lock_vip_club"><i class="fas fa-lock"></i><span>Locked</span></div>
         </div>
 
     </div>
 
     <div id="voiceTrigger" style="display:none;"></div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Jemon chilo temoni ache) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // আপনার কনফিগারেশন
+        // আপনার কনফিগারেশন (যেইটা ছিল সেটাই রাখা হয়েছে)
         const firebaseConfig = { 
             apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", 
             authDomain: "art-paid-work001.firebaseapp.com", 
@@ -167,7 +312,7 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // --- MAIN LOGIC ---
+        // --- MAIN LOGIC (NO CHANGES) ---
         auth.onAuthStateChanged((user) => {
             if (user) {
                 console.log("User Logged In:", user.uid);
@@ -175,23 +320,18 @@
                 // ইউজারের ডাটা ফেচ করা
                 db.ref('users/' + user.uid).on('value', (snapshot) => {
                     const data = snapshot.val();
-                    console.log("Database Data:", data); // কনসোলে ডাটা চেক করুন
+                    console.log("Database Data:", data); 
 
                     if(data) {
-                        // যদি ডাটা পাওয়া যায়
-                        // 1. নাম সেট করা (যদি firstName না থাকে তবে 'User' দেখাবে)
                         document.getElementById('userName').innerText = data.firstName || "User";
                         
-                        // 2. স্ট্যাটাস আপডেট
                         currentUserStatus = data.status || 'inactive';
                         updateUI(currentUserStatus);
 
-                        // 3. প্রোফাইল পিকচার
                         if(data.profilePic) {
                             document.getElementById('profileBtn').innerHTML = `<img src="${data.profilePic}">`;
                         }
 
-                        // 4. ভয়েস মেসেজ
                         if(currentUserStatus === 'active') {
                             if(!localStorage.getItem('activation_voice_played')) {
                                 speak("Your account active successful so start network marketing journey");
@@ -199,18 +339,15 @@
                             }
                         }
                     } else {
-                        // যদি ডাটাবেসে এই ইউজারের কোনো ডাটা না থাকে
                         console.log("Data is null for this user");
                         document.getElementById('userName').innerText = "No Data";
                         updateUI('inactive');
                     }
                 }, (error) => {
-                    // যদি ডাটাবেস এরর দেয়
                     console.error("Database Error:", error);
                     alert("Data Load Error: " + error.message);
                 });
 
-                // উইথড্র রিকোয়েস্ট চেক
                 db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).on('child_changed', (snapshot) => {
                     const req = snapshot.val();
                     if(req && req.status === 'approved') {
@@ -220,7 +357,6 @@
                 });
 
             } else {
-                // ইউজার লগইন না থাকলে
                 console.log("No user logged in");
                 window.location.href = 'login_register.html';
             }
@@ -231,7 +367,6 @@
             const banner = document.getElementById('activateBanner');
             const locks = ['lock_task', 'lock_team', 'lock_withdraw', 'lock_vip', 'lock_quiz', 'lock_vip_club'];
 
-            // UI Elements আছে কিনা চেক করে নেওয়া ভালো, যাতে এরর না দেয়
             if(!badge || !banner) return;
 
             if (status === 'active') {
