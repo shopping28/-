@@ -280,12 +280,13 @@
             <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
 
-        <div class="wide-card bg-time shine-anim" onclick="window.location.href='weekly.html'">
+        <!-- UPDATED BUTTON: "Weekly" changed to "4X Program" -->
+        <div class="wide-card bg-time shine-anim" onclick="checkAccess('weekly.html')">
             <div class="card-content">
                 <i class="fas fa-calendar-week card-icon"></i>
-                <div class="card-text">Weekly</div>
+                <div class="card-text">4X Program</div>
             </div>
-            <div class="lock-layer"><i class="fas fa-clock"></i><span>16 Days</span></div>
+            <div class="lock-layer" id="lock_weekly"><i class="fas fa-lock"></i><span>Locked</span></div>
             <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
 
@@ -317,7 +318,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        /* === JAVASCRIPT LOGIC (SAME AS BEFORE) === */
+        /* === JAVASCRIPT LOGIC === */
         const firebaseConfig = { 
             apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", 
             authDomain: "art-paid-work001.firebaseapp.com", 
@@ -390,8 +391,11 @@
         function updateUI(status) {
             const badge = document.getElementById('userStatus');
             const banner = document.getElementById('activateBanner');
-            const locks = ['lock_task', 'lock_team', 'lock_withdraw', 'lock_vip', 'lock_quiz', 'lock_vip_club'];
+            // 'lock_weekly' is kept here for unlocking
+            const locks = ['lock_task', 'lock_team', 'lock_withdraw', 'lock_vip', 'lock_quiz', 'lock_vip_club', 'lock_weekly'];
+            
             if(!badge || !banner) return;
+            
             if (status === 'active') {
                 badge.innerText = "ACTIVE"; badge.className = "badge act"; banner.style.display = 'none';
                 locks.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
