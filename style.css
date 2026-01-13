@@ -1,0 +1,254 @@
+/* =========================================
+   RESET & BASE VARIABLES
+========================================= */
+:root {
+    --bg-dark: #090910;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --neon-blue: #00f2ff;
+    --neon-pink: #ff0055;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --card-radius: 20px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    padding-bottom: 40px;
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* =========================================
+   BACKGROUND ANIMATION (Dark & Moody)
+========================================= */
+.premium-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    background: #050505;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: moveBlob 20s infinite alternate;
+}
+
+.blob-1 { top: -10%; left: -10%; width: 50vh; height: 50vh; background: #2f00ff; }
+.blob-2 { bottom: -10%; right: -10%; width: 60vh; height: 60vh; background: #ff0055; animation-delay: -5s; }
+.blob-3 { top: 40%; left: 30%; width: 40vh; height: 40vh; background: #00f2ff; opacity: 0.3; animation-duration: 25s; }
+
+.mesh-overlay {
+    position: absolute; width: 100%; height: 100%;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.3;
+}
+
+@keyframes moveBlob {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(30px, -30px) scale(1.1); }
+}
+
+/* =========================================
+   HEADER SECTION
+========================================= */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.header h2 span {
+    background: linear-gradient(to right, #fff, #aaa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 5px 12px;
+    border-radius: 30px;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.badge.inact { background: rgba(255, 71, 87, 0.15); color: #ff6b81; border: 1px solid rgba(255, 71, 87, 0.3); }
+.badge.act { background: rgba(46, 213, 115, 0.15); color: #2ed573; border: 1px solid rgba(46, 213, 115, 0.3); }
+
+.profile-btn {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.profile-btn:active { transform: scale(0.9); }
+.profile-btn img { width: 100%; height: 100%; object-fit: cover; }
+
+/* =========================================
+   DASHBOARD LAYOUT
+========================================= */
+.dashboard-container {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Common Card Styles */
+.card {
+    position: relative;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid var(--glass-border);
+}
+
+.card:active { transform: scale(0.98); }
+
+/* Special Activate Card */
+.special-card {
+    background: linear-gradient(135deg, #2b1055, #7597de);
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(118, 75, 162, 0.4);
+    margin-bottom: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+.special-card .card-content { display: flex; align-items: center; gap: 15px; }
+.special-card h3 { margin: 0; font-size: 1.4rem; font-weight: 900; letter-spacing: 0.5px; }
+.special-card p { margin: 4px 0 0 0; font-size: 0.85rem; opacity: 0.9; }
+.icon-activate {
+    width: 50px; height: 50px; background: rgba(255,255,255,0.2);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; color: #fff;
+}
+
+/* Grid Layout for other items */
+.menu-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Default to list view for mobile readability */
+    gap: 15px;
+}
+
+/* Glass Cards */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.glass-card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.2);
+}
+
+.glass-card .card-content {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.icon-box {
+    width: 45px; height: 45px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Icon Colors */
+.icon-task { background: linear-gradient(135deg, #FF416C, #FF4B2B); }
+.icon-team { background: linear-gradient(135deg, #00b09b, #96c93d); }
+.icon-withdraw { background: linear-gradient(135deg, #56CCF2, #2F80ED); }
+.icon-vip { background: linear-gradient(135deg, #F2994A, #F2C94C); }
+.icon-quiz { background: linear-gradient(135deg, #8E2DE2, #4A00E0); }
+.icon-weekly { background: linear-gradient(135deg, #1A2980, #26D0CE); }
+.icon-monthly { background: linear-gradient(135deg, #3a1c71, #d76d77); }
+.icon-club { background: linear-gradient(135deg, #ee0979, #ff6a00); }
+
+.text-box h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Lock Overlay */
+.lock-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(9, 9, 16, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff5252;
+    font-size: 1.2rem;
+    z-index: 10;
+    border-radius: var(--card-radius);
+    gap: 8px;
+}
+
+.lock-overlay span {
+    font-size: 0.9rem;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Specific style for unlocked countdown (Monthly) */
+.open-info {
+    background: rgba(0,0,0,0.4) !important;
+    color: #fff !important;
+}
+
+/* Responsive Grid for Tablets/Desktops */
+@media (min-width: 480px) {
+    .menu-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
