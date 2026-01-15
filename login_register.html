@@ -43,7 +43,7 @@
             <input type="password" id="r_pass" placeholder="Password">
             <input type="password" id="r_cpass" placeholder="Confirm Password">
             <input type="text" id="r_ref" placeholder="Referral Code (Required)">
-            <button id="regBtn">REGISTER & ACTIVATE</button>
+            <button id="regBtn">REGISTER & PROCEED</button>
         </div>
     </div>
 
@@ -64,28 +64,13 @@
         }
         function showMsg(text) { document.getElementById('msg').innerText = text; }
 
-        // Restore Data & Tab if returning from Active Page
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const refCode = urlParams.get('ref');
-            
-            // Restore Inputs
-            if(sessionStorage.getItem('r_fname')) document.getElementById('r_fname').value = sessionStorage.getItem('r_fname');
-            if(sessionStorage.getItem('r_lname')) document.getElementById('r_lname').value = sessionStorage.getItem('r_lname');
-            if(sessionStorage.getItem('r_phone')) document.getElementById('r_phone').value = sessionStorage.getItem('r_phone');
-            if(sessionStorage.getItem('r_pass')) document.getElementById('r_pass').value = sessionStorage.getItem('r_pass');
-            if(sessionStorage.getItem('r_cpass')) document.getElementById('r_cpass').value = sessionStorage.getItem('r_cpass');
-            if(sessionStorage.getItem('r_ref')) document.getElementById('r_ref').value = sessionStorage.getItem('r_ref');
-
             if (refCode) {
                 document.getElementById('r_ref').value = refCode;
                 document.getElementById('r_ref').readOnly = true;
                 switchTab('register', document.getElementById('tab_register'));
-            }
-
-            // If user came back from Active page, open Register tab
-            if(sessionStorage.getItem('visited_active_page') === 'true') {
-                 switchTab('register', document.getElementById('tab_register'));
             }
         }
 
@@ -103,26 +88,7 @@
             if(pass.length < 6) return showMsg("Password must be 6+ chars");
             if(pass !== cpass) return showMsg("Passwords do not match!");
 
-            // === NEW LOGIC: VISIT ACTIVE PAGE FIRST ===
-            if (sessionStorage.getItem('visited_active_page') !== 'true') {
-                // Save inputs to session
-                sessionStorage.setItem('r_fname', fname);
-                sessionStorage.setItem('r_lname', lname);
-                sessionStorage.setItem('r_phone', phone);
-                sessionStorage.setItem('r_pass', pass);
-                sessionStorage.setItem('r_cpass', cpass);
-                sessionStorage.setItem('r_ref', refCode);
-                
-                // Mark visited
-                sessionStorage.setItem('visited_active_page', 'true');
-                
-                // Redirect to Active Page (Guest Mode)
-                window.location.href = 'account_active.html?guest=true';
-                return;
-            }
-            // ==========================================
-
-            btn.disabled = true; btn.innerText = "Processing...";
+            btn.disabled = true; btn.innerText = "Creating Account...";
 
             // Check Referral
             if(refCode === "the_art2000") {
@@ -130,7 +96,7 @@
             } else {
                 db.ref('users').orderByChild('ownCode').equalTo(refCode).once('value', s => {
                     if(s.exists()) createAccount(fname, lname, phone, pass, refCode, btn);
-                    else { showMsg("Invalid Referral Code!"); btn.disabled = false; btn.innerText = "REGISTER & ACTIVATE"; }
+                    else { showMsg("Invalid Referral Code!"); btn.disabled = false; btn.innerText = "REGISTER & PROCEED"; }
                 });
             }
         });
@@ -139,17 +105,17 @@
             auth.createUserWithEmailAndPassword(phone + "@shoppingfree.com", pass)
                 .then((cred) => {
                     const newCode = (fname.substring(0,3) + Math.floor(1000 + Math.random() * 9000)).toUpperCase();
+                    // 1. Account Created Here
                     db.ref('users/' + cred.user.uid).set({
                         firstName: fname, lastName: lname, phone: phone, password: pass,
                         ownCode: newCode, referredBy: refBy, status: 'inactive', balance: 0, joinedAt: new Date().toISOString()
                     }).then(() => {
-                        // Registration Done, Clear Session and Go to Active Page (Normal Mode)
-                        sessionStorage.clear();
+                        // 2. Redirect to Activation Page
                         window.location.href = 'account_active.html';
                     });
                 })
                 .catch((e) => {
-                    btn.disabled = false; btn.innerText = "REGISTER & ACTIVATE";
+                    btn.disabled = false; btn.innerText = "REGISTER & PROCEED";
                     showMsg(e.code === 'auth/email-already-in-use' ? "Phone already exists!" : e.message);
                 });
         }
@@ -165,9 +131,8 @@
 
             auth.signInWithEmailAndPassword(phone + "@shoppingfree.com", pass)
             .then(() => {
-                // Clear session just in case
-                sessionStorage.clear();
-                window.location.href = 'home.html'; 
+                // Login successful, check status in next page
+                window.location.href = 'account_active.html'; 
             })
             .catch(() => {
                 btn.disabled = false; btn.innerText = "LOGIN";
