@@ -3,268 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra Premium Dashboard</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Forsage Dashboard | Premium</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* === THEME VARIABLES === */
-        :root { --text-white: #ffffff; --neon-blue: #00f2ff; --neon-pink: #ff0084; }
-        body { margin: 0; padding-bottom: 50px; color: var(--text-white); min-height: 100vh; font-family: 'Outfit', sans-serif; background: #000; overflow-x: hidden; position: relative; }
-        
-        /* BACKGROUND CSS (UNCHANGED) */
-        .premium-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: #0f0c29; overflow: hidden; }
-        .gradient-sphere { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.6; animation: moveGradient 15s infinite alternate ease-in-out; }
-        .g-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: radial-gradient(circle, #764ba2, #667eea); animation-duration: 20s; }
-        .g-2 { bottom: -10%; right: -10%; width: 400px; height: 400px; background: radial-gradient(circle, #ff0084, #33001b); animation-duration: 15s; animation-delay: -5s; }
-        .g-3 { top: 40%; left: 40%; width: 300px; height: 300px; background: radial-gradient(circle, #00f2ff, #000000); opacity: 0.4; animation: moveGradient 12s infinite alternate-reverse; }
-        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(1px 1px at 20px 30px, #eee, rgba(0,0,0,0)), radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)); background-size: 200px 200px; animation: twinkle 5s linear infinite; opacity: 0.5; }
-        @keyframes moveGradient { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(50px, 50px) scale(1.1); } 100% { transform: translate(-30px, 20px) scale(0.9); } }
-        @keyframes twinkle { 0% { transform: translateY(0); opacity: 0.3; } 50% { opacity: 0.8; } 100% { transform: translateY(-50px); opacity: 0.3; } }
-        .glass-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 12, 41, 0.2); backdrop-filter: blur(2px); z-index: -1; }
+        /* === FORSAGE THEME VARIABLES === */
+        :root {
+            --bg-dark: #0d0d2b;
+            --card-glass: rgba(30, 30, 60, 0.6);
+            --primary: #5856d6;
+            --accent-cyan: #00ecff;
+            --accent-pink: #bd00ff;
+            --text-white: #ffffff;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-        /* === NEW PROFILE DESIGN === */
-        .profile-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding-top: 40px;
-            padding-bottom: 20px;
-            text-align: center;
+        body {
+            margin: 0; padding-bottom: 80px;
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
             position: relative;
-            z-index: 10;
         }
 
-        .profile-img-box {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            padding: 4px;
-            background: linear-gradient(135deg, #00f2ff, #ff0084);
-            box-shadow: 0 0 25px rgba(0, 242, 255, 0.4);
-            margin-bottom: 15px;
-            cursor: pointer;
+        /* BACKGROUND ORBS */
+        .orb { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; }
+        .orb-1 { top: -10%; left: -10%; width: 350px; height: 350px; background: rgba(88, 86, 214, 0.4); animation: float 10s infinite alternate; }
+        .orb-2 { bottom: 10%; right: -10%; width: 300px; height: 300px; background: rgba(189, 0, 255, 0.3); animation: float 12s infinite alternate-reverse; }
+        .grid-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px; opacity: 0.5;
         }
 
-        .profile-img-box img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #0f0c29;
-            background: #1a1a2e;
+        @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, 40px); } }
+
+        /* HEADER */
+        .header {
+            padding: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(13, 13, 43, 0.8); backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .logo-area h2 { margin: 0; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
+        .logo-area span { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0, 236, 255, 0.5); }
+        
+        .profile-btn {
+            width: 45px; height: 45px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            padding: 2px; cursor: pointer;
+        }
+        .profile-btn img {
+            width: 100%; height: 100%; border-radius: 50%;
+            object-fit: cover; border: 2px solid var(--bg-dark); background: #000;
         }
 
-        .user-name {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin: 0;
-            background: linear-gradient(to right, #fff, #a8c0ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* HERO SECTION */
+        .hero {
+            text-align: center; padding: 30px 20px;
+            background: linear-gradient(180deg, rgba(88, 86, 214, 0.1) 0%, transparent 100%);
         }
-
-        .user-uid {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-top: 5px;
-            letter-spacing: 1px;
-            background: rgba(255,255,255,0.1);
-            padding: 2px 10px;
-            border-radius: 10px;
+        .user-id-box {
+            display: inline-block; padding: 5px 15px;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--accent-cyan);
+            border-radius: 20px; color: var(--accent-cyan); font-weight: bold;
+            letter-spacing: 1px; margin-bottom: 10px; box-shadow: 0 0 15px rgba(0, 236, 255, 0.2);
         }
+        .balance-display { font-size: 2.5rem; font-weight: 700; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .balance-label { color: #aaa; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; }
 
-        .active-date {
-            font-size: 0.8rem;
-            color: #00f2ff;
-            margin-top: 5px;
-            font-weight: 600;
-        }
-
-        /* === STATS GRID === */
+        /* STATS GRID (Forsage Style) */
         .stats-container {
-            padding: 0 20px;
-            margin-bottom: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px;
         }
-
-        .row-split {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+        .stat-box {
+            background: var(--card-glass);
+            border: var(--glass-border);
+            padding: 20px; border-radius: 15px;
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: center;
         }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
+        .stat-box::before {
+            content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 3px;
+            background: var(--accent-pink);
         }
+        .stat-box:nth-child(even)::before { background: var(--accent-cyan); }
         
-        .stat-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.08); }
+        .stat-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; }
+        .stat-title { font-size: 0.75rem; color: #bbb; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .stat-title { font-size: 0.75rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
-        .stat-value { font-size: 1.3rem; font-weight: 800; color: #fff; }
-        
-        .stat-value.green { color: #2ed573; text-shadow: 0 0 10px rgba(46, 213, 115, 0.3); }
-        .stat-value.gold { color: #ffa502; text-shadow: 0 0 10px rgba(255, 165, 2, 0.3); }
-        .stat-value.blue { color: #00f2ff; text-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
+        .glow-text { color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
 
-        /* === 16:9 BUTTONS GRID === */
+        /* MENU GRID (16:9 Buttons) */
         .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* 2 Buttons per row */
-            gap: 15px;
-            padding: 0 20px 40px 20px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px 20px 40px;
         }
-
-        .menu-btn {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16/9; /* The 16:9 Requirement */
-            border-radius: 16px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.2s ease;
+        .menu-card {
+            aspect-ratio: 16/9;
+            border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative; overflow: hidden;
         }
+        .menu-card:active { transform: scale(0.96); }
+        .menu-card:hover { box-shadow: 0 5px 20px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.2); }
 
-        .menu-btn:active { transform: scale(0.95); }
+        .mc-icon { font-size: 1.8rem; margin-bottom: 8px; z-index: 2; }
+        .mc-text { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; z-index: 2; letter-spacing: 0.5px; }
 
-        /* Gradients for buttons */
-        .btn-task { background: linear-gradient(135deg, #FF416C, #FF4B2B); }
-        .btn-team { background: linear-gradient(135deg, #11998e, #38ef7d); }
-        .btn-withdraw { background: linear-gradient(135deg, #2193b0, #6dd5ed); }
-        .btn-vip { background: linear-gradient(135deg, #F2994A, #F2C94C); }
-        .btn-quiz { background: linear-gradient(135deg, #8E2DE2, #4A00E0); }
-        .btn-4x { background: linear-gradient(135deg, #000428, #004e92); }
-        .btn-month { background: linear-gradient(135deg, #DA4453, #89216B); }
-        .btn-club { background: linear-gradient(135deg, #fc4a1a, #f7b733); }
-
-        .menu-icon { font-size: 1.8rem; margin-bottom: 8px; color: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
-        .menu-text { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        /* Shine Animation */
-        .shine-anim::before { content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transform: skewX(-25deg); animation: shine 5s infinite; z-index: 1; }
+        /* Button Gradients (Darker & Richer) */
+        .g-task { background: linear-gradient(135deg, #2b1055, #7597de); }
+        .g-team { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
+        .g-with { background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b); } /* Rich */
+        .g-vip  { background: linear-gradient(135deg, #141e30, #243b55); }
+        .g-game { background: linear-gradient(135deg, #43cea2, #185a9d); }
+        .g-club { background: linear-gradient(135deg, #8E2DE2, #4A00E0); }
+        
+        /* Shine Effect */
+        .shine::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: skewX(-20deg); animation: shine 6s infinite;
+        }
         @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
 
-        /* Loading Overlay */
-        #pageLoader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; color: white; font-size: 1.5rem; }
+        /* Loader */
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d0d2b; z-index: 9999; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; letter-spacing: 2px; }
+
     </style>
 </head>
 <body onclick="unlockAudio()">
 
-    <!-- Loading Screen -->
-    <div id="pageLoader">Verifying Account...</div>
+    <div id="loader">LOADING...</div>
 
-    <!-- Animated Background -->
-    <div class="premium-bg">
-        <div class="gradient-sphere g-1"></div>
-        <div class="gradient-sphere g-2"></div>
-        <div class="gradient-sphere g-3"></div>
-        <div class="stars"></div>
-        <div class="glass-overlay"></div>
-    </div>
+    <!-- Backgrounds -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="grid-bg"></div>
 
-    <!-- 1. CENTER PROFILE SECTION -->
-    <div class="profile-container">
-        <div class="profile-img-box" onclick="window.location.href='account.html'">
-            <img id="userImg" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="Profile">
+    <!-- Header -->
+    <div class="header">
+        <div class="logo-area">
+            <h2>Forsage <span>IO</span></h2>
         </div>
-        <h2 class="user-name" id="userName">Loading...</h2>
-        <div class="user-uid">UID: <span id="userUID">...</span></div>
-        <div class="active-date">Active: <span id="activeDate">...</span></div>
+        <div class="profile-btn" onclick="window.location.href='account.html'">
+            <img id="headProfile" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="Profile">
+        </div>
     </div>
 
-    <!-- 2. STATS GRID -->
+    <!-- Hero -->
+    <div class="hero">
+        <div class="user-id-box">ID: <span id="userId">...</span></div>
+        <h1 class="balance-display">৳<span id="mainBalance">0.00</span></h1>
+        <div class="balance-label">Total Current Balance</div>
+    </div>
+
+    <!-- Stats Grid (Counts & Income) -->
     <div class="stats-container">
-        <!-- Row 1: Partner & Team -->
-        <div class="row-split">
-            <div class="stat-card">
-                <div class="stat-title">My Partner</div>
-                <div class="stat-value" id="partnerCount">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">My Team</div>
-                <div class="stat-value" id="teamCount">0</div>
-            </div>
+        <!-- Partner Count (Direct) -->
+        <div class="stat-box">
+            <div class="stat-value glow-text" id="partnerCount">0</div>
+            <div class="stat-title">My Partners</div>
         </div>
 
-        <!-- Row 2: Total Earning -->
-        <div class="stat-card">
+        <!-- Team Count (Total) -->
+        <div class="stat-box">
+            <div class="stat-value glow-text" id="teamCount">0</div>
+            <div class="stat-title">Total Team</div>
+        </div>
+
+        <!-- Total Income -->
+        <div class="stat-box">
+            <div class="stat-value" style="color:#ffd700">৳<span id="totalIncome">0</span></div>
             <div class="stat-title">Total Earning</div>
-            <div class="stat-value gold" id="totalEarning">$0.00</div>
         </div>
 
-        <!-- Row 3: Today Earning -->
-        <div class="stat-card">
+        <!-- Today Income -->
+        <div class="stat-box">
+            <div class="stat-value" style="color:#00ecff">৳<span id="todayIncome">0</span></div>
             <div class="stat-title">Today Earning</div>
-            <div class="stat-value green" id="todayEarning">$0.00</div>
-        </div>
-
-        <!-- Row 4: Current Balance -->
-        <div class="stat-card" style="border-color: rgba(0, 242, 255, 0.3); background: rgba(0, 242, 255, 0.05);">
-            <div class="stat-title">Current Balance</div>
-            <div class="stat-value blue" id="currentBalance">$0.00</div>
         </div>
     </div>
 
-    <!-- 3. BUTTONS (16:9 Grid) -->
+    <!-- Action Buttons (Grid) -->
     <div class="menu-grid">
-        <div class="menu-btn btn-task shine-anim" onclick="window.location.href='task.html'">
-            <i class="fas fa-clipboard-check menu-icon"></i>
-            <span class="menu-text">Daily Task</span>
+        <div class="menu-card g-task shine" onclick="window.location.href='task.html'">
+            <i class="fas fa-clipboard-check mc-icon"></i>
+            <span class="mc-text">Daily Task</span>
         </div>
 
-        <div class="menu-btn btn-team shine-anim" onclick="window.location.href='my_team.html'">
-            <i class="fas fa-users menu-icon"></i>
-            <span class="menu-text">My Team</span>
+        <div class="menu-card g-team shine" onclick="window.location.href='my_team.html'">
+            <i class="fas fa-users mc-icon"></i>
+            <span class="mc-text">My Team</span>
         </div>
 
-        <div class="menu-btn btn-withdraw shine-anim" onclick="window.location.href='withdraw.html'">
-            <i class="fas fa-wallet menu-icon"></i>
-            <span class="menu-text">Withdraw</span>
+        <div class="menu-card g-with shine" onclick="window.location.href='withdraw.html'">
+            <i class="fas fa-wallet mc-icon"></i>
+            <span class="mc-text">Withdraw</span>
         </div>
 
-        <div class="menu-btn btn-vip shine-anim" onclick="window.location.href='vip_level.html'">
-            <i class="fas fa-crown menu-icon"></i>
-            <span class="menu-text">VIP Level</span>
+        <div class="menu-card g-vip shine" onclick="window.location.href='vip_level.html'">
+            <i class="fas fa-crown mc-icon"></i>
+            <span class="mc-text">VIP Level</span>
         </div>
 
-        <div class="menu-btn btn-quiz shine-anim" onclick="window.location.href='question_game.html'">
-            <i class="fas fa-gamepad menu-icon"></i>
-            <span class="menu-text">Quiz Game</span>
+        <div class="menu-card g-game shine" onclick="window.location.href='question_game.html'">
+            <i class="fas fa-gamepad mc-icon"></i>
+            <span class="mc-text">Quiz Game</span>
         </div>
 
-        <div class="menu-btn btn-4x shine-anim" onclick="window.location.href='weekly.html'">
-            <i class="fas fa-calendar-week menu-icon"></i>
-            <span class="menu-text">4X Program</span>
+        <div class="menu-card g-club shine" onclick="window.location.href='vip_club.html'">
+            <i class="fas fa-gem mc-icon"></i>
+            <span class="mc-text">VIP Club</span>
+        </div>
+        
+        <div class="menu-card g-task shine" onclick="window.location.href='weekly.html'">
+            <i class="fas fa-calendar-week mc-icon"></i>
+            <span class="mc-text">4X Plan</span>
         </div>
 
-        <div class="menu-btn btn-month shine-anim" onclick="window.location.href='monthly.html'">
-            <i class="fas fa-calendar-alt menu-icon"></i>
-            <span class="menu-text">Monthly</span>
-        </div>
-
-        <div class="menu-btn btn-club shine-anim" onclick="window.location.href='vip_club.html'">
-            <i class="fas fa-gem menu-icon"></i>
-            <span class="menu-text">VIP Club</span>
+        <div class="menu-card g-team shine" onclick="window.location.href='monthly.html'">
+            <i class="fas fa-calendar-alt mc-icon"></i>
+            <span class="mc-text">Monthly</span>
         </div>
     </div>
 
-    <!-- Firebase SDK (UNCHANGED) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -285,7 +255,7 @@
         function speak(text) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'en-US'; u.rate = 0.9;
+            u.lang = 'en-US';
             window.speechSynthesis.speak(u);
         }
 
@@ -294,35 +264,50 @@
                 db.ref('users/' + user.uid).on('value', (snapshot) => {
                     const data = snapshot.val();
                     if(data) {
-                        // === SECURITY CHECK ===
+                        // Check active status
                         if(data.status !== 'active') {
                             window.location.href = 'account_active.html';
                             return;
                         }
 
-                        // === UI UPDATE (MAPPING DATA) ===
-                        document.getElementById('pageLoader').style.display = 'none';
-                        
-                        // Basic Info
-                        document.getElementById('userName').innerText = data.firstName || "User";
-                        if(data.profilePic) document.getElementById('userImg').src = data.profilePic;
-                        
-                        // New Fields - Mapping Logic (নিরাপদে ডেটা দেখানোর জন্য)
-                        document.getElementById('userUID').innerText = user.uid.substring(0, 8) + "..."; // UID Short version
-                        document.getElementById('activeDate').innerText = data.activeDate || data.joinDate || "Recent";
-                        
-                        // Stats (ডেটাবেসে এই ফিল্ডগুলো থাকলে দেখাবে, না থাকলে 0)
-                        document.getElementById('partnerCount').innerText = data.direct_member || data.partnerCount || "0";
-                        document.getElementById('teamCount').innerText = data.team_member || data.teamCount || "0";
-                        
-                        document.getElementById('totalEarning').innerText = "$" + (data.total_income || data.totalEarning || "0.00");
-                        document.getElementById('todayEarning').innerText = "$" + (data.today_income || data.todayEarning || "0.00");
-                        document.getElementById('currentBalance').innerText = "$" + (data.balance || "0.00");
+                        // Remove Loader
+                        document.getElementById('loader').style.display = 'none';
 
-                        // Welcome Voice (Once)
-                        if(!localStorage.getItem('activation_voice_played')) {
-                            speak("Your account active successful so start network marketing journey");
-                            localStorage.setItem('activation_voice_played', 'true');
+                        // 1. Basic Info
+                        document.getElementById('userId').innerText = data.ownCode || user.uid.substring(0,6);
+                        if(data.profilePic) document.getElementById('headProfile').src = data.profilePic;
+
+                        // 2. Financials (Taka)
+                        document.getElementById('mainBalance').innerText = (data.balance || 0).toFixed(2);
+                        document.getElementById('totalIncome').innerText = (data.total_income || data.totalEarning || 0);
+                        document.getElementById('todayIncome').innerText = (data.today_income || data.todayEarning || 0);
+
+                        // 3. Team Counters Logic
+                        // Direct Partners (সরাসরি আপনার রেফার লিংক ব্যবহারকারীরা)
+                        if(data.ownCode) {
+                            db.ref('users').orderByChild('referredBy').equalTo(data.ownCode).on('value', (snap) => {
+                                document.getElementById('partnerCount').innerText = snap.numChildren();
+                            });
+
+                            // Total Team (যদি ডেটাবেসে teamCount সেভ করা থাকে, তবে সেটা দেখাবে। 
+                            // নাহলে, আপাতত 0 দেখাবে কারণ হোম পেজে পুরো ট্রি ক্যালকুলেট করলে পেজ স্লো হয়ে যাবে)
+                            // তবে আপনি চাইলে partnerCount এবং team_member ফিল্ড ডেটাবেসে আপডেট রাখলে এখানে শো করবে।
+                            
+                            // Option A: Database stored value (Fastest)
+                            let totalTeam = 0;
+                            if(data.teamCount) totalTeam = data.teamCount;
+                            else if (data.team_member) totalTeam = data.team_member;
+                            
+                            // If user has direct partners but no team count stored, at least show partners count
+                            // Note: For full recursive team count on Home, backend Cloud Functions are recommended.
+                            // Here we display what is stored or calculate basic L1.
+                            document.getElementById('teamCount').innerText = totalTeam || document.getElementById('partnerCount').innerText; 
+                        }
+
+                        // Voice Welcome (Once)
+                        if(!localStorage.getItem('home_voice_played')) {
+                            speak("Welcome to your Premium Dashboard");
+                            localStorage.setItem('home_voice_played', 'true');
                         }
                     } else {
                         window.location.href = 'login_register.html';
