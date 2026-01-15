@@ -46,7 +46,7 @@
         .back-btn:hover { color: var(--neon-blue); }
         .page-title { font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
 
-        /* HERO CARD (My Active Partners) */
+        /* HERO CARD */
         .hero-card {
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid var(--glass-border);
@@ -152,9 +152,8 @@
         let claimedLevels = {};
         let vipLevelsData = [];
         
-        // CONVERT TAKA TO USDT (For display if db has BDT) - But for new rewards we treat as USDT directly
-        // If your admin panel sets rewards in BDT, use: amount / 120. 
-        // Here we assume Admin sets rewards in USDT directly.
+        // CONVERSION RATE
+        const RATE = 120; // 120 BDT = 1 USDT
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -166,7 +165,7 @@
         });
 
         function loadData() {
-            // Get Admin Levels
+            // Get Admin Levels (Assumed to be in BDT in Database)
             db.ref('settings/vip_levels').on('value', (snapshot) => {
                 vipLevelsData = [];
                 if (snapshot.exists()) {
@@ -175,7 +174,7 @@
                         vipLevelsData.push({
                             level: Number(val.level),
                             target: Number(val.target),
-                            bonus: Number(val.bonus) // Assuming this is now set in USDT or needs conversion
+                            bonusBDT: Number(val.bonus) // Storing Raw BDT value
                         });
                     });
                     vipLevelsData.sort((a, b) => a.level - b.level);
@@ -222,16 +221,12 @@
                 const isUnlocked = myActiveCount >= lvl.target;
                 const isClaimed = claimedLevels['level' + lvl.level] === true;
 
-                // Auto Claim Logic (USDT)
-                // Note: We need to know if the bonus in DB is BDT or USDT. 
-                // Assuming Admin puts USDT value. If BDT, convert here.
-                // Example: If DB says 500 (BDT), then convert to 4.16 USDT
-                
-                // Let's assume Admin panel sets USDT value directly now.
-                const rewardAmount = lvl.bonus; 
+                // CONVERT BDT TO USDT FOR DISPLAY
+                const displayUSDT = (lvl.bonusBDT / RATE).toFixed(2);
 
+                // Auto Claim Logic (Adds BDT to balance)
                 if (isUnlocked && !isClaimed) {
-                    autoClaimReward(lvl.level, rewardAmount);
+                    autoClaimReward(lvl.level, lvl.bonusBDT);
                 }
 
                 let statusClass = "locked";
@@ -252,7 +247,7 @@
                     <div class="vip-card ${statusClass} fade-up" style="animation-delay: ${index * 0.1}s">
                         <div class="card-header">
                             <div class="lvl-badge">LEVEL ${lvl.level}</div>
-                            <div class="bonus-txt">+ ${rewardAmount} USDT</div>
+                            <div class="bonus-txt">+ ${displayUSDT} USDT</div>
                         </div>
                         
                         <div class="progress-box">
@@ -271,22 +266,19 @@
             });
         }
 
-        function autoClaimReward(lvlNum, amount) {
+        function autoClaimReward(lvlNum, amountBDT) {
             const key = 'level' + lvlNum;
             if (claimedLevels[key]) return;
             claimedLevels[key] = true; 
-
-            // Convert USDT to BDT for storage (Since balance is likely stored in BDT)
-            // 1 USDT = 120 BDT
-            const amountInBDT = amount * 120;
 
             db.ref('users/' + currentUser.uid).transaction(user => {
                 if (user) {
                     if (!user.claimed_levels) user.claimed_levels = {};
                     if (user.claimed_levels[key]) return;
 
-                    user.balance = (user.balance || 0) + amountInBDT; // Add BDT equivalent to balance
-                    user.total_income = (user.total_income || 0) + amountInBDT; // Add to income history
+                    // ADD BDT TO BALANCE (So other pages can convert it properly)
+                    user.balance = (user.balance || 0) + amountBDT; 
+                    user.total_income = (user.total_income || 0) + amountBDT; 
                     user.claimed_levels[key] = true;
                 }
                 return user;
