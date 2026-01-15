@@ -3,139 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Team | Forsage Mode</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>My Team | SHOPPING28</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* === FORSAGE THEME VARIABLES === */
+        /* === PREMIUM VARIABLES === */
         :root {
-            --bg-dark: #0d0d2b;
-            --card-bg: rgba(35, 35, 75, 0.6);
-            --primary: #5856d6;
-            --accent-blue: #00ecff;
-            --accent-purple: #bd00ff;
-            --text-white: #ffffff;
-            --glass-border: 1px solid rgba(255, 255, 255, 0.15);
+            --bg-dark: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-gold: #ffd700;
+            --neon-blue: #00f2ff;
+            --neon-green: #00ff88;
+            --neon-purple: #bc13fe;
+            --text-main: #ffffff;
+            --text-muted: #8b9bb4;
         }
 
         body {
-            margin: 0; padding: 20px;
+            margin: 0; padding: 0; padding-bottom: 50px;
             background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(88, 86, 214, 0.3) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(189, 0, 255, 0.2) 0%, transparent 40%);
-            color: var(--text-white);
-            font-family: 'Rajdhani', sans-serif;
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
             min-height: 100vh;
+            position: relative;
         }
 
+        /* AMBIENT LIGHTS */
+        .ambient-light { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; opacity: 0.4; }
+        .al-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, #4c00ff, transparent); }
+        .al-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, #ff0055, transparent); }
+
         /* HEADER */
-        .header { display: flex; align-items: center; margin-bottom: 30px; }
-        .back-btn { 
-            color: var(--text-white); font-size: 1.2rem; text-decoration: none; 
-            background: rgba(255,255,255,0.1); width: 40px; height: 40px; 
-            display: flex; align-items: center; justify-content: center; border-radius: 10px;
-            margin-right: 15px; border: var(--glass-border);
+        .header {
+            padding: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 100;
         }
+        .back-btn { 
+            color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 600;
+            display: flex; align-items: center; gap: 5px; transition: 0.3s;
+        }
+        .back-btn:hover { color: var(--neon-blue); }
+        .logo { font-size: 1.2rem; font-weight: 900; letter-spacing: 1px; }
+        .logo span { background: linear-gradient(to right, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         /* INVITE CARD */
         .invite-card {
-            background: linear-gradient(135deg, rgba(88, 86, 214, 0.2), rgba(189, 0, 255, 0.2));
-            border: 1px solid rgba(0, 236, 255, 0.3);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 0 20px rgba(88, 86, 214, 0.2);
-            text-align: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 25px; margin: 20px;
+            text-align: center; position: relative; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+        .invite-title { font-size: 0.8rem; text-transform: uppercase; color: var(--neon-blue); letter-spacing: 1px; margin-bottom: 10px; }
+        .ref-code { font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: 2px; text-shadow: 0 0 15px rgba(255,255,255,0.1); margin: 0; }
         
-        .invite-title { text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; color: var(--accent-blue); margin-bottom: 10px; }
-        .ref-code { font-size: 2rem; font-weight: 700; color: white; text-shadow: 0 0 10px rgba(255,255,255,0.5); letter-spacing: 2px; margin: 0; }
-        
-        /* LINK BOX */
-        .link-box {
-            display: flex;
+        /* Link Box */
+        .link-wrapper {
             background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            margin-top: 15px;
-            padding: 5px;
+            border-radius: 12px; padding: 10px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid rgba(255,255,255,0.05); margin-top: 15px;
         }
-        .link-input {
-            flex: 1; background: transparent; border: none; color: #aaa;
-            padding: 8px 10px; outline: none; font-family: monospace;
+        .link-input { 
+            background: transparent; border: none; color: var(--text-muted); 
+            font-family: monospace; font-size: 0.85rem; width: 70%; outline: none; 
         }
         .copy-btn {
-            background: var(--primary); color: white; border: none;
-            padding: 8px 15px; border-radius: 5px; cursor: pointer;
-            font-weight: bold; text-transform: uppercase; font-size: 0.8rem;
+            background: var(--neon-blue); color: #000; border: none;
+            padding: 6px 15px; border-radius: 20px; font-weight: 800; 
+            font-size: 0.75rem; cursor: pointer; box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
         }
 
-        /* STATS GRID (Pending Removed) */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .stat-card {
-            background: var(--card-bg);
-            border: var(--glass-border);
-            padding: 20px 15px;
-            border-radius: 12px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            display: flex; flex-direction: column; justify-content: center;
+        /* STATS GRID */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px 25px; }
+        .stat-box {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 20px; border-radius: 18px; text-align: center; position: relative;
         }
-        .stat-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-        }
-        .stat-num { font-size: 1.8rem; font-weight: 700; margin: 5px 0; }
-        .stat-label { font-size: 0.8rem; text-transform: uppercase; color: #aaa; letter-spacing: 1px; }
+        .stat-num { font-size: 1.6rem; font-weight: 800; margin: 5px 0 0; color: #fff; }
+        .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .val-gold { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+        .val-blue { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
 
         /* TABS */
-        .tabs { display: flex; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 10px; margin-bottom: 20px; overflow-x: auto; }
+        .tabs-wrapper { 
+            margin: 0 20px 15px; display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; 
+            scrollbar-width: none;
+        }
         .tab-btn {
-            flex: 1; border: none; background: transparent; color: #aaa;
-            padding: 10px; cursor: pointer; font-weight: 600; white-space: nowrap;
-            transition: 0.3s; border-radius: 8px; font-family: 'Rajdhani', sans-serif;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            color: var(--text-muted); padding: 8px 20px; border-radius: 30px;
+            white-space: nowrap; cursor: pointer; font-weight: 600; font-family: 'Outfit', sans-serif;
+            transition: 0.3s;
         }
-        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 0 15px rgba(88, 86, 214, 0.4); }
-
-        /* MEMBER LIST */
-        .list-container { display: none; }
-        .list-container.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .member-row {
-            display: flex; align-items: center; justify-content: space-between;
-            background: var(--card-bg);
-            border: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 10px;
-            padding: 15px;
-            border-radius: 10px;
-            position: relative;
-            border-left: 4px solid var(--accent-blue); /* Always Active Color */
+        .tab-btn.active {
+            background: var(--neon-blue); color: #000; border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
-        
-        .m-info h4 { margin: 0; font-size: 1rem; color: white; }
-        .m-info small { color: #888; font-size: 0.8rem; }
-        
+
+        /* LIST CONTAINER */
+        .list-container { display: none; margin: 0 20px; }
+        .list-container.active { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* MEMBER CARD */
+        .member-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 15px; border-radius: 15px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 3px solid var(--neon-green); position: relative;
+        }
+        .profit-badge {
+            position: absolute; right: 10px; top: -8px;
+            background: var(--neon-gold); color: #000; font-size: 0.65rem;
+            padding: 2px 8px; border-radius: 10px; font-weight: 800;
+        }
+        .m-info h4 { margin: 0; font-size: 1rem; color: #fff; font-weight: 700; }
+        .m-info small { color: var(--text-muted); font-size: 0.8rem; }
         .m-status {
-            font-size: 0.75rem; font-weight: bold; text-transform: uppercase;
-            padding: 3px 8px; border-radius: 4px;
-            color: var(--accent-blue); background: rgba(0, 236, 255, 0.1);
-        }
-
-        .profit-float {
-            position: absolute; right: 10px; top: 5px;
-            font-size: 0.7rem; color: #ffd700; font-weight: bold;
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+            padding: 4px 10px; border-radius: 20px;
+            color: var(--neon-green); background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.2);
         }
 
     </style>
 </head>
 <body onclick="unlockAudio()">
 
+    <div class="ambient-light al-1"></div>
+    <div class="ambient-light al-2"></div>
+
     <div class="header">
-        <a href="home.html" class="back-btn"><i class="fas fa-chevron-left"></i></a>
-        <h2 style="margin:0; text-transform:uppercase; letter-spacing:2px;">Team Partners</h2>
+        <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i> Home</a>
+        <div class="logo">SHOPPING<span>28</span></div>
     </div>
 
     <!-- REFERRAL BOX -->
@@ -143,30 +149,30 @@
         <div class="invite-title">Personal Link</div>
         <div class="ref-code" id="myCode">...</div>
         
-        <div class="link-box">
+        <div class="link-wrapper">
             <input type="text" id="refLinkInput" class="link-input" readonly value="Loading...">
             <button class="copy-btn" onclick="copyLink()">Copy</button>
         </div>
     </div>
 
-    <!-- STATS (ONLY ACTIVE & INCOME) -->
+    <!-- STATS -->
     <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-num" id="totalTeam" style="color: var(--accent-blue);">0</div>
-            <div class="stat-label">Active Partners</div>
+        <div class="stat-box">
+            <div class="stat-lbl">Active Team</div>
+            <div class="stat-num val-blue" id="totalTeam">0</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-num" id="totalIncome" style="color: #ffd700;">৳0</div>
-            <div class="stat-label">Team Profit</div>
+        <div class="stat-box">
+            <div class="stat-lbl">Team Profit</div>
+            <div class="stat-num val-gold"><span id="totalIncome">0.00</span> USDT</div>
         </div>
     </div>
 
     <!-- TABS -->
-    <div class="tabs">
+    <div class="tabs-wrapper">
         <button class="tab-btn active" onclick="switchTab('lvl1')" id="btnLvl1">Level 1</button>
         <button class="tab-btn" onclick="switchTab('lvl2')" id="btnLvl2">Level 2</button>
         <button class="tab-btn" onclick="switchTab('lvl3')" id="btnLvl3">Level 3</button>
-        <button class="tab-btn" onclick="switchTab('allActive')" id="btnAllActive">All Team</button>
+        <button class="tab-btn" onclick="switchTab('allActive')" id="btnAllActive">All List</button>
     </div>
 
     <!-- LISTS -->
@@ -175,29 +181,31 @@
     <div id="lvl3" class="list-container"></div>
     <div id="allActive" class="list-container"></div>
 
-    <!-- Firebase SDK & Logic -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // CONFIG
         const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
 
         let COMMISSION = { level1: 0, level2: 0, level3: 0 };
         let currentUserCode = null;
         let isVoiceReady = false;
-        
-        // Removed 'pending' from stats object
         let stats = { active: 0, profit: 0, lvl1: 0, lvl2: 0, lvl3: 0 };
 
         function unlockAudio() {
             if(isVoiceReady) return;
             window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); 
             isVoiceReady = true;
+        }
+
+        // CONVERT TAKA TO USDT (120 BDT = 1 USDT)
+        function toUSDT(taka) {
+            return (parseFloat(taka) / 120).toFixed(2);
         }
 
         // LOAD SETTINGS
@@ -230,7 +238,8 @@
 
         function updateDisplay() {
             document.getElementById('totalTeam').innerText = stats.active;
-            document.getElementById('totalIncome').innerText = "৳" + stats.profit;
+            // Convert Total Profit to USDT for display
+            document.getElementById('totalIncome').innerText = toUSDT(stats.profit);
             
             document.getElementById('btnLvl1').innerText = `Level 1 (${stats.lvl1})`;
             document.getElementById('btnLvl2').innerText = `Level 2 (${stats.lvl2})`;
@@ -247,7 +256,6 @@
                 if(snapshot.exists()) {
                     snapshot.forEach(child => {
                         const user = child.val();
-                        // Only process if status is active
                         if(user.status === 'active') {
                             renderMember(user, 1, lvl1Container);
                             if(user.ownCode) level1Codes.push(user.ownCode);
@@ -258,7 +266,7 @@
                 } 
                 
                 if(!hasActive) {
-                    lvl1Container.innerHTML = "<div style='text-align:center;color:#666;padding:20px;'>No Active Partners</div>";
+                    lvl1Container.innerHTML = "<div style='text-align:center;color:#666;padding:20px;font-size:0.9rem;'>No Active Partners</div>";
                 }
             });
         }
@@ -298,16 +306,15 @@
         }
 
         function renderMember(user, level, container) {
-            // SECURITY CHECK: DO NOT RENDER IF PENDING
             if(user.status !== 'active') return;
 
-            let profit = 0;
-            if(level === 1) profit = COMMISSION.level1 || 0;
-            if(level === 2) profit = COMMISSION.level2 || 0;
-            if(level === 3) profit = COMMISSION.level3 || 0;
+            let profitBDT = 0;
+            if(level === 1) profitBDT = COMMISSION.level1 || 0;
+            if(level === 2) profitBDT = COMMISSION.level2 || 0;
+            if(level === 3) profitBDT = COMMISSION.level3 || 0;
             
             stats.active++;
-            stats.profit += profit;
+            stats.profit += profitBDT;
 
             if(level === 1) stats.lvl1++;
             if(level === 2) stats.lvl2++;
@@ -318,9 +325,12 @@
             let phone = user.phone ? user.phone.toString() : "N/A";
             if(phone.length > 6) phone = phone.substring(0,3) + "**" + phone.substring(phone.length-3);
 
+            // Convert individual profit to USDT for badge
+            let profitUSDT = toUSDT(profitBDT);
+
             const html = `
-                <div class="member-row">
-                    <div class="profit-float">+ ৳${profit}</div>
+                <div class="member-card">
+                    <div class="profit-badge">+ ${profitUSDT} USDT</div>
                     <div class="m-info">
                         <h4>${user.firstName || 'User'}</h4>
                         <small>ID: ${user.ownCode || '...'}</small>
@@ -345,7 +355,7 @@
             linkInput.select();
             linkInput.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(linkInput.value);
-            alert("Link Copied!");
+            alert("Referral Link Copied!");
         }
     </script>
 </body>
