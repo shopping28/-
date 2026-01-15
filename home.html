@@ -15,7 +15,6 @@
             --neon-gold: #ffd700;
             --neon-blue: #00f2ff;
             --neon-green: #00ff88;
-            --neon-purple: #bc13fe;
             --text-main: #ffffff;
             --text-muted: #8b9bb4;
         }
@@ -43,6 +42,10 @@
             border-bottom: 1px solid var(--glass-border);
             position: sticky; top: 0; z-index: 100;
         }
+        
+        /* LOGO STYLE */
+        .logo-container { display: flex; align-items: center; gap: 8px; }
+        .logo-icon { font-size: 1.6rem; color: var(--neon-blue); filter: drop-shadow(0 0 5px rgba(0,242,255,0.5)); }
         .logo { font-size: 1.4rem; font-weight: 900; letter-spacing: 1px; }
         .logo span { background: linear-gradient(to right, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
@@ -83,13 +86,19 @@
         
         .user-name { font-size: 1.5rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; }
         .user-meta { color: var(--text-muted); font-size: 0.85rem; margin-top: 5px; }
+        
+        /* UID BADGE WITH HIDE/SHOW */
         .uid-badge {
-            background: rgba(255,255,255,0.1);
-            padding: 4px 12px; border-radius: 8px;
-            font-size: 0.8rem; margin-top: 8px;
+            background: rgba(255,255,255,0.08);
+            padding: 6px 15px; border-radius: 20px;
+            font-size: 0.8rem; margin-top: 10px;
             color: var(--neon-gold); font-family: monospace;
             border: 1px solid rgba(255, 215, 0, 0.3);
+            cursor: pointer; user-select: none;
+            display: flex; align-items: center; gap: 8px;
+            transition: 0.3s;
         }
+        .uid-badge:hover { background: rgba(255, 215, 0, 0.1); }
 
         /* LINK BOX */
         .link-wrapper {
@@ -106,7 +115,7 @@
             font-weight: 800; font-size: 0.75rem; cursor: pointer;
         }
 
-        /* STATS GRID (Partners & Team) */
+        /* STATS GRID */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px; }
         .stat-box {
             background: var(--glass-bg); border: 1px solid var(--glass-border);
@@ -139,15 +148,10 @@
 
         /* PREMIUM ACTION BUTTONS */
         .program-btn {
-            margin: 0 20px 15px;
-            height: 90px;
-            border-radius: 20px;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
+            margin: 0 20px 15px; height: 90px; border-radius: 20px;
+            position: relative; overflow: hidden; cursor: pointer;
             display: flex; flex-direction: column; justify-content: center; padding: 0 25px;
-            transition: transform 0.2s;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
             border: 1px solid rgba(255,255,255,0.1);
         }
         .program-btn:active { transform: scale(0.98); }
@@ -162,28 +166,23 @@
         .btn-text p { margin: 2px 0 0; font-size: 0.8rem; font-weight: 500; opacity: 0.9; }
         
         .action-pill {
-            background: #fff; color: #000;
-            padding: 8px 20px; border-radius: 30px;
-            font-weight: 800; font-size: 0.8rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background: #fff; color: #000; padding: 8px 20px; border-radius: 30px;
+            font-weight: 800; font-size: 0.8rem; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             display: flex; align-items: center; gap: 5px;
         }
 
-        /* MORE OPTIONS (Monthly & Weekly) */
+        /* MORE OPTIONS */
         .more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px; }
         .more-card {
-            height: 80px;
-            border-radius: 15px;
+            height: 80px; border-radius: 15px;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             text-align: center; cursor: pointer;
             border: 1px solid rgba(255,255,255,0.1);
             position: relative; overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        
         .mc-monthly { background: linear-gradient(135deg, #8E2DE2, #4A00E0); }
         .mc-weekly { background: linear-gradient(135deg, #fc4a1a, #f7b733); }
-
         .more-card i { font-size: 1.4rem; color: #fff; margin-bottom: 5px; z-index: 2; }
         .more-card span { font-size: 0.9rem; color: #fff; font-weight: 700; z-index: 2; text-transform: uppercase; }
 
@@ -209,24 +208,32 @@
 
     <div id="loader">SHOPPING<span>28</span></div>
 
-    <!-- Background Ambience -->
+    <!-- Background -->
     <div class="ambient-light al-1"></div>
     <div class="ambient-light al-2"></div>
 
-    <!-- HEADER -->
+    <!-- HEADER with PREMIUM LOGO -->
     <div class="header">
-        <div class="logo">SHOPPING<span>28</span></div>
+        <div class="logo-container">
+            <i class="fas fa-shopping-bag logo-icon"></i>
+            <div class="logo">SHOPPING<span>28</span></div>
+        </div>
         <div class="id-pill" id="headerCode">ID: ...</div>
     </div>
 
-    <!-- CENTERED PROFILE CARD -->
+    <!-- PROFILE CARD -->
     <div class="profile-card">
         <div class="profile-img-box" onclick="window.location.href='account.html'">
             <img id="u_img" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="User">
         </div>
         <h3 class="user-name" id="u_name">Loading...</h3>
         <p class="user-meta" id="u_joined">Joined: ...</p>
-        <div class="uid-badge" id="u_uid">UID: ...</div>
+        
+        <!-- UID TOGGLE -->
+        <div class="uid-badge" onclick="toggleUid()">
+            <span id="u_uid_display">UID: Loading...</span>
+            <i id="uid_eye" class="fas fa-eye-slash"></i>
+        </div>
 
         <div class="link-wrapper">
             <div class="link-txt" id="refLinkText">shopping28.io/b/...</div>
@@ -234,7 +241,7 @@
         </div>
     </div>
 
-    <!-- STATS (Partners & Team) -->
+    <!-- STATS -->
     <div class="stats-grid">
         <div class="stat-box" onclick="window.location.href='my_team.html'">
             <div class="stat-label">Partners <i class="fas fa-info-circle"></i></div>
@@ -248,14 +255,14 @@
         </div>
     </div>
 
-    <!-- PROFIT SECTION (CONVERTED TO USDT) -->
+    <!-- PROFIT SECTION (USDT BEP20) -->
     <div class="profit-card">
         <div class="profit-row">
-            <div class="p-title"><div class="dot d-gold"></div> Total Profit (USDT)</div>
+            <div class="p-title"><div class="dot d-gold"></div> Total Profit</div>
             <div class="p-value val-gold"><span id="totalProfit">0.00</span> USDT</div>
         </div>
         <div class="profit-row">
-            <div class="p-title"><div class="dot d-green"></div> Current Balance (USDT)</div>
+            <div class="p-title"><div class="dot d-green"></div> Current Balance</div>
             <div class="p-value val-green"><span id="currentBalance">0.00</span> USDT</div>
         </div>
     </div>
@@ -263,7 +270,6 @@
     <!-- PROGRAMS -->
     <div class="section-title">Shopping28 Programs</div>
 
-    <!-- Task28 Job (Renamed from Daily Task) -->
     <div class="program-btn bg-task shine" onclick="window.location.href='task.html'">
         <div class="btn-content">
             <div class="btn-text">
@@ -274,7 +280,6 @@
         </div>
     </div>
 
-    <!-- Payout (Renamed from Withdraw) -->
     <div class="program-btn bg-withdraw shine" onclick="window.location.href='withdraw.html'">
         <div class="btn-content">
             <div class="btn-text">
@@ -285,7 +290,6 @@
         </div>
     </div>
 
-    <!-- VIP Levels -->
     <div class="program-btn bg-vip shine" onclick="window.location.href='vip_level.html'">
         <div class="btn-content">
             <div class="btn-text">
@@ -296,7 +300,7 @@
         </div>
     </div>
 
-    <!-- MORE OPTIONS (Monthly & Weekly) -->
+    <!-- MORE OPTIONS -->
     <div class="section-title">More Options</div>
     <div class="more-grid">
         <div class="more-card mc-monthly shine" onclick="window.location.href='monthly.html'">
@@ -309,7 +313,7 @@
         </div>
     </div>
 
-    <!-- Firebase Scripts -->
+    <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -319,6 +323,9 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
         const db = firebase.database();
+        
+        let fullUid = "";
+        let isUidHidden = true;
         let isVoiceReady = false;
 
         function unlockAudio() {
@@ -326,7 +333,6 @@
             window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
             isVoiceReady = true;
         }
-
         function speak(text) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(text);
@@ -334,10 +340,27 @@
             window.speechSynthesis.speak(u);
         }
 
-        // CURRENCY CONVERTER FUNCTION (120 Taka = 1 USD)
+        // CONVERT TAKA TO USDT (120 BDT = 1 USD)
         function toUSDT(taka) {
             if(!taka) return "0.00";
             return (parseFloat(taka) / 120).toFixed(2);
+        }
+
+        // UID TOGGLE FUNCTION
+        function toggleUid() {
+            const display = document.getElementById('u_uid_display');
+            const icon = document.getElementById('uid_eye');
+            isUidHidden = !isUidHidden;
+            
+            if(isUidHidden) {
+                display.innerText = "UID: " + fullUid.substring(0, 8) + "•••";
+                icon.className = "fas fa-eye-slash";
+                icon.style.color = "#8b9bb4";
+            } else {
+                display.innerText = "UID: " + fullUid;
+                icon.className = "fas fa-eye";
+                icon.style.color = "#00f2ff";
+            }
         }
 
         auth.onAuthStateChanged((user) => {
@@ -349,41 +372,47 @@
                         
                         document.getElementById('loader').style.display = 'none';
 
-                        // Profile Info
+                        // Basic Info
                         document.getElementById('u_name').innerText = data.firstName;
                         document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
                         document.getElementById('u_joined').innerText = "Joined: " + (data.joinDate || "Recent");
-                        document.getElementById('u_uid').innerText = "UID: " + user.uid.substring(0,8) + ".."; // Showing short UID
-                        
                         if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
+                        
+                        // UID Setup
+                        fullUid = user.uid;
+                        document.getElementById('u_uid_display').innerText = "UID: " + fullUid.substring(0, 8) + "•••";
 
-                        // Link Box
-                        const link = `shopping28.io/b/${data.ownCode}`;
-                        document.getElementById('refLinkText').innerText = link;
+                        // Link
+                        document.getElementById('refLinkText').innerText = `shopping28.io/b/${data.ownCode}`;
 
-                        // Balance & Profit (AUTO CONVERT TO USDT)
-                        const rawBalance = data.balance || 0;
-                        const rawProfit = data.total_income || data.totalEarning || 0;
+                        // Financials (Converted)
+                        document.getElementById('currentBalance').innerText = toUSDT(data.balance || 0);
+                        document.getElementById('totalProfit').innerText = toUSDT(data.total_income || data.totalEarning || 0);
 
-                        document.getElementById('currentBalance').innerText = toUSDT(rawBalance);
-                        document.getElementById('totalProfit').innerText = toUSDT(rawProfit);
-
-                        // Partners & Team Logic
+                        // === TEAM COUNT LOGIC (Deep Search) ===
                         if(data.ownCode) {
-                            // Direct Partners
+                            // 1. Direct Partners
                             db.ref('users').orderByChild('referredBy').equalTo(data.ownCode).on('value', (snap) => {
-                                document.getElementById('partnerCount').innerText = snap.numChildren();
+                                const directCount = snap.numChildren();
+                                document.getElementById('partnerCount').innerText = directCount;
+                                
+                                // 2. Total Team Calculation (Level 1 + Level 2 + Level 3)
+                                // We first assume Database might have a stored count, if not, we try to calculate
+                                if(data.teamCount || data.team_member) {
+                                    document.getElementById('teamCount').innerText = data.teamCount || data.team_member;
+                                } else {
+                                    // Fallback: If no backend logic, assume Total = Direct (Client side recursive is too heavy for simple home)
+                                    // For deeper accuracy, calculateTeam(data.ownCode); could be used but requires multiple DB calls.
+                                    // Here we show Directs + (approximation if needed)
+                                    document.getElementById('teamCount').innerText = directCount;
+                                    calculateDeepTeam(data.ownCode, directCount);
+                                }
                             });
-                            
-                            // Total Team Count (Checks Database for 'teamCount' or 'team_member')
-                            // If your backend updates this, it will show. If not, it falls back to Partner count.
-                            let tCount = data.teamCount || data.team_member || document.getElementById('partnerCount').innerText;
-                            document.getElementById('teamCount').innerText = tCount;
                         }
 
-                        // Welcome Voice
+                        // Voice
                         if(!localStorage.getItem('home_voice_played')) {
-                            speak("Welcome to Shopping 28 Premium Dashboard");
+                            speak("Welcome to Shopping 28");
                             localStorage.setItem('home_voice_played', 'true');
                         }
                     }
@@ -393,12 +422,45 @@
             }
         });
 
+        // RECURSIVE TEAM COUNT (Lightweight version - Up to Level 3)
+        function calculateDeepTeam(myCode, directCount) {
+            let total = directCount;
+            // Get Level 1 Users
+            db.ref('users').orderByChild('referredBy').equalTo(myCode).once('value', (snap1) => {
+                if(snap1.exists()) {
+                    snap1.forEach(child1 => {
+                        const user1 = child1.val();
+                        if(user1.ownCode) {
+                            // Get Level 2
+                            db.ref('users').orderByChild('referredBy').equalTo(user1.ownCode).once('value', (snap2) => {
+                                if(snap2.exists()) {
+                                    total += snap2.numChildren();
+                                    document.getElementById('teamCount').innerText = total;
+                                    
+                                    // Get Level 3
+                                    snap2.forEach(child2 => {
+                                        const user2 = child2.val();
+                                        if(user2.ownCode) {
+                                            db.ref('users').orderByChild('referredBy').equalTo(user2.ownCode).once('value', (snap3) => {
+                                                if(snap3.exists()) {
+                                                    total += snap3.numChildren();
+                                                    document.getElementById('teamCount').innerText = total;
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
         function copyRef() {
             const code = document.getElementById('headerCode').innerText.replace("ID: ", "");
             const fullLink = `https://shopping28.github.io/-/login_register.html?ref=${code}`;
-            navigator.clipboard.writeText(fullLink).then(() => {
-                alert("Referral Link Copied!");
-            });
+            navigator.clipboard.writeText(fullLink).then(() => { alert("Link Copied!"); });
         }
     </script>
 </body>
