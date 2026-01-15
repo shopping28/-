@@ -3,168 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra  Premium Dashboard</title>
+    <title>Ultra Premium Dashboard</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* === THEME VARIABLES === */
-        :root {
-            --text-white: #ffffff;
-            --neon-blue: #00f2ff;
-        }
-
-        body {
-            margin: 0; 
-            padding-bottom: 90px; 
-            color: var(--text-white); 
-            min-height: 100vh;
-            font-family: 'Outfit', sans-serif;
-            background: #000; /* Fallback */
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* =========================================
-           ULTRA PREMIUM BACKGROUND ANIMATION
-        ========================================= */
-        .premium-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            background: #0f0c29;
-            overflow: hidden;
-        }
-
-        /* Moving Gradients (The Aurora Effect) */
-        .gradient-sphere {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.6;
-            animation: moveGradient 15s infinite alternate ease-in-out;
-        }
-
-        .g-1 {
-            top: -10%; left: -10%; width: 500px; height: 500px;
-            background: radial-gradient(circle, #764ba2, #667eea);
-            animation-duration: 20s;
-        }
-
-        .g-2 {
-            bottom: -10%; right: -10%; width: 400px; height: 400px;
-            background: radial-gradient(circle, #ff0084, #33001b);
-            animation-duration: 15s;
-            animation-delay: -5s;
-        }
-
-        .g-3 {
-            top: 40%; left: 40%; width: 300px; height: 300px;
-            background: radial-gradient(circle, #00f2ff, #000000);
-            opacity: 0.4;
-            animation: moveGradient 12s infinite alternate-reverse;
-        }
-
-        /* Animated Stars/Dust Overlay */
-        .stars {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                radial-gradient(1px 1px at 20px 30px, #eee, rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 50px 160px, #ddd, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0));
-            background-size: 200px 200px;
-            animation: twinkle 5s linear infinite;
-            opacity: 0.5;
-        }
-
-        @keyframes moveGradient {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(50px, 50px) scale(1.1); }
-            100% { transform: translate(-30px, 20px) scale(0.9); }
-        }
-
-        @keyframes twinkle {
-            0% { transform: translateY(0); opacity: 0.3; }
-            50% { opacity: 0.8; }
-            100% { transform: translateY(-50px); opacity: 0.3; }
-        }
-
-        /* Glass Overlay for Depth */
-        .glass-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 12, 41, 0.2); /* Slight tint */
-            backdrop-filter: blur(2px); /* Soften everything slightly */
-            z-index: -1;
-        }
-
-        /* =========================================
-           HEADER & COMPONENTS
-        ========================================= */
-        .header {
-            padding: 25px 25px; 
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            position: sticky; top: 0; z-index: 100;
-        }
+        :root { --text-white: #ffffff; --neon-blue: #00f2ff; }
+        body { margin: 0; padding-bottom: 90px; color: var(--text-white); min-height: 100vh; font-family: 'Outfit', sans-serif; background: #000; overflow-x: hidden; position: relative; }
         
-        .header h2 { font-size: 1.6rem; font-weight: 800; margin: 0; }
-        .header h2 span { 
-            background: linear-gradient(to right, #00f2ff, #00c6ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
-        }
+        /* BACKGROUND CSS (SAME AS BEFORE) */
+        .premium-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: #0f0c29; overflow: hidden; }
+        .gradient-sphere { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.6; animation: moveGradient 15s infinite alternate ease-in-out; }
+        .g-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: radial-gradient(circle, #764ba2, #667eea); animation-duration: 20s; }
+        .g-2 { bottom: -10%; right: -10%; width: 400px; height: 400px; background: radial-gradient(circle, #ff0084, #33001b); animation-duration: 15s; animation-delay: -5s; }
+        .g-3 { top: 40%; left: 40%; width: 300px; height: 300px; background: radial-gradient(circle, #00f2ff, #000000); opacity: 0.4; animation: moveGradient 12s infinite alternate-reverse; }
+        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(1px 1px at 20px 30px, #eee, rgba(0,0,0,0)), radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)); background-size: 200px 200px; animation: twinkle 5s linear infinite; opacity: 0.5; }
+        @keyframes moveGradient { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(50px, 50px) scale(1.1); } 100% { transform: translate(-30px, 20px) scale(0.9); } }
+        @keyframes twinkle { 0% { transform: translateY(0); opacity: 0.3; } 50% { opacity: 0.8; } 100% { transform: translateY(-50px); opacity: 0.3; } }
+        .glass-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 12, 41, 0.2); backdrop-filter: blur(2px); z-index: -1; }
 
+        /* HEADER */
+        .header { padding: 25px 25px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 0; z-index: 100; }
+        .header h2 { font-size: 1.6rem; font-weight: 800; margin: 0; }
+        .header h2 span { background: linear-gradient(to right, #00f2ff, #00c6ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px rgba(0, 242, 255, 0.3); }
         .badge { padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; display: inline-block; margin-top: 5px; letter-spacing: 1px; }
-        .inact { background: rgba(255, 71, 87, 0.2); color: #ff6b81; border: 1px solid rgba(255, 71, 87, 0.4); }
         .act { background: rgba(46, 213, 115, 0.2); color: #2ed573; border: 1px solid rgba(46, 213, 115, 0.4); }
 
-        .profile-btn {
-            width: 55px; height: 55px; 
-            background: rgba(255,255,255,0.05); border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; 
-            border: 2px solid rgba(255,255,255,0.2); cursor: pointer;
-            box-shadow: 0 0 15px rgba(255,255,255,0.1);
-        }
+        .profile-btn { width: 55px; height: 55px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
         .profile-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
-        /* =========================================
-           BUTTONS (BIG & PREMIUM)
-        ========================================= */
-        .list-container {
-            display: flex; flex-direction: column; gap: 20px; padding: 25px 20px;
-        }
-
-        .wide-card {
-            width: 100%;
-            padding: 35px 30px; /* Big Size */
-            box-sizing: border-box;
-            border-radius: 25px;
-            display: flex; align-items: center; justify-content: space-between; 
-            position: relative; overflow: hidden; cursor: pointer;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            background-color: rgba(255,255,255,0.02); /* Glassy base */
-        }
-
+        /* CARDS */
+        .list-container { display: flex; flex-direction: column; gap: 20px; padding: 25px 20px; }
+        .wide-card { width: 100%; padding: 35px 30px; box-sizing: border-box; border-radius: 25px; display: flex; align-items: center; justify-content: space-between; position: relative; overflow: hidden; cursor: pointer; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; background-color: rgba(255,255,255,0.02); }
         .wide-card:active { transform: scale(0.97); }
-
         .card-content { display: flex; align-items: center; gap: 25px; z-index: 2; }
         .card-icon { font-size: 2.8rem; color: white; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }
         .card-text { font-size: 1.5rem; font-weight: 800; color: white; text-transform: uppercase; letter-spacing: 1px; }
         .arrow-icon { font-size: 1.2rem; color: rgba(255,255,255,0.6); z-index: 2; }
 
-        /* PREMIUM GRADIENTS */
-        .bg-activate { background: linear-gradient(135deg, #FF0080 0%, #7928CA 100%); }
+        /* COLORS */
         .bg-task { background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%); }
         .bg-team { background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); }
         .bg-with { background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%); }
@@ -172,190 +50,104 @@
         .bg-quiz { background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%); }
         .bg-time { background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%); }
         .bg-club { background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%); }
-
-        /* Shine Animation */
-        .shine-anim::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transform: skewX(-25deg);
-            animation: shine 4s infinite;
-            z-index: 1;
-        }
+        
+        .shine-anim::before { content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); transform: skewX(-25deg); animation: shine 4s infinite; z-index: 1; }
         @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
-
-        /* Floating Animation for Activate Button */
-        .float-anim { animation: floatBtn 6s ease-in-out infinite; }
-        @keyframes floatBtn { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-
-        /* Lock Layer */
-        .lock-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
-            display: flex; align-items: center; justify-content: center; z-index: 10;
-        }
-        .lock-layer i { font-size: 1.5rem; color: #ff6b6b; margin-right: 12px; }
-        .lock-layer span { font-size: 1.1rem; color: #fff; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
-
+        
+        /* Loading Overlay */
+        #pageLoader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; color: white; font-size: 1.5rem; }
     </style>
 </head>
 <body onclick="unlockAudio()">
 
-    <!-- ULTRA PREMIUM BACKGROUND -->
+    <!-- Loading Screen until Check is done -->
+    <div id="pageLoader">Verifying Account...</div>
+
     <div class="premium-bg">
         <div class="gradient-sphere g-1"></div>
         <div class="gradient-sphere g-2"></div>
         <div class="gradient-sphere g-3"></div>
-        <div class="stars"></div> <!-- Animated Stars -->
-        <div class="glass-overlay"></div> <!-- Depth Effect -->
+        <div class="stars"></div>
+        <div class="glass-overlay"></div>
     </div>
 
-    <!-- HEADER -->
     <div class="header">
         <div>
-            <h2 style="margin:0;">Hi, <span id="userName">Loading...</span></h2>
-            <span id="userStatus" class="badge inact">Checking...</span>
+            <h2 style="margin:0;">Hi, <span id="userName">User</span></h2>
+            <span id="userStatus" class="badge act">ACTIVE</span>
         </div>
-        <div class="profile-btn" id="profileBtn" onclick="checkAccess('account.html')">
+        <div class="profile-btn" id="profileBtn" onclick="window.location.href='account.html'">
             <i class="fas fa-user"></i>
         </div>
     </div>
 
-    <!-- BUTTONS LIST -->
+    <!-- Active Button REMOVED. Only Features visible -->
     <div class="list-container">
-
-        <!-- Activate Button -->
-        <div id="activateBanner" class="wide-card bg-activate shine-anim float-anim" onclick="window.location.href='account_active.html'">
-            <div class="card-content">
-                <i class="fas fa-rocket card-icon"></i>
-                <div>
-                    <div class="card-text">ACTIVATE NOW</div>
-                    <small style="color:rgba(255,255,255,0.9); font-size:0.9rem; font-weight:600;">Start Earning Journey</small>
-                </div>
-            </div>
-            <i class="fas fa-chevron-right arrow-icon"></i>
-        </div>
-
-        <div class="wide-card bg-task shine-anim" onclick="checkAccess('task.html')">
-            <div class="card-content">
-                <i class="fas fa-clipboard-check card-icon"></i>
-                <div class="card-text">Daily Task</div>
-            </div>
-            <div class="lock-layer" id="lock_task"><i class="fas fa-lock"></i><span>Locked</span></div>
+        
+        <div class="wide-card bg-task shine-anim" onclick="window.location.href='task.html'">
+            <div class="card-content"><i class="fas fa-clipboard-check card-icon"></i><div class="card-text">Daily Task</div></div>
             <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
 
-        <div class="wide-card bg-team shine-anim" onclick="checkAccess('my_team.html')">
-            <div class="card-content">
-                <i class="fas fa-users card-icon"></i>
-                <div class="card-text">My Team</div>
-            </div>
-            <div class="lock-layer" id="lock_team"><i class="fas fa-lock"></i><span>Locked</span></div>
+        <div class="wide-card bg-team shine-anim" onclick="window.location.href='my_team.html'">
+            <div class="card-content"><i class="fas fa-users card-icon"></i><div class="card-text">My Team</div></div>
             <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
 
-        <div class="wide-card bg-with shine-anim" onclick="checkAccess('withdraw.html')">
-            <div class="card-content">
-                <i class="fas fa-wallet card-icon"></i>
-                <div class="card-text">Withdraw</div>
-            </div>
-            <div class="lock-layer" id="lock_withdraw"><i class="fas fa-lock"></i><span>Locked</span></div>
+        <div class="wide-card bg-with shine-anim" onclick="window.location.href='withdraw.html'">
+            <div class="card-content"><i class="fas fa-wallet card-icon"></i><div class="card-text">Withdraw</div></div>
             <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
 
-        <div class="wide-card bg-vip shine-anim" onclick="checkAccess('vip_level.html')">
-            <div class="card-content">
-                <i class="fas fa-crown card-icon"></i>
-                <div class="card-text">VIP Level</div>
-            </div>
-            <div class="lock-layer" id="lock_vip"><i class="fas fa-lock"></i><span>Locked</span></div>
+        <div class="wide-card bg-vip shine-anim" onclick="window.location.href='vip_level.html'">
+            <div class="card-content"><i class="fas fa-crown card-icon"></i><div class="card-text">VIP Level</div></div>
             <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
 
-        <div class="wide-card bg-quiz shine-anim" onclick="checkAccess('question_game.html')">
-            <div class="card-content">
-                <i class="fas fa-gamepad card-icon"></i>
-                <div class="card-text">Quiz Game</div>
-            </div>
-            <div class="lock-layer" id="lock_quiz"><i class="fas fa-lock"></i><span>Locked</span></div>
+        <div class="wide-card bg-quiz shine-anim" onclick="window.location.href='question_game.html'">
+            <div class="card-content"><i class="fas fa-gamepad card-icon"></i><div class="card-text">Quiz Game</div></div>
             <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
 
-        <!-- UPDATED BUTTON: "Weekly" changed to "4X Program" -->
-        <div class="wide-card bg-time shine-anim" onclick="checkAccess('weekly.html')">
-            <div class="card-content">
-                <i class="fas fa-calendar-week card-icon"></i>
-                <div class="card-text">4X Program</div>
-            </div>
-            <div class="lock-layer" id="lock_weekly"><i class="fas fa-lock"></i><span>Locked</span></div>
+        <div class="wide-card bg-time shine-anim" onclick="window.location.href='weekly.html'">
+            <div class="card-content"><i class="fas fa-calendar-week card-icon"></i><div class="card-text">4X Program</div></div>
             <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
 
         <div class="wide-card bg-time shine-anim" onclick="window.location.href='monthly.html'">
-            <div class="card-content">
-                <i class="fas fa-calendar-alt card-icon"></i>
-                <div class="card-text">Monthly</div>
-            </div>
-            <div class="lock-layer"><i class="fas fa-clock"></i><span>16 Days</span></div>
+            <div class="card-content"><i class="fas fa-calendar-alt card-icon"></i><div class="card-text">Monthly</div></div>
             <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
 
-        <div class="wide-card bg-club shine-anim" onclick="checkAccess('vip_club.html')">
-            <div class="card-content">
-                <i class="fas fa-gem card-icon"></i>
-                <div class="card-text">VIP Club</div>
-            </div>
-            <div class="lock-layer" id="lock_vip_club"><i class="fas fa-lock"></i><span>Locked</span></div>
+        <div class="wide-card bg-club shine-anim" onclick="window.location.href='vip_club.html'">
+            <div class="card-content"><i class="fas fa-gem card-icon"></i><div class="card-text">VIP Club</div></div>
             <i class="fas fa-arrow-right arrow-icon"></i>
         </div>
-
     </div>
 
-    <div id="voiceTrigger" style="display:none;"></div>
-
-    <!-- Firebase SDK (NO CHANGE) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        /* === JAVASCRIPT LOGIC === */
-        const firebaseConfig = { 
-            apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", 
-            authDomain: "art-paid-work001.firebaseapp.com", 
-            databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", 
-            projectId: "art-paid-work001", 
-            storageBucket: "art-paid-work001.firebasestorage.app", 
-            messagingSenderId: "524647364992", 
-            appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" 
-        };
-        
+        const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        
         const auth = firebase.auth();
         const db = firebase.database();
-
-        let currentUserStatus = 'inactive';
         let isVoiceReady = false;
-        let pendingMsg = "";
 
         function unlockAudio() {
             if(isVoiceReady) return;
-            const synth = window.speechSynthesis;
-            const u = new SpeechSynthesisUtterance("");
-            synth.speak(u);
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
             isVoiceReady = true;
-            if(pendingMsg) { speakNow(pendingMsg); pendingMsg = ""; }
         }
 
         function speak(text) {
-            if(isVoiceReady) { speakNow(text); } else { pendingMsg = text; }
-        }
-
-        function speakNow(text) {
             window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US'; utterance.rate = 0.9; utterance.pitch = 1; utterance.volume = 1.0;
-            window.speechSynthesis.speak(utterance);
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US'; u.rate = 0.9;
+            window.speechSynthesis.speak(u);
         }
 
         auth.onAuthStateChanged((user) => {
@@ -363,52 +155,31 @@
                 db.ref('users/' + user.uid).on('value', (snapshot) => {
                     const data = snapshot.val();
                     if(data) {
+                        // === SECURITY CHECK ===
+                        // যদি স্ট্যাটাস active না হয়, তাহলে Active Page এ পাঠিয়ে দিবে
+                        if(data.status !== 'active') {
+                            window.location.href = 'account_active.html';
+                            return;
+                        }
+
+                        // সব ঠিক থাকলে লোডার সরিয়ে দিবে
+                        document.getElementById('pageLoader').style.display = 'none';
                         document.getElementById('userName').innerText = data.firstName || "User";
-                        currentUserStatus = data.status || 'inactive';
-                        updateUI(currentUserStatus);
-                        if(data.profilePic) { document.getElementById('profileBtn').innerHTML = `<img src="${data.profilePic}">`; }
-                        if(currentUserStatus === 'active' && !localStorage.getItem('activation_voice_played')) {
+                        if(data.profilePic) document.getElementById('profileBtn').innerHTML = `<img src="${data.profilePic}">`;
+
+                        // Welcome Voice (Once)
+                        if(!localStorage.getItem('activation_voice_played')) {
                             speak("Your account active successful so start network marketing journey");
                             localStorage.setItem('activation_voice_played', 'true');
                         }
                     } else {
-                        document.getElementById('userName').innerText = "No Data";
-                        updateUI('inactive');
-                    }
-                });
-                db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).on('child_changed', (snapshot) => {
-                    const req = snapshot.val();
-                    if(req && req.status === 'approved') {
-                        speak("Your withdraw successfully accept then you work first and more withdraw and more earning best of luck for shopping28 and the art community");
-                        if("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
+                        window.location.href = 'login_register.html';
                     }
                 });
             } else {
                 window.location.href = 'login_register.html';
             }
         });
-
-        function updateUI(status) {
-            const badge = document.getElementById('userStatus');
-            const banner = document.getElementById('activateBanner');
-            // 'lock_weekly' is kept here for unlocking
-            const locks = ['lock_task', 'lock_team', 'lock_withdraw', 'lock_vip', 'lock_quiz', 'lock_vip_club', 'lock_weekly'];
-            
-            if(!badge || !banner) return;
-            
-            if (status === 'active') {
-                badge.innerText = "ACTIVE"; badge.className = "badge act"; banner.style.display = 'none';
-                locks.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
-            } else {
-                badge.innerText = "INACTIVE"; badge.className = "badge inact"; banner.style.display = 'flex';
-                locks.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'flex'; });
-            }
-        }
-
-        function checkAccess(url) {
-            if (currentUserStatus === 'active') { window.location.href = url; } 
-            else { if("vibrate" in navigator) navigator.vibrate(200); alert("⛔ ACCOUNT LOCKED!\n\nApni Account Active koren nai."); }
-        }
     </script>
 </body>
 </html>
