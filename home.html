@@ -3,295 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOPPING28 | Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <title>SHOPPING28 | Premium Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* === PREMIUM VARIABLES === */
         :root {
-            --bg-body: #0e0f12;
-            --bg-card: #191b20;
-            --primary-blue: #4c6ef5;
-            --accent-purple: #5b3fab;
+            --bg-dark: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-gold: #ffd700;
+            --neon-blue: #00f2ff;
+            --neon-green: #00ff88;
+            --neon-purple: #bc13fe;
             --text-main: #ffffff;
-            --text-muted: #8a8d96;
-            --glow-gold: #ffc107;
-            --font-main: 'Roboto', sans-serif;
+            --text-muted: #8b9bb4;
         }
 
         body {
-            margin: 0; padding: 0; padding-bottom: 80px;
-            background-color: var(--bg-body);
+            margin: 0; padding: 0; padding-bottom: 90px;
+            background-color: var(--bg-dark);
             color: var(--text-main);
-            font-family: var(--font-main);
+            font-family: 'Outfit', sans-serif;
             overflow-x: hidden;
+            position: relative;
         }
+
+        /* AMBIENT BACKGROUND LIGHTS */
+        .ambient-light { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; opacity: 0.4; }
+        .al-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, #4c00ff, transparent); }
+        .al-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, #ff0055, transparent); }
 
         /* HEADER */
         .header {
-            padding: 15px 20px;
+            padding: 20px;
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--bg-card);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 100;
         }
-        .logo { font-size: 1.2rem; font-weight: 900; letter-spacing: 1px; color: #fff; }
-        .logo span { color: var(--primary-blue); }
-        .wallet-badge {
-            background: rgba(76, 110, 245, 0.2); color: #8ea4ff;
-            padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;
+        .logo { font-size: 1.4rem; font-weight: 900; letter-spacing: 1px; }
+        .logo span { background: linear-gradient(to right, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .id-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 14px; border-radius: 30px;
+            font-size: 0.8rem; font-weight: 700; letter-spacing: 1px;
+            color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
         }
 
-        /* PROFILE SECTION (Top Box) */
-        .profile-section {
-            background: linear-gradient(180deg, #1f2229 0%, #15171c 100%);
-            margin: 20px; padding: 20px; border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        /* GLASS CARD COMMON STYLE */
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 15px 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             position: relative; overflow: hidden;
         }
-        /* Glowing orb effect behind profile */
-        .glow-orb {
-            position: absolute; top: -20px; left: -20px; width: 100px; height: 100px;
-            background: radial-gradient(circle, rgba(76,110,245,0.4) 0%, transparent 70%);
-            border-radius: 50%; filter: blur(20px);
+
+        /* PROFILE SECTION */
+        .profile-container { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .profile-img-box {
+            width: 65px; height: 65px; border-radius: 50%;
+            padding: 3px; background: linear-gradient(135deg, #00f2ff, #bc13fe);
+            position: relative;
         }
-
-        .user-info { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; position: relative; z-index: 2; }
-        
-        /* Circle Avatar */
-        .avatar-circle {
-            width: 60px; height: 60px; border-radius: 50%;
-            background: #000; padding: 3px;
-            background: conic-gradient(from 0deg, #4c6ef5, #a64cf5, #4c6ef5);
-            display: flex; justify-content: center; align-items: center;
+        .profile-img-box img {
+            width: 100%; height: 100%; border-radius: 50%;
+            object-fit: cover; border: 3px solid #000;
         }
-        .avatar-circle img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #191b20; }
+        .user-details h3 { margin: 0; font-size: 1.2rem; font-weight: 700; }
+        .user-details p { margin: 3px 0 0; color: var(--text-muted); font-size: 0.85rem; }
+        .setting-icon { margin-left: auto; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
+        .setting-icon:hover { color: #fff; transform: rotate(90deg); }
 
-        .u-details h3 { margin: 0; font-size: 1.1rem; }
-        .u-details span { color: var(--text-muted); font-size: 0.85rem; }
-        .id-badge { background: #2a2d35; padding: 2px 8px; border-radius: 6px; color: #fff; font-size: 0.8rem; margin-left: 5px; }
-
-        /* Personal Link Box (Blue Pill) */
-        .link-box {
-            background: #2a2d35; border-radius: 30px; padding: 8px 15px;
+        /* LINK BOX */
+        .link-wrapper {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px; padding: 10px 15px;
             display: flex; justify-content: space-between; align-items: center;
-            margin-top: 10px; border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .link-text { color: var(--primary-blue); font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%; }
+        .link-txt { font-family: monospace; color: var(--neon-blue); font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; max-width: 70%; white-space: nowrap; }
         .copy-btn {
-            background: var(--primary-blue); color: white; border: none;
-            padding: 5px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
+            background: var(--neon-blue); color: #000;
+            border: none; padding: 6px 15px; border-radius: 20px;
+            font-weight: 800; font-size: 0.75rem; cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
+            transition: 0.2s;
         }
+        .copy-btn:active { transform: scale(0.95); }
 
         /* STATS GRID (Partners & Team) */
-        .stats-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
-            padding: 0 20px; margin-bottom: 20px;
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px; }
+        .stat-box {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 20px; border-radius: 18px; position: relative;
         }
-        .stat-card {
-            background: var(--bg-card); padding: 15px; border-radius: 12px;
-            display: flex; flex-direction: column; justify-content: space-between;
-            height: 80px; position: relative;
-        }
-        .st-label { color: var(--text-muted); font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
-        .st-val { font-size: 1.5rem; font-weight: 700; color: #fff; margin-top: 5px; }
-        .st-icon { position: absolute; right: 15px; top: 15px; color: #333; font-size: 1.2rem; }
+        .stat-label { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
+        .stat-num { font-size: 1.8rem; font-weight: 800; margin-top: 10px; color: #fff; }
+        .stat-icon { position: absolute; right: 15px; top: 15px; font-size: 1.5rem; opacity: 0.1; color: #fff; }
 
-        /* PROFIT SECTION (Taka) */
-        .profit-section {
-            margin: 0 20px 20px; padding: 15px; border-radius: 12px;
-            background: var(--bg-card);
+        /* PROFIT SECTION */
+        .profit-card {
+            display: flex; flex-direction: column; gap: 15px;
         }
-        .profit-header { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 10px; }
-        .profit-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .profit-row:last-child { border-bottom: none; }
-        .p-label { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .profit-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .profit-row:last-child { border-bottom: none; padding-bottom: 0; padding-top: 5px; }
+        .p-title { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
-        .dot.yellow { background: #ffc107; }
-        .dot.green { background: #00e676; }
-        .p-amount { font-weight: bold; font-size: 1rem; }
-
-        /* PROGRAMS / FEATURES (The Big Colorful Cards) */
-        .features-title { margin: 0 20px 10px; font-size: 1rem; font-weight: bold; }
+        .d-gold { background: var(--neon-gold); box-shadow: 0 0 8px var(--neon-gold); }
+        .d-green { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
         
-        .program-card {
-            margin: 0 20px 15px; padding: 0; border-radius: 12px;
-            background: var(--bg-card); overflow: hidden;
-            position: relative; cursor: pointer; transition: 0.2s;
-        }
-        .program-card:active { transform: scale(0.98); }
+        .p-value { font-size: 1.2rem; font-weight: 700; }
+        .val-gold { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+        .val-green { color: var(--neon-green); text-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
 
-        /* X3/X4 Style Gradients */
-        .pc-top {
-            padding: 15px 20px;
-            display: flex; justify-content: space-between; align-items: center;
+        /* PROGRAMS HEADER */
+        .section-title { margin: 25px 20px 10px; font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+
+        /* PREMIUM ACTION BUTTONS */
+        .program-btn {
+            margin: 0 20px 15px;
+            height: 90px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            display: flex; flex-direction: column; justify-content: center; padding: 0 25px;
+            transition: transform 0.2s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        /* Yellow/Gold Gradient (Like X3) */
-        .gold-grad { background: linear-gradient(90deg, #ffb300 0%, #ffca28 100%); color: #000; }
-        .gold-grad .pc-title { color: #000; opacity: 0.8; }
-        .gold-grad .pc-val { color: #000; font-weight: 900; }
+        .program-btn:active { transform: scale(0.98); }
+
+        /* Gradients */
+        .bg-task { background: linear-gradient(90deg, #FF9966 0%, #FF5E62 100%); }
+        .bg-withdraw { background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%); }
+        .bg-vip { background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%); }
+
+        .btn-content { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; }
+        .btn-text h4 { margin: 0; font-size: 1.3rem; font-weight: 900; text-transform: uppercase; font-style: italic; }
+        .btn-text p { margin: 2px 0 0; font-size: 0.8rem; font-weight: 500; opacity: 0.9; }
         
-        /* Blue/Purple Gradient (Like X4) */
-        .blue-grad { background: linear-gradient(90deg, #304ffe 0%, #7c4dff 100%); color: #fff; }
-
-        /* Green Gradient */
-        .green-grad { background: linear-gradient(90deg, #00c853 0%, #64dd17 100%); color: #fff; }
-
-        .pc-title { font-size: 1rem; font-weight: 800; text-transform: uppercase; }
-        .pc-val { font-size: 0.9rem; font-weight: 600; }
-        
-        .pc-body {
-            padding: 15px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
-            background: rgba(255,255,255,0.02);
-        }
-        /* Little dots inside card */
-        .slot-dot { width: 100%; height: 8px; background: #2c2f36; border-radius: 2px; }
-        .slot-dot.active { background: #fff; opacity: 0.2; }
-
-        .action-btn {
-            background: #fff; color: #000; border: none; padding: 8px 15px;
-            border-radius: 20px; font-weight: bold; font-size: 0.8rem;
-            display: flex; align-items: center; gap: 5px; margin-left: auto;
+        .action-pill {
+            background: #fff; color: #000;
+            padding: 8px 20px; border-radius: 30px;
+            font-weight: 800; font-size: 0.8rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex; align-items: center; gap: 5px;
         }
 
-        /* Bottom Space */
-        .spacer { height: 50px; }
+        /* Shine Animation */
+        .shine::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-20deg); animation: shine 4s infinite;
+        }
+        @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
 
-        /* Loader */
-        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0e0f12; z-index: 9999; display: flex; align-items: center; justify-content: center; color: white; }
+        /* MORE SECTION */
+        .more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px; }
+        .more-card {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            border-radius: 15px; padding: 20px; text-align: center; cursor: pointer;
+        }
+        .more-card i { font-size: 1.5rem; margin-bottom: 10px; display: block; }
+        .more-card span { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+
+        /* LOADER */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center;
+            font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.5rem; letter-spacing: 2px;
+        }
+        #loader span { color: var(--neon-blue); }
 
     </style>
 </head>
 <body onclick="unlockAudio()">
 
-    <div id="loader">SHOPPING28...</div>
+    <div id="loader">SHOPPING<span>28</span></div>
+
+    <!-- Background Ambience -->
+    <div class="ambient-light al-1"></div>
+    <div class="ambient-light al-2"></div>
 
     <!-- HEADER -->
     <div class="header">
         <div class="logo">SHOPPING<span>28</span></div>
-        <div class="wallet-badge" id="headerCode">ID: ...</div>
+        <div class="id-pill" id="headerCode">ID: ...</div>
     </div>
 
     <!-- PROFILE CARD -->
-    <div class="profile-section">
-        <div class="glow-orb"></div>
-        
-        <div class="user-info">
-            <div class="avatar-circle" onclick="window.location.href='account.html'">
-                <img id="u_img" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="">
+    <div class="glass-card">
+        <div class="profile-container">
+            <div class="profile-img-box" onclick="window.location.href='account.html'">
+                <img id="u_img" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="User">
             </div>
-            <div class="u-details">
+            <div class="user-details">
                 <h3 id="u_name">Loading...</h3>
-                <span id="u_date">Joined: Recent</span>
-                <span class="id-badge" id="u_id">ID ...</span>
+                <p id="u_joined">Joined: Recent</p>
             </div>
-            <i class="fas fa-cog" style="margin-left:auto; color:#666;" onclick="window.location.href='account.html'"></i>
+            <i class="fas fa-cog setting-icon" onclick="window.location.href='account.html'"></i>
         </div>
 
-        <!-- Personal Link Like Forsage -->
-        <div class="link-box">
-            <div class="link-text" id="refLinkText">shopping28.io/b/...</div>
+        <div class="link-wrapper">
+            <div class="link-txt" id="refLinkText">shopping28.io/b/...</div>
             <button class="copy-btn" onclick="copyRef()">Copy</button>
         </div>
     </div>
 
-    <!-- STATS GRID -->
+    <!-- STATS (Partners & Team) -->
     <div class="stats-grid">
-        <div class="stat-card" onclick="window.location.href='my_team.html'">
-            <div class="st-label">Partners <i class="fas fa-info-circle" style="font-size:0.7rem; margin-left:3px;"></i></div>
-            <div class="st-val" id="partnerCount">0</div>
-            <i class="fas fa-user-friends st-icon"></i>
+        <div class="stat-box" onclick="window.location.href='my_team.html'">
+            <div class="stat-label">Partners <i class="fas fa-info-circle"></i></div>
+            <div class="stat-num" id="partnerCount">0</div>
+            <i class="fas fa-user-friends stat-icon"></i>
         </div>
-        <div class="stat-card" onclick="window.location.href='my_team.html'">
-            <div class="st-label">Team <i class="fas fa-info-circle" style="font-size:0.7rem; margin-left:3px;"></i></div>
-            <div class="st-val" id="teamCount">0</div>
-            <i class="fas fa-users st-icon"></i>
+        <div class="stat-box" onclick="window.location.href='my_team.html'">
+            <div class="stat-label">Team <i class="fas fa-info-circle"></i></div>
+            <div class="stat-num" id="teamCount">0</div>
+            <i class="fas fa-users stat-icon"></i>
         </div>
     </div>
 
     <!-- PROFIT SECTION -->
-    <div class="profit-section">
-        <div class="profit-header">Profit Stats</div>
-        
-        <!-- Total Income -->
+    <div class="glass-card profit-card">
         <div class="profit-row">
-            <div class="p-label">
-                <div class="dot yellow"></div> Total Profit
-            </div>
-            <div class="p-amount" style="color:#ffc107">৳ <span id="totalProfit">0.00</span></div>
+            <div class="p-title"><div class="dot d-gold"></div> Total Profit</div>
+            <div class="p-value val-gold">৳ <span id="totalProfit">0.00</span></div>
         </div>
-        
-        <!-- Current Balance -->
         <div class="profit-row">
-            <div class="p-label">
-                <div class="dot green"></div> Current Balance
+            <div class="p-title"><div class="dot d-green"></div> Current Balance</div>
+            <div class="p-value val-green">৳ <span id="currentBalance">0.00</span></div>
+        </div>
+    </div>
+
+    <!-- PROGRAMS -->
+    <div class="section-title">Shopping28 Programs</div>
+
+    <div class="program-btn bg-task shine" onclick="window.location.href='task.html'">
+        <div class="btn-content">
+            <div class="btn-text">
+                <h4>Daily Task</h4>
+                <p>Earn Daily Income</p>
             </div>
-            <div class="p-amount" style="color:#00e676">৳ <span id="currentBalance">0.00</span></div>
+            <div class="action-pill">Start <i class="fas fa-chevron-right"></i></div>
         </div>
     </div>
 
-    <!-- PROGRAMS (Buttons Style like Forsage) -->
-    <div class="features-title">Shopping28 Programs</div>
-
-    <!-- 1. Daily Task (Yellow X3 Style) -->
-    <div class="program-card" onclick="window.location.href='task.html'">
-        <div class="pc-top gold-grad">
-            <div>
-                <div class="pc-title">Daily Task</div>
-                <div class="pc-val">Earn Daily</div>
+    <div class="program-btn bg-withdraw shine" onclick="window.location.href='withdraw.html'">
+        <div class="btn-content">
+            <div class="btn-text">
+                <h4>Withdraw</h4>
+                <p>Cashout Money</p>
             </div>
-            <button class="action-btn">Start <i class="fas fa-chevron-right"></i></button>
-        </div>
-        <div class="pc-body">
-            <div class="slot-dot active"></div><div class="slot-dot"></div><div class="slot-dot"></div><div class="slot-dot"></div>
+            <div class="action-pill" style="color:#4776E6">Go <i class="fas fa-chevron-right"></i></div>
         </div>
     </div>
 
-    <!-- 2. Withdraw (Blue X4 Style) -->
-    <div class="program-card" onclick="window.location.href='withdraw.html'">
-        <div class="pc-top blue-grad">
-            <div>
-                <div class="pc-title">Withdraw</div>
-                <div class="pc-val">Cashout</div>
+    <div class="program-btn bg-vip shine" onclick="window.location.href='vip_level.html'">
+        <div class="btn-content">
+            <div class="btn-text">
+                <h4>VIP Levels</h4>
+                <p>Upgrade Status</p>
             </div>
-            <button class="action-btn" style="color:#304ffe">Go <i class="fas fa-chevron-right"></i></button>
-        </div>
-        <div class="pc-body">
-            <div class="slot-dot active"></div><div class="slot-dot active"></div><div class="slot-dot"></div><div class="slot-dot"></div>
+            <div class="action-pill" style="color:#11998e">View <i class="fas fa-chevron-right"></i></div>
         </div>
     </div>
 
-    <!-- 3. VIP Level (Green Style) -->
-    <div class="program-card" onclick="window.location.href='vip_level.html'">
-        <div class="pc-top green-grad">
-            <div>
-                <div class="pc-title">VIP Levels</div>
-                <div class="pc-val">Upgrade Now</div>
-            </div>
-            <button class="action-btn" style="color:#00c853">View <i class="fas fa-chevron-right"></i></button>
+    <!-- MORE SECTION -->
+    <div class="section-title">More Options</div>
+    <div class="more-grid">
+        <div class="more-card" onclick="window.location.href='monthly.html'">
+            <i class="fas fa-calendar-alt" style="color: #bc13fe;"></i>
+            <span>Monthly</span>
         </div>
-        <div class="pc-body">
-            <div class="slot-dot active"></div><div class="slot-dot active"></div><div class="slot-dot active"></div><div class="slot-dot"></div>
-        </div>
-    </div>
-
-    <!-- 4. More Options Grid -->
-    <div class="features-title" style="margin-top:20px;">More</div>
-    <div class="stats-grid">
-        <div class="stat-card" style="height:auto; align-items:center; text-align:center;" onclick="window.location.href='monthly.html'">
-            <i class="fas fa-calendar-alt" style="font-size:1.5rem; color:#a64cf5; margin-bottom:5px;"></i>
-            <div class="st-label" style="justify-content:center;">Monthly</div>
-        </div>
-        <div class="stat-card" style="height:auto; align-items:center; text-align:center;" onclick="window.location.href='question_game.html'">
-            <i class="fas fa-gamepad" style="font-size:1.5rem; color:#ff4081; margin-bottom:5px;"></i>
-            <div class="st-label" style="justify-content:center;">Quiz Game</div>
+        <div class="more-card" onclick="window.location.href='question_game.html'">
+            <i class="fas fa-gamepad" style="color: #ff0055;"></i>
+            <span>Quiz Game</span>
         </div>
     </div>
 
-    <div class="spacer"></div>
-
-    <!-- FIREBASE -->
+    <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -327,10 +328,8 @@
 
                         // Profile Info
                         document.getElementById('u_name').innerText = data.firstName;
-                        document.getElementById('u_id').innerText = data.ownCode || "N/A";
                         document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
-                        document.getElementById('u_date').innerText = "Joined: " + (data.joinDate || "Recent");
-                        
+                        document.getElementById('u_joined').innerText = "Joined: " + (data.joinDate || "Recent");
                         if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
 
                         // Link Box
@@ -348,14 +347,14 @@
                                 document.getElementById('partnerCount').innerText = snap.numChildren();
                             });
                             
-                            // Team Count (Stored or approximate)
+                            // Team Count
                             let tCount = data.teamCount || data.team_member || document.getElementById('partnerCount').innerText;
                             document.getElementById('teamCount').innerText = tCount;
                         }
 
                         // Welcome Voice
                         if(!localStorage.getItem('home_voice_played')) {
-                            speak("Welcome to Shopping 28 Dashboard");
+                            speak("Welcome to Shopping 28 Premium Dashboard");
                             localStorage.setItem('home_voice_played', 'true');
                         }
                     }
@@ -366,10 +365,10 @@
         });
 
         function copyRef() {
-            const code = document.getElementById('u_id').innerText;
+            const code = document.getElementById('headerCode').innerText.replace("ID: ", "");
             const fullLink = `https://shopping28.github.io/-/login_register.html?ref=${code}`;
             navigator.clipboard.writeText(fullLink).then(() => {
-                alert("Personal Link Copied!");
+                alert("Referral Link Copied!");
             });
         }
     </script>
