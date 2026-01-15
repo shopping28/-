@@ -23,6 +23,10 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         .logout-btn { background: none; border: 1px solid #ff4757; color: #ff4757; padding: 5px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
+        
+        /* Guest Mode Styles */
+        .guest-hidden { display: none; }
+        .back-btn { width: 100%; padding: 15px; background: #3498db; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -30,20 +34,35 @@
         <div id="paymentForm">
             <div class="header">
                 <h2>Activate Account</h2>
-                <p style="font-size: 0.9rem; color: #aaa;">Complete payment to finish registration</p>
+                <p style="font-size: 0.9rem; color: #aaa;">Complete payment information</p>
             </div>
+            
             <div class="pay-box">
                 <small>Send Amount</small><div class="amount">৳ <span id="dispFee">...</span></div>
                 <small>To this Number (Personal)</small>
                 <div class="number-display" onclick="copyNumber()"><span id="dispNum">Loading...</span> <i class="fas fa-copy"></i></div>
             </div>
-            <form onsubmit="event.preventDefault(); submitRequest();">
-                <label>Payment Method</label><select id="method"><option value="Bkash">Bkash</option><option value="Nagad">Nagad</option></select>
-                <label>Your Payment Number</label><input type="number" id="senderPhone" placeholder="e.g. 017xxxxxxxx" required>
-                <label>Transaction ID (TrxID)</label><input type="text" id="trxId" placeholder="e.g. 8J7HG65F" required>
-                <button type="submit" id="btnSubmit" class="submit-btn">Confirm Payment</button>
-            </form>
-            <button onclick="logout()" class="logout-btn">Cancel & Logout</button>
+
+            <!-- Normal Form (Hidden for Guest) -->
+            <div id="regFormArea">
+                <form onsubmit="event.preventDefault(); submitRequest();">
+                    <label>Payment Method</label><select id="method"><option value="Bkash">Bkash</option><option value="Nagad">Nagad</option></select>
+                    <label>Your Payment Number</label><input type="number" id="senderPhone" placeholder="e.g. 017xxxxxxxx" required>
+                    <label>Transaction ID (TrxID)</label><input type="text" id="trxId" placeholder="e.g. 8J7HG65F" required>
+                    <button type="submit" id="btnSubmit" class="submit-btn">Confirm Payment</button>
+                </form>
+                <button onclick="logout()" class="logout-btn">Cancel & Logout</button>
+            </div>
+
+            <!-- Guest View Only -->
+            <div id="guestArea" style="display:none; text-align:center;">
+                <p style="color:#aaa; font-size:0.9rem; margin-bottom:20px;">
+                    Please send the money to the number above.<br>
+                    Then go back and click <b>Register</b> again to submit your details.
+                </p>
+                <button onclick="goBackToReg()" class="back-btn">Go Back to Register</button>
+            </div>
+
         </div>
         
         <div id="overlay">
@@ -71,7 +90,17 @@
         const auth = firebase.auth();
         let currentUser = null, currentFee = 0, adminNumber = "";
 
-        // Load Settings
+        // Check for Guest Mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const isGuest = urlParams.get('guest');
+
+        if(isGuest) {
+            // Guest Mode: Hide Form, Show Back Button
+            document.getElementById('regFormArea').style.display = 'none';
+            document.getElementById('guestArea').style.display = 'block';
+        }
+
+        // Load Settings (Works for everyone)
         db.ref('settings/payment').on('value', (snap) => {
             const data = snap.val();
             if(data) { 
@@ -82,22 +111,28 @@
             }
         });
 
-        // Check Status
-        auth.onAuthStateChanged((user) => {
-            if (user) { 
-                currentUser = user; 
-                // রিয়েলটাইম লিসেনার: যদি অ্যাডমিন স্ট্যাটাস active করে দেয়, সাথে সাথে Home এ নিয়ে যাবে
-                db.ref('users/' + user.uid + '/status').on('value', (snap) => { 
-                    if(snap.val() === 'active') showSuccess(); 
-                }); 
-            } else { 
-                window.location.href = 'login_register.html'; 
-            }
-        });
+        // Check Status (Only if NOT guest)
+        if(!isGuest) {
+            auth.onAuthStateChanged((user) => {
+                if (user) { 
+                    currentUser = user; 
+                    db.ref('users/' + user.uid + '/status').on('value', (snap) => { 
+                        if(snap.val() === 'active') showSuccess(); 
+                    }); 
+                } else { 
+                    window.location.href = 'login_register.html'; 
+                }
+            });
+        }
 
         function copyNumber() { navigator.clipboard.writeText(adminNumber); alert("Number Copied!"); }
 
+        function goBackToReg() {
+            window.history.back();
+        }
+
         function submitRequest() {
+            if(isGuest) return alert("Please Register First!");
             if(!adminNumber) return alert("System Loading...");
             const method = document.getElementById('method').value;
             const sender = document.getElementById('senderPhone').value;
