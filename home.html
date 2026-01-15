@@ -241,15 +241,15 @@
         </div>
     </div>
 
-    <!-- STATS -->
+    <!-- STATS (ACTIVE ONLY) -->
     <div class="stats-grid">
         <div class="stat-box" onclick="window.location.href='my_team.html'">
-            <div class="stat-label">Partners <i class="fas fa-info-circle"></i></div>
+            <div class="stat-label">Active Partners <i class="fas fa-info-circle"></i></div>
             <div class="stat-num" id="partnerCount">0</div>
             <i class="fas fa-user-friends stat-icon"></i>
         </div>
         <div class="stat-box" onclick="window.location.href='my_team.html'">
-            <div class="stat-label">Total Team <i class="fas fa-info-circle"></i></div>
+            <div class="stat-label">Total Active Team <i class="fas fa-info-circle"></i></div>
             <div class="stat-num" id="teamCount">0</div>
             <i class="fas fa-users stat-icon"></i>
         </div>
@@ -389,24 +389,18 @@
                         document.getElementById('currentBalance').innerText = toUSDT(data.balance || 0);
                         document.getElementById('totalProfit').innerText = toUSDT(data.total_income || data.totalEarning || 0);
 
-                        // === TEAM COUNT LOGIC (Deep Search) ===
+                        // === TEAM COUNT LOGIC (ACTIVE ONLY) ===
                         if(data.ownCode) {
-                            // 1. Direct Partners
+                            // 1. Active Direct Partners
                             db.ref('users').orderByChild('referredBy').equalTo(data.ownCode).on('value', (snap) => {
-                                const directCount = snap.numChildren();
-                                document.getElementById('partnerCount').innerText = directCount;
+                                let activeDirects = 0;
+                                snap.forEach(child => {
+                                    if(child.val().status === 'active') activeDirects++;
+                                });
+                                document.getElementById('partnerCount').innerText = activeDirects;
                                 
-                                // 2. Total Team Calculation (Level 1 + Level 2 + Level 3)
-                                // We first assume Database might have a stored count, if not, we try to calculate
-                                if(data.teamCount || data.team_member) {
-                                    document.getElementById('teamCount').innerText = data.teamCount || data.team_member;
-                                } else {
-                                    // Fallback: If no backend logic, assume Total = Direct (Client side recursive is too heavy for simple home)
-                                    // For deeper accuracy, calculateTeam(data.ownCode); could be used but requires multiple DB calls.
-                                    // Here we show Directs + (approximation if needed)
-                                    document.getElementById('teamCount').innerText = directCount;
-                                    calculateDeepTeam(data.ownCode, directCount);
-                                }
+                                // 2. Trigger Active Deep Search
+                                calculateActiveTeam(data.ownCode);
                             });
                         }
 
@@ -422,38 +416,49 @@
             }
         });
 
-        // RECURSIVE TEAM COUNT (Lightweight version - Up to Level 3)
-        function calculateDeepTeam(myCode, directCount) {
-            let total = directCount;
-            // Get Level 1 Users
+        // RECURSIVE ACTIVE TEAM COUNT (L1, L2, L3)
+        function calculateActiveTeam(myCode) {
+            let totalActive = 0;
+
+            // Level 1
             db.ref('users').orderByChild('referredBy').equalTo(myCode).once('value', (snap1) => {
-                if(snap1.exists()) {
-                    snap1.forEach(child1 => {
-                        const user1 = child1.val();
-                        if(user1.ownCode) {
-                            // Get Level 2
-                            db.ref('users').orderByChild('referredBy').equalTo(user1.ownCode).once('value', (snap2) => {
-                                if(snap2.exists()) {
-                                    total += snap2.numChildren();
-                                    document.getElementById('teamCount').innerText = total;
-                                    
-                                    // Get Level 3
-                                    snap2.forEach(child2 => {
-                                        const user2 = child2.val();
-                                        if(user2.ownCode) {
-                                            db.ref('users').orderByChild('referredBy').equalTo(user2.ownCode).once('value', (snap3) => {
-                                                if(snap3.exists()) {
-                                                    total += snap3.numChildren();
-                                                    document.getElementById('teamCount').innerText = total;
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
+                if(!snap1.exists()) { document.getElementById('teamCount').innerText = 0; return; }
+
+                snap1.forEach(child1 => {
+                    const u1 = child1.val();
+                    if(u1.status === 'active') totalActive++;
+
+                    if(u1.ownCode) {
+                        // Level 2
+                        db.ref('users').orderByChild('referredBy').equalTo(u1.ownCode).once('value', (snap2) => {
+                            if(snap2.exists()) {
+                                snap2.forEach(child2 => {
+                                    const u2 = child2.val();
+                                    if(u2.status === 'active') totalActive++;
+
+                                    if(u2.ownCode) {
+                                        // Level 3
+                                        db.ref('users').orderByChild('referredBy').equalTo(u2.ownCode).once('value', (snap3) => {
+                                            if(snap3.exists()) {
+                                                snap3.forEach(child3 => {
+                                                    const u3 = child3.val();
+                                                    if(u3.status === 'active') totalActive++;
+                                                    
+                                                    // Update UI Deepest level
+                                                    document.getElementById('teamCount').innerText = totalActive;
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                                // Update UI Level 2
+                                document.getElementById('teamCount').innerText = totalActive;
+                            }
+                        });
+                    }
+                });
+                // Update UI Level 1
+                document.getElementById('teamCount').innerText = totalActive;
             });
         }
 
