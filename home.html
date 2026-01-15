@@ -55,63 +55,72 @@
             box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
         }
 
-        /* GLASS CARD COMMON STYLE */
-        .glass-card {
+        /* CENTERED PROFILE SECTION */
+        .profile-card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
-            padding: 20px;
-            margin: 15px 20px;
+            padding: 30px 20px;
+            margin: 20px;
             backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
             position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* PROFILE SECTION */
-        .profile-container { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
         .profile-img-box {
-            width: 65px; height: 65px; border-radius: 50%;
-            padding: 3px; background: linear-gradient(135deg, #00f2ff, #bc13fe);
+            width: 90px; height: 90px; border-radius: 50%;
+            padding: 4px; background: linear-gradient(135deg, #00f2ff, #bc13fe);
+            margin-bottom: 15px;
             position: relative;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(188, 19, 254, 0.3);
         }
         .profile-img-box img {
             width: 100%; height: 100%; border-radius: 50%;
             object-fit: cover; border: 3px solid #000;
         }
-        .user-details h3 { margin: 0; font-size: 1.2rem; font-weight: 700; }
-        .user-details p { margin: 3px 0 0; color: var(--text-muted); font-size: 0.85rem; }
-        .setting-icon { margin-left: auto; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
-        .setting-icon:hover { color: #fff; transform: rotate(90deg); }
+        
+        .user-name { font-size: 1.5rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; }
+        .user-meta { color: var(--text-muted); font-size: 0.85rem; margin-top: 5px; }
+        .uid-badge {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 12px; border-radius: 8px;
+            font-size: 0.8rem; margin-top: 8px;
+            color: var(--neon-gold); font-family: monospace;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
 
         /* LINK BOX */
         .link-wrapper {
             background: rgba(0,0,0,0.3);
-            border-radius: 12px; padding: 10px 15px;
+            border-radius: 12px; padding: 12px 15px;
             display: flex; justify-content: space-between; align-items: center;
             border: 1px solid rgba(255,255,255,0.05);
+            width: 100%; box-sizing: border-box; margin-top: 20px;
         }
         .link-txt { font-family: monospace; color: var(--neon-blue); font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; max-width: 70%; white-space: nowrap; }
         .copy-btn {
             background: var(--neon-blue); color: #000;
             border: none; padding: 6px 15px; border-radius: 20px;
             font-weight: 800; font-size: 0.75rem; cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
-            transition: 0.2s;
         }
-        .copy-btn:active { transform: scale(0.95); }
 
         /* STATS GRID (Partners & Team) */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px; }
         .stat-box {
             background: var(--glass-bg); border: 1px solid var(--glass-border);
             padding: 20px; border-radius: 18px; position: relative;
+            backdrop-filter: blur(5px);
         }
         .stat-label { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
         .stat-num { font-size: 1.8rem; font-weight: 800; margin-top: 10px; color: #fff; }
         .stat-icon { position: absolute; right: 15px; top: 15px; font-size: 1.5rem; opacity: 0.1; color: #fff; }
 
-        /* PROFIT SECTION */
+        /* PROFIT SECTION (USDT) */
         .profit-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 20px; margin: 15px 20px;
             display: flex; flex-direction: column; gap: 15px;
         }
         .profit-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -121,7 +130,7 @@
         .d-gold { background: var(--neon-gold); box-shadow: 0 0 8px var(--neon-gold); }
         .d-green { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
         
-        .p-value { font-size: 1.2rem; font-weight: 700; }
+        .p-value { font-size: 1.2rem; font-weight: 700; font-family: monospace; }
         .val-gold { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
         .val-green { color: var(--neon-green); text-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
 
@@ -160,6 +169,24 @@
             display: flex; align-items: center; gap: 5px;
         }
 
+        /* MORE OPTIONS (Monthly & Weekly) */
+        .more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px; }
+        .more-card {
+            height: 80px;
+            border-radius: 15px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative; overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .mc-monthly { background: linear-gradient(135deg, #8E2DE2, #4A00E0); }
+        .mc-weekly { background: linear-gradient(135deg, #fc4a1a, #f7b733); }
+
+        .more-card i { font-size: 1.4rem; color: #fff; margin-bottom: 5px; z-index: 2; }
+        .more-card span { font-size: 0.9rem; color: #fff; font-weight: 700; z-index: 2; text-transform: uppercase; }
+
         /* Shine Animation */
         .shine::after {
             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
@@ -167,15 +194,6 @@
             transform: skewX(-20deg); animation: shine 4s infinite;
         }
         @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
-
-        /* MORE SECTION */
-        .more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px; }
-        .more-card {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
-            border-radius: 15px; padding: 20px; text-align: center; cursor: pointer;
-        }
-        .more-card i { font-size: 1.5rem; margin-bottom: 10px; display: block; }
-        .more-card span { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
         /* LOADER */
         #loader {
@@ -201,18 +219,14 @@
         <div class="id-pill" id="headerCode">ID: ...</div>
     </div>
 
-    <!-- PROFILE CARD -->
-    <div class="glass-card">
-        <div class="profile-container">
-            <div class="profile-img-box" onclick="window.location.href='account.html'">
-                <img id="u_img" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="User">
-            </div>
-            <div class="user-details">
-                <h3 id="u_name">Loading...</h3>
-                <p id="u_joined">Joined: Recent</p>
-            </div>
-            <i class="fas fa-cog setting-icon" onclick="window.location.href='account.html'"></i>
+    <!-- CENTERED PROFILE CARD -->
+    <div class="profile-card">
+        <div class="profile-img-box" onclick="window.location.href='account.html'">
+            <img id="u_img" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="User">
         </div>
+        <h3 class="user-name" id="u_name">Loading...</h3>
+        <p class="user-meta" id="u_joined">Joined: ...</p>
+        <div class="uid-badge" id="u_uid">UID: ...</div>
 
         <div class="link-wrapper">
             <div class="link-txt" id="refLinkText">shopping28.io/b/...</div>
@@ -228,67 +242,70 @@
             <i class="fas fa-user-friends stat-icon"></i>
         </div>
         <div class="stat-box" onclick="window.location.href='my_team.html'">
-            <div class="stat-label">Team <i class="fas fa-info-circle"></i></div>
+            <div class="stat-label">Total Team <i class="fas fa-info-circle"></i></div>
             <div class="stat-num" id="teamCount">0</div>
             <i class="fas fa-users stat-icon"></i>
         </div>
     </div>
 
-    <!-- PROFIT SECTION -->
-    <div class="glass-card profit-card">
+    <!-- PROFIT SECTION (CONVERTED TO USDT) -->
+    <div class="profit-card">
         <div class="profit-row">
-            <div class="p-title"><div class="dot d-gold"></div> Total Profit</div>
-            <div class="p-value val-gold">৳ <span id="totalProfit">0.00</span></div>
+            <div class="p-title"><div class="dot d-gold"></div> Total Profit (USDT)</div>
+            <div class="p-value val-gold"><span id="totalProfit">0.00</span> USDT</div>
         </div>
         <div class="profit-row">
-            <div class="p-title"><div class="dot d-green"></div> Current Balance</div>
-            <div class="p-value val-green">৳ <span id="currentBalance">0.00</span></div>
+            <div class="p-title"><div class="dot d-green"></div> Current Balance (USDT)</div>
+            <div class="p-value val-green"><span id="currentBalance">0.00</span> USDT</div>
         </div>
     </div>
 
     <!-- PROGRAMS -->
     <div class="section-title">Shopping28 Programs</div>
 
+    <!-- Task28 Job (Renamed from Daily Task) -->
     <div class="program-btn bg-task shine" onclick="window.location.href='task.html'">
         <div class="btn-content">
             <div class="btn-text">
-                <h4>Daily Task</h4>
-                <p>Earn Daily Income</p>
+                <h4>TASK28 JOB</h4>
+                <p>Earn USDT Daily</p>
             </div>
             <div class="action-pill">Start <i class="fas fa-chevron-right"></i></div>
         </div>
     </div>
 
+    <!-- Payout (Renamed from Withdraw) -->
     <div class="program-btn bg-withdraw shine" onclick="window.location.href='withdraw.html'">
         <div class="btn-content">
             <div class="btn-text">
-                <h4>Withdraw</h4>
-                <p>Cashout Money</p>
+                <h4>PAYOUT</h4>
+                <p>USDT (BEP20)</p>
             </div>
             <div class="action-pill" style="color:#4776E6">Go <i class="fas fa-chevron-right"></i></div>
         </div>
     </div>
 
+    <!-- VIP Levels -->
     <div class="program-btn bg-vip shine" onclick="window.location.href='vip_level.html'">
         <div class="btn-content">
             <div class="btn-text">
-                <h4>VIP Levels</h4>
+                <h4>VIP LEVELS</h4>
                 <p>Upgrade Status</p>
             </div>
             <div class="action-pill" style="color:#11998e">View <i class="fas fa-chevron-right"></i></div>
         </div>
     </div>
 
-    <!-- MORE SECTION -->
+    <!-- MORE OPTIONS (Monthly & Weekly) -->
     <div class="section-title">More Options</div>
     <div class="more-grid">
-        <div class="more-card" onclick="window.location.href='monthly.html'">
-            <i class="fas fa-calendar-alt" style="color: #bc13fe;"></i>
+        <div class="more-card mc-monthly shine" onclick="window.location.href='monthly.html'">
+            <i class="fas fa-calendar-alt"></i>
             <span>Monthly</span>
         </div>
-        <div class="more-card" onclick="window.location.href='question_game.html'">
-            <i class="fas fa-gamepad" style="color: #ff0055;"></i>
-            <span>Quiz Game</span>
+        <div class="more-card mc-weekly shine" onclick="window.location.href='weekly.html'">
+            <i class="fas fa-gift"></i>
+            <span>Weekly</span>
         </div>
     </div>
 
@@ -317,6 +334,12 @@
             window.speechSynthesis.speak(u);
         }
 
+        // CURRENCY CONVERTER FUNCTION (120 Taka = 1 USD)
+        function toUSDT(taka) {
+            if(!taka) return "0.00";
+            return (parseFloat(taka) / 120).toFixed(2);
+        }
+
         auth.onAuthStateChanged((user) => {
             if (user) {
                 db.ref('users/' + user.uid).on('value', (snapshot) => {
@@ -330,15 +353,20 @@
                         document.getElementById('u_name').innerText = data.firstName;
                         document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
                         document.getElementById('u_joined').innerText = "Joined: " + (data.joinDate || "Recent");
+                        document.getElementById('u_uid').innerText = "UID: " + user.uid.substring(0,8) + ".."; // Showing short UID
+                        
                         if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
 
                         // Link Box
                         const link = `shopping28.io/b/${data.ownCode}`;
                         document.getElementById('refLinkText').innerText = link;
 
-                        // Balance & Profit
-                        document.getElementById('currentBalance').innerText = (data.balance || 0).toFixed(2);
-                        document.getElementById('totalProfit').innerText = (data.total_income || data.totalEarning || 0).toFixed(2);
+                        // Balance & Profit (AUTO CONVERT TO USDT)
+                        const rawBalance = data.balance || 0;
+                        const rawProfit = data.total_income || data.totalEarning || 0;
+
+                        document.getElementById('currentBalance').innerText = toUSDT(rawBalance);
+                        document.getElementById('totalProfit').innerText = toUSDT(rawProfit);
 
                         // Partners & Team Logic
                         if(data.ownCode) {
@@ -347,7 +375,8 @@
                                 document.getElementById('partnerCount').innerText = snap.numChildren();
                             });
                             
-                            // Team Count
+                            // Total Team Count (Checks Database for 'teamCount' or 'team_member')
+                            // If your backend updates this, it will show. If not, it falls back to Partner count.
                             let tCount = data.teamCount || data.team_member || document.getElementById('partnerCount').innerText;
                             document.getElementById('teamCount').innerText = tCount;
                         }
