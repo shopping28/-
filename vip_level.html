@@ -3,152 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP Premium Zone</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>VIP Levels | SHOPPING28</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* === PREMIUM VARIABLES === */
         :root {
-            --primary: #f1c40f;
-            --success: #00e676;
-            --dark: #121212;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --glass: rgba(255, 255, 255, 0.1);
+            --bg-dark: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-gold: #ffd700;
+            --neon-blue: #00f2ff;
+            --neon-green: #00ff88;
+            --text-main: #ffffff;
+            --text-muted: #8b9bb4;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            background: radial-gradient(circle at top, #1a1a2e, #0f0c29); 
-            color: white; 
-            font-family: 'Poppins', sans-serif; 
+        body {
+            margin: 0; padding: 0; padding-bottom: 50px;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
             min-height: 100vh;
-            padding: 20px;
+            position: relative;
         }
+
+        /* AMBIENT LIGHTS */
+        .ambient-light { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; opacity: 0.4; }
+        .al-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, #4c00ff, transparent); }
+        .al-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, #ff0055, transparent); }
 
         /* HEADER */
-        .top-nav {
-            display: flex; align-items: center; gap: 10px; margin-bottom: 25px;
+        .header {
+            padding: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 100;
         }
-        .back-btn {
-            background: var(--glass); width: 40px; height: 40px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            color: white; text-decoration: none; transition: 0.3s;
-        }
-        .back-btn:hover { background: var(--primary); color: black; }
-        .page-title { font-size: 1.2rem; font-weight: 600; }
+        .back-btn { color: var(--text-muted); text-decoration: none; font-size: 1.1rem; transition: 0.3s; }
+        .back-btn:hover { color: var(--neon-blue); }
+        .page-title { font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
 
-        /* HERO STATS CARD */
+        /* HERO CARD (My Active Partners) */
         .hero-card {
-            background: linear-gradient(135deg, #FFD700, #F37335);
-            border-radius: 20px; padding: 25px; text-align: center;
-            box-shadow: 0 10px 30px rgba(243, 115, 53, 0.3);
-            margin-bottom: 30px; position: relative; overflow: hidden;
-            z-index: 1;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 30px;
+            text-align: center; margin: 20px;
+            position: relative; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         .hero-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.2), transparent);
-            animation: rotate 10s linear infinite;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--neon-gold), var(--neon-blue));
         }
-        .hero-content { position: relative; z-index: 2; color: #000; }
-        .hero-count { font-size: 3.5rem; font-weight: 800; margin: 5px 0; line-height: 1; }
-        .hero-label { font-size: 0.9rem; font-weight: 600; letter-spacing: 1px; opacity: 0.9; }
+        .hero-label { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .hero-count { font-size: 3rem; font-weight: 900; margin: 10px 0; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.1); }
+        .hero-desc { font-size: 0.8rem; color: #888; }
 
-        .section-title { 
-            margin-bottom: 15px; font-size: 1.1rem; color: #fff; 
-            border-left: 4px solid var(--primary); padding-left: 10px; 
-        }
-        
-        /* VIP CARD DESIGN */
+        /* LEVEL CARD */
+        .level-container { margin: 0 20px; display: flex; flex-direction: column; gap: 15px; }
+
         .vip-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255,255,255,0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 16px; padding: 20px; margin-bottom: 20px;
-            position: relative; overflow: hidden; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px; padding: 20px;
+            position: relative; overflow: hidden;
+            transition: 0.3s;
         }
-        
-        /* States */
-        .vip-card.locked { opacity: 0.8; border-left: 5px solid #555; }
-        .vip-card.running { border: 1px solid var(--primary); box-shadow: 0 0 15px rgba(241, 196, 15, 0.15); }
+
+        /* Card States */
+        .vip-card.locked { opacity: 0.7; border-left: 4px solid #444; }
+        .vip-card.running { border: 1px solid var(--neon-gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
         .vip-card.completed { 
-            background: linear-gradient(145deg, rgba(0, 230, 118, 0.15), rgba(0,0,0,0.2));
-            border: 1px solid var(--success);
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid var(--neon-green);
         }
 
-        /* Card Elements */
-        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .lvl-badge { 
-            background: #222; padding: 5px 15px; border-radius: 20px; 
-            font-size: 0.85rem; font-weight: bold; color: var(--primary); 
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 8px;
+            font-size: 0.8rem; font-weight: 800; color: #fff; letter-spacing: 1px;
         }
-        .reward-amount { font-size: 1.3rem; font-weight: 700; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .bonus-txt { font-size: 1.2rem; font-weight: 800; color: var(--neon-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
 
-        .progress-container {
-            background: rgba(255,255,255,0.1); height: 8px; border-radius: 10px;
-            overflow: hidden; margin: 15px 0 10px 0;
-        }
-        .progress-bar {
-            height: 100%; width: 0%; border-radius: 10px;
-            transition: width 0.8s ease;
-        }
+        .progress-box { position: relative; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+        .progress-bar { height: 100%; width: 0%; border-radius: 10px; transition: width 1s ease; }
         
-        /* Progress Colors */
-        .locked .progress-bar { background: #555; }
-        .running .progress-bar { background: linear-gradient(90deg, #f1c40f, #ffeb3b); }
-        .completed .progress-bar { background: var(--success); box-shadow: 0 0 8px var(--success); }
+        .locked .progress-bar { background: #444; }
+        .running .progress-bar { background: linear-gradient(90deg, #FF9966, #FF5E62); }
+        .completed .progress-bar { background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
 
-        .card-footer { display: flex; justify-content: space-between; font-size: 0.8rem; color: #ccc; margin-top:5px; }
-        
-        /* Status Tags */
+        .card-footer { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); }
+
         .status-pill {
-            display: block; text-align: center; margin-top: 15px; padding: 10px;
-            font-size: 0.85rem; font-weight: bold; border-radius: 10px; text-transform: uppercase;
+            margin-top: 15px; text-align: center; padding: 8px; border-radius: 10px;
+            font-size: 0.8rem; font-weight: 800; text-transform: uppercase;
         }
-        .st-lock { background: rgba(255,255,255,0.08); color: #aaa; }
-        .st-run { background: rgba(241, 196, 15, 0.15); color: var(--primary); }
-        .st-done { background: rgba(0, 230, 118, 0.15); color: var(--success); }
+        .st-lock { background: rgba(255,255,255,0.05); color: #666; }
+        .st-run { background: rgba(255, 215, 0, 0.1); color: var(--neon-gold); }
+        .st-done { background: rgba(0, 255, 136, 0.1); color: var(--neon-green); }
 
-        .icon-box { 
-            width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 1rem; margin-right: 10px;
-        }
-
-        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* Animation class */
-        .fade-in { animation: fadeIn 0.5s ease forwards; opacity: 0; transform: translateY(10px); }
-        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        /* Animation */
+        .fade-up { animation: fadeUp 0.5s forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="top-nav">
-        <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-        <span class="page-title">VIP Dashboard</span>
+    <div class="ambient-light al-1"></div>
+    <div class="ambient-light al-2"></div>
+
+    <div class="header">
+        <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i> Home</a>
+        <div class="page-title">VIP LEVELS</div>
     </div>
 
-    <!-- Stats -->
+    <!-- Active Team Stats -->
     <div class="hero-card">
-        <div class="hero-content">
-            <div class="hero-label">ACTIVE TEAM MEMBERS</div>
-            <div class="hero-count" id="myRef">0</div>
-            <small style="color:#222;">Keep referring to unlock levels!</small>
-        </div>
+        <div class="hero-label">My Active Partners</div>
+        <div class="hero-count" id="myRef">0</div>
+        <div class="hero-desc">Increase active partners to unlock levels & earn USDT rewards.</div>
     </div>
 
-    <h4 class="section-title">VIP Levels</h4>
-    
-    <!-- Levels Container -->
-    <div id="levelContainer">
-        <p style="text-align:center; color:#888; margin-top:50px;">
+    <!-- Levels List -->
+    <div class="level-container" id="levelContainer">
+        <div style="text-align:center; padding:30px; color:#666;">
             <i class="fas fa-circle-notch fa-spin"></i> Loading Levels...
-        </p>
+        </div>
     </div>
 
     <!-- Firebase SDK -->
@@ -157,15 +142,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        const firebaseConfig = {
-          apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g",
-          authDomain: "art-paid-work001.firebaseapp.com",
-          databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com",
-          projectId: "art-paid-work001",
-          storageBucket: "art-paid-work001.firebasestorage.app",
-          messagingSenderId: "524647364992",
-          appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
@@ -174,6 +151,10 @@
         let myActiveCount = 0;
         let claimedLevels = {};
         let vipLevelsData = [];
+        
+        // CONVERT TAKA TO USDT (For display if db has BDT) - But for new rewards we treat as USDT directly
+        // If your admin panel sets rewards in BDT, use: amount / 120. 
+        // Here we assume Admin sets rewards in USDT directly.
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -184,50 +165,40 @@
             }
         });
 
-        // 1. Load Admin Levels & User Data
         function loadData() {
+            // Get Admin Levels
             db.ref('settings/vip_levels').on('value', (snapshot) => {
                 vipLevelsData = [];
-                
                 if (snapshot.exists()) {
                     snapshot.forEach((child) => {
                         const val = child.val();
-                        // Fix: Ensure numbers are actually numbers
                         vipLevelsData.push({
                             level: Number(val.level),
                             target: Number(val.target),
-                            bonus: Number(val.bonus)
+                            bonus: Number(val.bonus) // Assuming this is now set in USDT or needs conversion
                         });
                     });
-                    
-                    // Sort Levels 1 -> 10
                     vipLevelsData.sort((a, b) => a.level - b.level);
                 }
-                
-                // After loading levels, check user stats
                 checkUserProgress();
             });
         }
 
         function checkUserProgress() {
-            // Get Claimed History
             db.ref('users/' + currentUser.uid + '/claimed_levels').on('value', (snap) => {
                 claimedLevels = snap.val() || {};
 
-                // Get Active Referral Count
                 db.ref('users/' + currentUser.uid + '/ownCode').once('value', (s) => {
                     const code = s.val();
                     if(code) {
                         db.ref('users').orderByChild('referredBy').equalTo(code).on('value', (teamSnap) => {
                             let count = 0;
                             if(teamSnap.exists()) {
-                                teamSnap.forEach(m => {
-                                    if(m.val().status === 'active') count++;
-                                });
+                                teamSnap.forEach(m => { if(m.val().status === 'active') count++; });
                             }
                             myActiveCount = count;
                             document.getElementById('myRef').innerText = myActiveCount;
-                            renderLevels(); // Now render UI
+                            renderLevels();
                         });
                     } else {
                         document.getElementById('myRef').innerText = "0";
@@ -237,62 +208,55 @@
             });
         }
 
-        // 2. Render Levels to HTML
         function renderLevels() {
             const container = document.getElementById('levelContainer');
             container.innerHTML = "";
 
             if(vipLevelsData.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align:center; padding:30px; background:rgba(255,255,255,0.05); border-radius:10px;">
-                        <i class="fas fa-exclamation-triangle" style="color:#f1c40f; font-size:2rem; margin-bottom:10px;"></i>
-                        <p>No VIP Levels found.</p>
-                        <small style="color:#777;">Admin has not added any levels yet.</small>
-                    </div>`;
+                container.innerHTML = "<div style='text-align:center; padding:20px; color:#666;'>No levels found.</div>";
                 return;
             }
 
             vipLevelsData.forEach((lvl, index) => {
-                // Calculations
                 const percent = Math.min((myActiveCount / lvl.target) * 100, 100);
                 const isUnlocked = myActiveCount >= lvl.target;
                 const isClaimed = claimedLevels['level' + lvl.level] === true;
 
-                // Auto Claim Check
+                // Auto Claim Logic (USDT)
+                // Note: We need to know if the bonus in DB is BDT or USDT. 
+                // Assuming Admin puts USDT value. If BDT, convert here.
+                // Example: If DB says 500 (BDT), then convert to 4.16 USDT
+                
+                // Let's assume Admin panel sets USDT value directly now.
+                const rewardAmount = lvl.bonus; 
+
                 if (isUnlocked && !isClaimed) {
-                    autoClaimReward(lvl.level, lvl.bonus);
+                    autoClaimReward(lvl.level, rewardAmount);
                 }
 
-                // UI Variables
-                let stateClass = "locked";
-                let statusHtml = `<div class="status-pill st-lock"><i class="fas fa-lock"></i> Locked</div>`;
-                let iconHtml = `<i class="fas fa-lock" style="color:#aaa;"></i>`;
-
-                if (isClaimed) {
-                    stateClass = "completed";
-                    statusHtml = `<div class="status-pill st-done"><i class="fas fa-check-circle"></i> Reward Received</div>`;
-                    iconHtml = `<i class="fas fa-gift" style="color:#00e676;"></i>`;
-                } else if (!isClaimed && !isUnlocked) {
-                    stateClass = "running";
-                    statusHtml = `<div class="status-pill st-run"><i class="fas fa-chart-line"></i> In Progress</div>`;
-                    iconHtml = `<i class="fas fa-star" style="color:#f1c40f;"></i>`;
-                } else if (isUnlocked && !isClaimed) {
-                    // Just unlocked but transaction pending
-                    stateClass = "completed"; 
-                    statusHtml = `<div class="status-pill st-run">Processing Reward...</div>`;
+                let statusClass = "locked";
+                let statusHtml = `<div class="status-pill st-lock"><i class="fas fa-lock"></i> LOCKED</div>`;
+                
+                if(isClaimed) {
+                    statusClass = "completed";
+                    statusHtml = `<div class="status-pill st-done"><i class="fas fa-check-circle"></i> RECEIVED</div>`;
+                } else if(!isClaimed && !isUnlocked) {
+                    statusClass = "running";
+                    statusHtml = `<div class="status-pill st-run">IN PROGRESS</div>`;
+                } else {
+                    statusClass = "completed";
+                    statusHtml = `<div class="status-pill st-run">CLAIMING...</div>`;
                 }
-
-                // Animation Delay
-                const delay = index * 0.15; 
 
                 const html = `
-                    <div class="vip-card ${stateClass} fade-in" style="animation-delay: ${delay}s">
-                        <div class="card-top">
-                            <div style="display:flex; align-items:center;">
-                                <div class="icon-box" style="background:rgba(255,255,255,0.08);">${iconHtml}</div>
-                                <span class="lvl-badge">LEVEL ${lvl.level}</span>
-                            </div>
-                            <span class="reward-amount">৳${lvl.bonus}</span>
+                    <div class="vip-card ${statusClass} fade-up" style="animation-delay: ${index * 0.1}s">
+                        <div class="card-header">
+                            <div class="lvl-badge">LEVEL ${lvl.level}</div>
+                            <div class="bonus-txt">+ ${rewardAmount} USDT</div>
+                        </div>
+                        
+                        <div class="progress-box">
+                            <div class="progress-bar" style="width: ${percent}%"></div>
                         </div>
 
                         <div class="card-footer">
@@ -300,28 +264,29 @@
                             <span>${Math.floor(percent)}%</span>
                         </div>
 
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: ${percent}%"></div>
-                        </div>
-                        
                         ${statusHtml}
                     </div>
                 `;
-                container.innerHTML += html;
+                container.insertAdjacentHTML('beforeend', html);
             });
         }
 
         function autoClaimReward(lvlNum, amount) {
             const key = 'level' + lvlNum;
             if (claimedLevels[key]) return;
-            claimedLevels[key] = true; // Local lock
+            claimedLevels[key] = true; 
+
+            // Convert USDT to BDT for storage (Since balance is likely stored in BDT)
+            // 1 USDT = 120 BDT
+            const amountInBDT = amount * 120;
 
             db.ref('users/' + currentUser.uid).transaction(user => {
                 if (user) {
                     if (!user.claimed_levels) user.claimed_levels = {};
-                    if (user.claimed_levels[key]) return; // Stop if db already has it
+                    if (user.claimed_levels[key]) return;
 
-                    user.balance = (user.balance || 0) + amount;
+                    user.balance = (user.balance || 0) + amountInBDT; // Add BDT equivalent to balance
+                    user.total_income = (user.total_income || 0) + amountInBDT; // Add to income history
                     user.claimed_levels[key] = true;
                 }
                 return user;
