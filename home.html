@@ -15,7 +15,6 @@
             --neon-gold: #ffd700;
             --neon-blue: #00f2ff;
             --neon-green: #00ff88;
-            --neon-purple: #bc13fe;
             --text-main: #ffffff;
             --text-muted: #8b9bb4;
         }
@@ -58,7 +57,7 @@
             box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
         }
 
-        /* CENTERED PROFILE SECTION */
+        /* PROFILE SECTION */
         .profile-card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -108,7 +107,7 @@
         .stat-num { font-size: 1.8rem; font-weight: 800; margin-top: 10px; color: #fff; }
         .stat-icon { position: absolute; right: 15px; top: 15px; font-size: 1.5rem; opacity: 0.1; color: #fff; }
 
-        /* PROFIT SECTION (UPDATED) */
+        /* PROFIT SECTION */
         .profit-card {
             background: var(--glass-bg); border: 1px solid var(--glass-border);
             border-radius: 20px; padding: 20px; margin: 15px 20px;
@@ -129,10 +128,8 @@
         .val-green { color: var(--neon-green); text-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
         .val-blue { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
 
-        /* PROGRAMS HEADER */
+        /* PROGRAMS */
         .section-title { margin: 25px 20px 10px; font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
-
-        /* PREMIUM ACTION BUTTONS */
         .program-btn {
             margin: 0 20px 15px; height: 90px; border-radius: 20px;
             position: relative; overflow: hidden; cursor: pointer;
@@ -142,7 +139,6 @@
         }
         .program-btn:active { transform: scale(0.98); }
 
-        /* Gradients */
         .bg-task { background: linear-gradient(90deg, #FF9966 0%, #FF5E62 100%); }
         .bg-withdraw { background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%); }
         .bg-vip { background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%); }
@@ -171,15 +167,13 @@
         .more-card i { font-size: 1.4rem; color: #fff; margin-bottom: 5px; z-index: 2; }
         .more-card span { font-size: 0.9rem; color: #fff; font-weight: 700; z-index: 2; text-transform: uppercase; }
 
-        /* Shine Animation */
+        /* Shine & Loader */
         .shine::after {
             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             transform: skewX(-20deg); animation: shine 4s infinite;
         }
         @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
-
-        /* LOADER */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center;
@@ -194,7 +188,6 @@
     <div class="ambient-light al-1"></div>
     <div class="ambient-light al-2"></div>
 
-    <!-- HEADER -->
     <div class="header">
         <div class="logo-container">
             <i class="fas fa-shopping-bag logo-icon"></i>
@@ -203,7 +196,6 @@
         <div class="id-pill" id="headerCode">ID: ...</div>
     </div>
 
-    <!-- PROFILE -->
     <div class="profile-card">
         <div class="profile-img-box" onclick="window.location.href='account.html'">
             <img id="u_img" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="User">
@@ -222,7 +214,7 @@
         </div>
     </div>
 
-    <!-- TEAM STATS (Active Only) -->
+    <!-- ACTIVE TEAM STATS -->
     <div class="stats-grid">
         <div class="stat-box" onclick="window.location.href='my_team.html'">
             <div class="stat-label">Active Partners <i class="fas fa-info-circle"></i></div>
@@ -230,15 +222,15 @@
             <i class="fas fa-user-friends stat-icon"></i>
         </div>
         <div class="stat-box" onclick="window.location.href='my_team.html'">
-            <div class="stat-label">Active Team (Total) <i class="fas fa-info-circle"></i></div>
+            <div class="stat-label">Active Team (All) <i class="fas fa-info-circle"></i></div>
             <div class="stat-num" id="teamCount">0</div>
             <i class="fas fa-users stat-icon"></i>
         </div>
     </div>
 
-    <!-- PROFIT SECTION (USDT) -->
+    <!-- PROFIT SECTION (CALCULATED) -->
     <div class="profit-card">
-        <!-- 1. Total Lifetime Profit -->
+        <!-- 1. Total Profit = Current + Withdrawn -->
         <div class="profit-row">
             <div class="p-title"><div class="dot d-gold"></div> Total Profit</div>
             <div class="p-value val-gold"><span id="totalProfit">0.00</span> USDT</div>
@@ -255,7 +247,6 @@
         </div>
     </div>
 
-    <!-- PROGRAMS -->
     <div class="section-title">Shopping28 Programs</div>
 
     <div class="program-btn bg-task shine" onclick="window.location.href='task.html'">
@@ -288,7 +279,6 @@
         </div>
     </div>
 
-    <!-- MORE OPTIONS -->
     <div class="section-title">More Options</div>
     <div class="more-grid">
         <div class="more-card mc-monthly shine" onclick="window.location.href='monthly.html'">
@@ -301,7 +291,6 @@
         </div>
     </div>
 
-    <!-- SCRIPTS -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -355,32 +344,35 @@
                         if(data.status !== 'active') { window.location.href = 'account_active.html'; return; }
                         
                         document.getElementById('loader').style.display = 'none';
+                        fullUid = user.uid;
 
-                        // Profile
+                        // Basic Info
                         document.getElementById('u_name').innerText = data.firstName;
                         document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
                         document.getElementById('u_joined').innerText = "Joined: " + (data.joinDate || "Recent");
                         if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
-                        fullUid = user.uid;
                         document.getElementById('u_uid_display').innerText = "UID: " + fullUid.substring(0, 8) + "•••";
                         document.getElementById('refLinkText').innerText = `shopping28.io/b/${data.ownCode}`;
 
-                        // Financials (Converted)
-                        document.getElementById('totalProfit').innerText = toUSDT(data.total_income || data.totalEarning || 0);
-                        document.getElementById('currentBalance').innerText = toUSDT(data.balance || 0);
-                        document.getElementById('todayProfit').innerText = toUSDT(data.today_income || data.todayEarning || 0);
+                        // Financials: Current & Today
+                        const currentBalance = parseFloat(data.balance || 0);
+                        const todayIncome = parseFloat(data.today_income || data.todayEarning || 0);
+                        
+                        document.getElementById('currentBalance').innerText = toUSDT(currentBalance);
+                        document.getElementById('todayProfit').innerText = toUSDT(todayIncome);
 
-                        // === TEAM COUNT LOGIC (ACTIVE ONLY) ===
+                        // === TOTAL PROFIT CALCULATION (Current + Withdrawn) ===
+                        calculateTotalLifetimeProfit(user.uid, currentBalance);
+
+                        // === TEAM LOGIC ===
                         if(data.ownCode) {
-                            // 1. Direct Active Partners
+                            // Direct Active
                             db.ref('users').orderByChild('referredBy').equalTo(data.ownCode).on('value', (snap) => {
                                 let activeDirects = 0;
-                                snap.forEach(child => {
-                                    if(child.val().status === 'active') activeDirects++;
-                                });
+                                snap.forEach(child => { if(child.val().status === 'active') activeDirects++; });
                                 document.getElementById('partnerCount').innerText = activeDirects;
                                 
-                                // 2. Recursive Active Team
+                                // Recursive Deep Active Team
                                 calculateActiveTeam(data.ownCode);
                             });
                         }
@@ -394,23 +386,44 @@
             } else { window.location.href = 'login_register.html'; }
         });
 
-        // RECURSIVE ACTIVE TEAM COUNT (L1 + L2 + L3)
+        // 1. Calculate Total Lifetime Profit
+        function calculateTotalLifetimeProfit(uid, currentBal) {
+            let totalWithdrawn = 0;
+            db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
+                if(snap.exists()) {
+                    snap.forEach(child => {
+                        const w = child.val();
+                        // If approved, add to total withdrawn. 
+                        // Note: Check if amount is stored as BDT or USDT in DB. Assuming BDT based on 'balance'.
+                        if(w.status === 'approved') {
+                            // Support both old 'amount' (BDT) and new structure if needed
+                            let amt = w.amountBDT || w.amount || 0;
+                            totalWithdrawn += parseFloat(amt);
+                        }
+                    });
+                }
+                const lifetimeProfit = currentBal + totalWithdrawn;
+                document.getElementById('totalProfit').innerText = toUSDT(lifetimeProfit);
+            });
+        }
+
+        // 2. Recursive Active Team Count
         function calculateActiveTeam(myCode) {
             let totalActive = 0;
-            // L1
+            // Level 1
             db.ref('users').orderByChild('referredBy').equalTo(myCode).once('value', (snap1) => {
                 if(!snap1.exists()) { document.getElementById('teamCount').innerText = 0; return; }
                 snap1.forEach(child1 => {
                     const u1 = child1.val();
                     if(u1.status === 'active') totalActive++;
-                    // L2
+                    // Level 2
                     if(u1.ownCode) {
                         db.ref('users').orderByChild('referredBy').equalTo(u1.ownCode).once('value', (snap2) => {
                             if(snap2.exists()) {
                                 snap2.forEach(child2 => {
                                     const u2 = child2.val();
                                     if(u2.status === 'active') totalActive++;
-                                    // L3
+                                    // Level 3
                                     if(u2.ownCode) {
                                         db.ref('users').orderByChild('referredBy').equalTo(u2.ownCode).once('value', (snap3) => {
                                             if(snap3.exists()) {
