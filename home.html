@@ -3,238 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forsage Dashboard | Premium</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>SHOPPING28 | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* === FORSAGE THEME VARIABLES === */
         :root {
-            --bg-dark: #0d0d2b;
-            --card-glass: rgba(30, 30, 60, 0.6);
-            --primary: #5856d6;
-            --accent-cyan: #00ecff;
-            --accent-pink: #bd00ff;
-            --text-white: #ffffff;
-            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --bg-body: #0e0f12;
+            --bg-card: #191b20;
+            --primary-blue: #4c6ef5;
+            --accent-purple: #5b3fab;
+            --text-main: #ffffff;
+            --text-muted: #8a8d96;
+            --glow-gold: #ffc107;
+            --font-main: 'Roboto', sans-serif;
         }
 
         body {
-            margin: 0; padding-bottom: 80px;
-            background-color: var(--bg-dark);
-            color: var(--text-white);
-            font-family: 'Rajdhani', sans-serif;
-            min-height: 100vh;
+            margin: 0; padding: 0; padding-bottom: 80px;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-main);
             overflow-x: hidden;
-            position: relative;
         }
-
-        /* BACKGROUND ORBS */
-        .orb { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; }
-        .orb-1 { top: -10%; left: -10%; width: 350px; height: 350px; background: rgba(88, 86, 214, 0.4); animation: float 10s infinite alternate; }
-        .orb-2 { bottom: 10%; right: -10%; width: 300px; height: 300px; background: rgba(189, 0, 255, 0.3); animation: float 12s infinite alternate-reverse; }
-        .grid-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px; opacity: 0.5;
-        }
-
-        @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, 40px); } }
 
         /* HEADER */
         .header {
-            padding: 20px;
+            padding: 15px 20px;
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(13, 13, 43, 0.8); backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: var(--bg-card);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .logo-area h2 { margin: 0; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
-        .logo-area span { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0, 236, 255, 0.5); }
-        
-        .profile-btn {
-            width: 45px; height: 45px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
-            padding: 2px; cursor: pointer;
-        }
-        .profile-btn img {
-            width: 100%; height: 100%; border-radius: 50%;
-            object-fit: cover; border: 2px solid var(--bg-dark); background: #000;
+        .logo { font-size: 1.2rem; font-weight: 900; letter-spacing: 1px; color: #fff; }
+        .logo span { color: var(--primary-blue); }
+        .wallet-badge {
+            background: rgba(76, 110, 245, 0.2); color: #8ea4ff;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;
         }
 
-        /* HERO SECTION */
-        .hero {
-            text-align: center; padding: 30px 20px;
-            background: linear-gradient(180deg, rgba(88, 86, 214, 0.1) 0%, transparent 100%);
-        }
-        .user-id-box {
-            display: inline-block; padding: 5px 15px;
-            background: rgba(255,255,255,0.05); border: 1px solid var(--accent-cyan);
-            border-radius: 20px; color: var(--accent-cyan); font-weight: bold;
-            letter-spacing: 1px; margin-bottom: 10px; box-shadow: 0 0 15px rgba(0, 236, 255, 0.2);
-        }
-        .balance-display { font-size: 2.5rem; font-weight: 700; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .balance-label { color: #aaa; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; }
-
-        /* STATS GRID (Forsage Style) */
-        .stats-container {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px;
-        }
-        .stat-box {
-            background: var(--card-glass);
-            border: var(--glass-border);
-            padding: 20px; border-radius: 15px;
-            position: relative; overflow: hidden;
-            display: flex; flex-direction: column; justify-content: center;
-        }
-        .stat-box::before {
-            content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 3px;
-            background: var(--accent-pink);
-        }
-        .stat-box:nth-child(even)::before { background: var(--accent-cyan); }
-        
-        .stat-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; }
-        .stat-title { font-size: 0.75rem; color: #bbb; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .glow-text { color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
-
-        /* MENU GRID (16:9 Buttons) */
-        .menu-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px 20px 40px;
-        }
-        .menu-card {
-            aspect-ratio: 16/9;
-            border-radius: 12px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid rgba(255,255,255,0.05);
+        /* PROFILE SECTION (Top Box) */
+        .profile-section {
+            background: linear-gradient(180deg, #1f2229 0%, #15171c 100%);
+            margin: 20px; padding: 20px; border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
             position: relative; overflow: hidden;
         }
-        .menu-card:active { transform: scale(0.96); }
-        .menu-card:hover { box-shadow: 0 5px 20px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.2); }
-
-        .mc-icon { font-size: 1.8rem; margin-bottom: 8px; z-index: 2; }
-        .mc-text { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; z-index: 2; letter-spacing: 0.5px; }
-
-        /* Button Gradients (Darker & Richer) */
-        .g-task { background: linear-gradient(135deg, #2b1055, #7597de); }
-        .g-team { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
-        .g-with { background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b); } /* Rich */
-        .g-vip  { background: linear-gradient(135deg, #141e30, #243b55); }
-        .g-game { background: linear-gradient(135deg, #43cea2, #185a9d); }
-        .g-club { background: linear-gradient(135deg, #8E2DE2, #4A00E0); }
-        
-        /* Shine Effect */
-        .shine::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: skewX(-20deg); animation: shine 6s infinite;
+        /* Glowing orb effect behind profile */
+        .glow-orb {
+            position: absolute; top: -20px; left: -20px; width: 100px; height: 100px;
+            background: radial-gradient(circle, rgba(76,110,245,0.4) 0%, transparent 70%);
+            border-radius: 50%; filter: blur(20px);
         }
-        @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+
+        .user-info { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; position: relative; z-index: 2; }
+        
+        /* Circle Avatar */
+        .avatar-circle {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: #000; padding: 3px;
+            background: conic-gradient(from 0deg, #4c6ef5, #a64cf5, #4c6ef5);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .avatar-circle img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #191b20; }
+
+        .u-details h3 { margin: 0; font-size: 1.1rem; }
+        .u-details span { color: var(--text-muted); font-size: 0.85rem; }
+        .id-badge { background: #2a2d35; padding: 2px 8px; border-radius: 6px; color: #fff; font-size: 0.8rem; margin-left: 5px; }
+
+        /* Personal Link Box (Blue Pill) */
+        .link-box {
+            background: #2a2d35; border-radius: 30px; padding: 8px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 10px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .link-text { color: var(--primary-blue); font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%; }
+        .copy-btn {
+            background: var(--primary-blue); color: white; border: none;
+            padding: 5px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
+        }
+
+        /* STATS GRID (Partners & Team) */
+        .stats-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+            padding: 0 20px; margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--bg-card); padding: 15px; border-radius: 12px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            height: 80px; position: relative;
+        }
+        .st-label { color: var(--text-muted); font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
+        .st-val { font-size: 1.5rem; font-weight: 700; color: #fff; margin-top: 5px; }
+        .st-icon { position: absolute; right: 15px; top: 15px; color: #333; font-size: 1.2rem; }
+
+        /* PROFIT SECTION (Taka) */
+        .profit-section {
+            margin: 0 20px 20px; padding: 15px; border-radius: 12px;
+            background: var(--bg-card);
+        }
+        .profit-header { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 10px; }
+        .profit-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .profit-row:last-child { border-bottom: none; }
+        .p-label { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .dot.yellow { background: #ffc107; }
+        .dot.green { background: #00e676; }
+        .p-amount { font-weight: bold; font-size: 1rem; }
+
+        /* PROGRAMS / FEATURES (The Big Colorful Cards) */
+        .features-title { margin: 0 20px 10px; font-size: 1rem; font-weight: bold; }
+        
+        .program-card {
+            margin: 0 20px 15px; padding: 0; border-radius: 12px;
+            background: var(--bg-card); overflow: hidden;
+            position: relative; cursor: pointer; transition: 0.2s;
+        }
+        .program-card:active { transform: scale(0.98); }
+
+        /* X3/X4 Style Gradients */
+        .pc-top {
+            padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        /* Yellow/Gold Gradient (Like X3) */
+        .gold-grad { background: linear-gradient(90deg, #ffb300 0%, #ffca28 100%); color: #000; }
+        .gold-grad .pc-title { color: #000; opacity: 0.8; }
+        .gold-grad .pc-val { color: #000; font-weight: 900; }
+        
+        /* Blue/Purple Gradient (Like X4) */
+        .blue-grad { background: linear-gradient(90deg, #304ffe 0%, #7c4dff 100%); color: #fff; }
+
+        /* Green Gradient */
+        .green-grad { background: linear-gradient(90deg, #00c853 0%, #64dd17 100%); color: #fff; }
+
+        .pc-title { font-size: 1rem; font-weight: 800; text-transform: uppercase; }
+        .pc-val { font-size: 0.9rem; font-weight: 600; }
+        
+        .pc-body {
+            padding: 15px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+            background: rgba(255,255,255,0.02);
+        }
+        /* Little dots inside card */
+        .slot-dot { width: 100%; height: 8px; background: #2c2f36; border-radius: 2px; }
+        .slot-dot.active { background: #fff; opacity: 0.2; }
+
+        .action-btn {
+            background: #fff; color: #000; border: none; padding: 8px 15px;
+            border-radius: 20px; font-weight: bold; font-size: 0.8rem;
+            display: flex; align-items: center; gap: 5px; margin-left: auto;
+        }
+
+        /* Bottom Space */
+        .spacer { height: 50px; }
 
         /* Loader */
-        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d0d2b; z-index: 9999; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; letter-spacing: 2px; }
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0e0f12; z-index: 9999; display: flex; align-items: center; justify-content: center; color: white; }
 
     </style>
 </head>
 <body onclick="unlockAudio()">
 
-    <div id="loader">LOADING...</div>
+    <div id="loader">SHOPPING28...</div>
 
-    <!-- Backgrounds -->
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="grid-bg"></div>
-
-    <!-- Header -->
+    <!-- HEADER -->
     <div class="header">
-        <div class="logo-area">
-            <h2>Forsage <span>IO</span></h2>
+        <div class="logo">SHOPPING<span>28</span></div>
+        <div class="wallet-badge" id="headerCode">ID: ...</div>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="profile-section">
+        <div class="glow-orb"></div>
+        
+        <div class="user-info">
+            <div class="avatar-circle" onclick="window.location.href='account.html'">
+                <img id="u_img" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="">
+            </div>
+            <div class="u-details">
+                <h3 id="u_name">Loading...</h3>
+                <span id="u_date">Joined: Recent</span>
+                <span class="id-badge" id="u_id">ID ...</span>
+            </div>
+            <i class="fas fa-cog" style="margin-left:auto; color:#666;" onclick="window.location.href='account.html'"></i>
         </div>
-        <div class="profile-btn" onclick="window.location.href='account.html'">
-            <img id="headProfile" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="Profile">
+
+        <!-- Personal Link Like Forsage -->
+        <div class="link-box">
+            <div class="link-text" id="refLinkText">shopping28.io/b/...</div>
+            <button class="copy-btn" onclick="copyRef()">Copy</button>
         </div>
     </div>
 
-    <!-- Hero -->
-    <div class="hero">
-        <div class="user-id-box">ID: <span id="userId">...</span></div>
-        <h1 class="balance-display">৳<span id="mainBalance">0.00</span></h1>
-        <div class="balance-label">Total Current Balance</div>
+    <!-- STATS GRID -->
+    <div class="stats-grid">
+        <div class="stat-card" onclick="window.location.href='my_team.html'">
+            <div class="st-label">Partners <i class="fas fa-info-circle" style="font-size:0.7rem; margin-left:3px;"></i></div>
+            <div class="st-val" id="partnerCount">0</div>
+            <i class="fas fa-user-friends st-icon"></i>
+        </div>
+        <div class="stat-card" onclick="window.location.href='my_team.html'">
+            <div class="st-label">Team <i class="fas fa-info-circle" style="font-size:0.7rem; margin-left:3px;"></i></div>
+            <div class="st-val" id="teamCount">0</div>
+            <i class="fas fa-users st-icon"></i>
+        </div>
     </div>
 
-    <!-- Stats Grid (Counts & Income) -->
-    <div class="stats-container">
-        <!-- Partner Count (Direct) -->
-        <div class="stat-box">
-            <div class="stat-value glow-text" id="partnerCount">0</div>
-            <div class="stat-title">My Partners</div>
-        </div>
-
-        <!-- Team Count (Total) -->
-        <div class="stat-box">
-            <div class="stat-value glow-text" id="teamCount">0</div>
-            <div class="stat-title">Total Team</div>
-        </div>
-
+    <!-- PROFIT SECTION -->
+    <div class="profit-section">
+        <div class="profit-header">Profit Stats</div>
+        
         <!-- Total Income -->
-        <div class="stat-box">
-            <div class="stat-value" style="color:#ffd700">৳<span id="totalIncome">0</span></div>
-            <div class="stat-title">Total Earning</div>
-        </div>
-
-        <!-- Today Income -->
-        <div class="stat-box">
-            <div class="stat-value" style="color:#00ecff">৳<span id="todayIncome">0</span></div>
-            <div class="stat-title">Today Earning</div>
-        </div>
-    </div>
-
-    <!-- Action Buttons (Grid) -->
-    <div class="menu-grid">
-        <div class="menu-card g-task shine" onclick="window.location.href='task.html'">
-            <i class="fas fa-clipboard-check mc-icon"></i>
-            <span class="mc-text">Daily Task</span>
-        </div>
-
-        <div class="menu-card g-team shine" onclick="window.location.href='my_team.html'">
-            <i class="fas fa-users mc-icon"></i>
-            <span class="mc-text">My Team</span>
-        </div>
-
-        <div class="menu-card g-with shine" onclick="window.location.href='withdraw.html'">
-            <i class="fas fa-wallet mc-icon"></i>
-            <span class="mc-text">Withdraw</span>
-        </div>
-
-        <div class="menu-card g-vip shine" onclick="window.location.href='vip_level.html'">
-            <i class="fas fa-crown mc-icon"></i>
-            <span class="mc-text">VIP Level</span>
-        </div>
-
-        <div class="menu-card g-game shine" onclick="window.location.href='question_game.html'">
-            <i class="fas fa-gamepad mc-icon"></i>
-            <span class="mc-text">Quiz Game</span>
-        </div>
-
-        <div class="menu-card g-club shine" onclick="window.location.href='vip_club.html'">
-            <i class="fas fa-gem mc-icon"></i>
-            <span class="mc-text">VIP Club</span>
+        <div class="profit-row">
+            <div class="p-label">
+                <div class="dot yellow"></div> Total Profit
+            </div>
+            <div class="p-amount" style="color:#ffc107">৳ <span id="totalProfit">0.00</span></div>
         </div>
         
-        <div class="menu-card g-task shine" onclick="window.location.href='weekly.html'">
-            <i class="fas fa-calendar-week mc-icon"></i>
-            <span class="mc-text">4X Plan</span>
-        </div>
-
-        <div class="menu-card g-team shine" onclick="window.location.href='monthly.html'">
-            <i class="fas fa-calendar-alt mc-icon"></i>
-            <span class="mc-text">Monthly</span>
+        <!-- Current Balance -->
+        <div class="profit-row">
+            <div class="p-label">
+                <div class="dot green"></div> Current Balance
+            </div>
+            <div class="p-amount" style="color:#00e676">৳ <span id="currentBalance">0.00</span></div>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- PROGRAMS (Buttons Style like Forsage) -->
+    <div class="features-title">Shopping28 Programs</div>
+
+    <!-- 1. Daily Task (Yellow X3 Style) -->
+    <div class="program-card" onclick="window.location.href='task.html'">
+        <div class="pc-top gold-grad">
+            <div>
+                <div class="pc-title">Daily Task</div>
+                <div class="pc-val">Earn Daily</div>
+            </div>
+            <button class="action-btn">Start <i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="pc-body">
+            <div class="slot-dot active"></div><div class="slot-dot"></div><div class="slot-dot"></div><div class="slot-dot"></div>
+        </div>
+    </div>
+
+    <!-- 2. Withdraw (Blue X4 Style) -->
+    <div class="program-card" onclick="window.location.href='withdraw.html'">
+        <div class="pc-top blue-grad">
+            <div>
+                <div class="pc-title">Withdraw</div>
+                <div class="pc-val">Cashout</div>
+            </div>
+            <button class="action-btn" style="color:#304ffe">Go <i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="pc-body">
+            <div class="slot-dot active"></div><div class="slot-dot active"></div><div class="slot-dot"></div><div class="slot-dot"></div>
+        </div>
+    </div>
+
+    <!-- 3. VIP Level (Green Style) -->
+    <div class="program-card" onclick="window.location.href='vip_level.html'">
+        <div class="pc-top green-grad">
+            <div>
+                <div class="pc-title">VIP Levels</div>
+                <div class="pc-val">Upgrade Now</div>
+            </div>
+            <button class="action-btn" style="color:#00c853">View <i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="pc-body">
+            <div class="slot-dot active"></div><div class="slot-dot active"></div><div class="slot-dot active"></div><div class="slot-dot"></div>
+        </div>
+    </div>
+
+    <!-- 4. More Options Grid -->
+    <div class="features-title" style="margin-top:20px;">More</div>
+    <div class="stats-grid">
+        <div class="stat-card" style="height:auto; align-items:center; text-align:center;" onclick="window.location.href='monthly.html'">
+            <i class="fas fa-calendar-alt" style="font-size:1.5rem; color:#a64cf5; margin-bottom:5px;"></i>
+            <div class="st-label" style="justify-content:center;">Monthly</div>
+        </div>
+        <div class="stat-card" style="height:auto; align-items:center; text-align:center;" onclick="window.location.href='question_game.html'">
+            <i class="fas fa-gamepad" style="font-size:1.5rem; color:#ff4081; margin-bottom:5px;"></i>
+            <div class="st-label" style="justify-content:center;">Quiz Game</div>
+        </div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -264,59 +321,57 @@
                 db.ref('users/' + user.uid).on('value', (snapshot) => {
                     const data = snapshot.val();
                     if(data) {
-                        // Check active status
-                        if(data.status !== 'active') {
-                            window.location.href = 'account_active.html';
-                            return;
-                        }
-
-                        // Remove Loader
+                        if(data.status !== 'active') { window.location.href = 'account_active.html'; return; }
+                        
                         document.getElementById('loader').style.display = 'none';
 
-                        // 1. Basic Info
-                        document.getElementById('userId').innerText = data.ownCode || user.uid.substring(0,6);
-                        if(data.profilePic) document.getElementById('headProfile').src = data.profilePic;
+                        // Profile Info
+                        document.getElementById('u_name').innerText = data.firstName;
+                        document.getElementById('u_id').innerText = data.ownCode || "N/A";
+                        document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
+                        document.getElementById('u_date').innerText = "Joined: " + (data.joinDate || "Recent");
+                        
+                        if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
 
-                        // 2. Financials (Taka)
-                        document.getElementById('mainBalance').innerText = (data.balance || 0).toFixed(2);
-                        document.getElementById('totalIncome').innerText = (data.total_income || data.totalEarning || 0);
-                        document.getElementById('todayIncome').innerText = (data.today_income || data.todayEarning || 0);
+                        // Link Box
+                        const link = `shopping28.io/b/${data.ownCode}`;
+                        document.getElementById('refLinkText').innerText = link;
 
-                        // 3. Team Counters Logic
-                        // Direct Partners (সরাসরি আপনার রেফার লিংক ব্যবহারকারীরা)
+                        // Balance & Profit
+                        document.getElementById('currentBalance').innerText = (data.balance || 0).toFixed(2);
+                        document.getElementById('totalProfit').innerText = (data.total_income || data.totalEarning || 0).toFixed(2);
+
+                        // Partners & Team Logic
                         if(data.ownCode) {
+                            // Direct Partners
                             db.ref('users').orderByChild('referredBy').equalTo(data.ownCode).on('value', (snap) => {
                                 document.getElementById('partnerCount').innerText = snap.numChildren();
                             });
-
-                            // Total Team (যদি ডেটাবেসে teamCount সেভ করা থাকে, তবে সেটা দেখাবে। 
-                            // নাহলে, আপাতত 0 দেখাবে কারণ হোম পেজে পুরো ট্রি ক্যালকুলেট করলে পেজ স্লো হয়ে যাবে)
-                            // তবে আপনি চাইলে partnerCount এবং team_member ফিল্ড ডেটাবেসে আপডেট রাখলে এখানে শো করবে।
                             
-                            // Option A: Database stored value (Fastest)
-                            let totalTeam = 0;
-                            if(data.teamCount) totalTeam = data.teamCount;
-                            else if (data.team_member) totalTeam = data.team_member;
-                            
-                            // If user has direct partners but no team count stored, at least show partners count
-                            // Note: For full recursive team count on Home, backend Cloud Functions are recommended.
-                            // Here we display what is stored or calculate basic L1.
-                            document.getElementById('teamCount').innerText = totalTeam || document.getElementById('partnerCount').innerText; 
+                            // Team Count (Stored or approximate)
+                            let tCount = data.teamCount || data.team_member || document.getElementById('partnerCount').innerText;
+                            document.getElementById('teamCount').innerText = tCount;
                         }
 
-                        // Voice Welcome (Once)
+                        // Welcome Voice
                         if(!localStorage.getItem('home_voice_played')) {
-                            speak("Welcome to your Premium Dashboard");
+                            speak("Welcome to Shopping 28 Dashboard");
                             localStorage.setItem('home_voice_played', 'true');
                         }
-                    } else {
-                        window.location.href = 'login_register.html';
                     }
                 });
             } else {
                 window.location.href = 'login_register.html';
             }
         });
+
+        function copyRef() {
+            const code = document.getElementById('u_id').innerText;
+            const fullLink = `https://shopping28.github.io/-/login_register.html?ref=${code}`;
+            navigator.clipboard.writeText(fullLink).then(() => {
+                alert("Personal Link Copied!");
+            });
+        }
     </script>
 </body>
 </html>
