@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Registration</title>
+    <title>Complete Activation</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -24,27 +24,30 @@
         
         .logout-btn { background: none; border: 1px solid #ff4757; color: #ff4757; padding: 5px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
         
-        /* Guest Mode Styles */
-        .guest-hidden { display: none; }
-        .back-btn { width: 100%; padding: 15px; background: #3498db; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
+        #loadingInit { text-align: center; color: #aaa; }
+        #mainContent { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="paymentForm">
-            <div class="header">
-                <h2>Activate Account</h2>
-                <p style="font-size: 0.9rem; color: #aaa;">Complete payment information</p>
-            </div>
-            
-            <div class="pay-box">
-                <small>Send Amount</small><div class="amount">৳ <span id="dispFee">...</span></div>
-                <small>To this Number (Personal)</small>
-                <div class="number-display" onclick="copyNumber()"><span id="dispNum">Loading...</span> <i class="fas fa-copy"></i></div>
-            </div>
+        
+        <!-- Loading Initial Check -->
+        <div id="loadingInit">
+            <div class="loader-ring" style="margin: 0 auto 10px auto;"></div>
+            <p>Checking Account Status...</p>
+        </div>
 
-            <!-- Normal Form (Hidden for Guest) -->
-            <div id="regFormArea">
+        <div id="mainContent">
+            <div id="paymentForm">
+                <div class="header">
+                    <h2>Activate Account</h2>
+                    <p style="font-size: 0.9rem; color: #aaa;">Complete payment to finish registration</p>
+                </div>
+                <div class="pay-box">
+                    <small>Send Amount</small><div class="amount">৳ <span id="dispFee">...</span></div>
+                    <small>To this Number (Personal)</small>
+                    <div class="number-display" onclick="copyNumber()"><span id="dispNum">Loading...</span> <i class="fas fa-copy"></i></div>
+                </div>
                 <form onsubmit="event.preventDefault(); submitRequest();">
                     <label>Payment Method</label><select id="method"><option value="Bkash">Bkash</option><option value="Nagad">Nagad</option></select>
                     <label>Your Payment Number</label><input type="number" id="senderPhone" placeholder="e.g. 017xxxxxxxx" required>
@@ -53,16 +56,6 @@
                 </form>
                 <button onclick="logout()" class="logout-btn">Cancel & Logout</button>
             </div>
-
-            <!-- Guest View Only -->
-            <div id="guestArea" style="display:none; text-align:center;">
-                <p style="color:#aaa; font-size:0.9rem; margin-bottom:20px;">
-                    Please send the money to the number above.<br>
-                    Then go back and click <b>Register</b> again to submit your details.
-                </p>
-                <button onclick="goBackToReg()" class="back-btn">Go Back to Register</button>
-            </div>
-
         </div>
         
         <div id="overlay">
@@ -70,12 +63,13 @@
                 <div class="loader-ring"></div>
                 <h3>Approval Pending...</h3>
                 <h2 style="color:#f39c12;" id="timer">15:00</h2>
-                <p style="color:#aaa; font-size:0.8rem;">Admin is checking your payment.<br>You will be redirected automatically.</p>
+                <p style="color:#aaa; font-size:0.8rem;">Admin is checking your payment.<br>Wait here or come back later.</p>
+                <button onclick="logout()" class="logout-btn" style="margin-top:20px;">Logout</button>
             </div>
             <div id="successState" style="display:none;">
                 <i class="fas fa-check-circle" style="font-size:4rem; color:#00f260;"></i>
                 <h2 style="color:#00f260;">Approved!</h2>
-                <p>Registration Complete.</p>
+                <p>Welcome to Dashboard.</p>
             </div>
         </div>
     </div>
@@ -90,17 +84,7 @@
         const auth = firebase.auth();
         let currentUser = null, currentFee = 0, adminNumber = "";
 
-        // Check for Guest Mode
-        const urlParams = new URLSearchParams(window.location.search);
-        const isGuest = urlParams.get('guest');
-
-        if(isGuest) {
-            // Guest Mode: Hide Form, Show Back Button
-            document.getElementById('regFormArea').style.display = 'none';
-            document.getElementById('guestArea').style.display = 'block';
-        }
-
-        // Load Settings (Works for everyone)
+        // Load Settings
         db.ref('settings/payment').on('value', (snap) => {
             const data = snap.val();
             if(data) { 
@@ -111,28 +95,46 @@
             }
         });
 
-        // Check Status (Only if NOT guest)
-        if(!isGuest) {
-            auth.onAuthStateChanged((user) => {
-                if (user) { 
-                    currentUser = user; 
-                    db.ref('users/' + user.uid + '/status').on('value', (snap) => { 
-                        if(snap.val() === 'active') showSuccess(); 
-                    }); 
-                } else { 
-                    window.location.href = 'login_register.html'; 
-                }
+        // Check Status Realtime
+        auth.onAuthStateChanged((user) => {
+            if (user) { 
+                currentUser = user;
+                
+                // Monitor user status changes
+                db.ref('users/' + user.uid + '/status').on('value', (snap) => {
+                    const status = snap.val();
+                    
+                    if (status === 'active') {
+                        // If active, show success and redirect
+                        showSuccess();
+                    } else {
+                        // If inactive, show payment form
+                        document.getElementById('loadingInit').style.display = 'none';
+                        document.getElementById('mainContent').style.display = 'block';
+                        
+                        // Check if already requested
+                        checkPendingRequest(user.uid);
+                    }
+                });
+            } else { 
+                window.location.href = 'login_register.html'; 
+            }
+        });
+
+        function checkPendingRequest(uid) {
+            // Optional: Check if user already submitted a request recently to show timer
+            db.ref('activation_requests').orderByChild('uid').equalTo(uid).limitToLast(1).once('value', s => {
+                s.forEach(c => {
+                    if(c.val().status === 'pending') {
+                        startTimer();
+                    }
+                });
             });
         }
 
         function copyNumber() { navigator.clipboard.writeText(adminNumber); alert("Number Copied!"); }
 
-        function goBackToReg() {
-            window.history.back();
-        }
-
         function submitRequest() {
-            if(isGuest) return alert("Please Register First!");
             if(!adminNumber) return alert("System Loading...");
             const method = document.getElementById('method').value;
             const sender = document.getElementById('senderPhone').value;
@@ -155,6 +157,9 @@
 
         function startTimer() {
             document.getElementById('overlay').style.display = 'flex';
+            document.getElementById('pendingState').style.display = 'flex';
+            document.getElementById('successState').style.display = 'none';
+            
             let time = 900; const el = document.getElementById('timer');
             const interval = setInterval(() => {
                 let m = Math.floor(time / 60); let s = time % 60; 
@@ -167,7 +172,8 @@
             document.getElementById('overlay').style.display = 'flex'; 
             document.getElementById('pendingState').style.display = 'none'; 
             document.getElementById('successState').style.display = 'block';
-            setTimeout(() => window.location.href = 'home.html', 3000);
+            document.getElementById('loadingInit').style.display = 'none';
+            setTimeout(() => window.location.href = 'home.html', 2000);
         }
 
         function logout() {
