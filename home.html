@@ -15,6 +15,7 @@
             --neon-gold: #ffd700;
             --neon-blue: #00f2ff;
             --neon-green: #00ff88;
+            --neon-purple: #bc13fe;
             --text-main: #ffffff;
             --text-muted: #8b9bb4;
         }
@@ -43,7 +44,6 @@
             position: sticky; top: 0; z-index: 100;
         }
         
-        /* LOGO STYLE */
         .logo-container { display: flex; align-items: center; gap: 8px; }
         .logo-icon { font-size: 1.6rem; color: var(--neon-blue); filter: drop-shadow(0 0 5px rgba(0,242,255,0.5)); }
         .logo { font-size: 1.4rem; font-weight: 900; letter-spacing: 1px; }
@@ -74,59 +74,41 @@
         .profile-img-box {
             width: 90px; height: 90px; border-radius: 50%;
             padding: 4px; background: linear-gradient(135deg, #00f2ff, #bc13fe);
-            margin-bottom: 15px;
-            position: relative;
-            cursor: pointer;
+            margin-bottom: 15px; position: relative; cursor: pointer;
             box-shadow: 0 0 20px rgba(188, 19, 254, 0.3);
         }
-        .profile-img-box img {
-            width: 100%; height: 100%; border-radius: 50%;
-            object-fit: cover; border: 3px solid #000;
-        }
+        .profile-img-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #000; }
         
         .user-name { font-size: 1.5rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; }
         .user-meta { color: var(--text-muted); font-size: 0.85rem; margin-top: 5px; }
         
-        /* UID BADGE WITH HIDE/SHOW */
         .uid-badge {
-            background: rgba(255,255,255,0.08);
-            padding: 6px 15px; border-radius: 20px;
-            font-size: 0.8rem; margin-top: 10px;
-            color: var(--neon-gold); font-family: monospace;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            cursor: pointer; user-select: none;
-            display: flex; align-items: center; gap: 8px;
-            transition: 0.3s;
+            background: rgba(255,255,255,0.08); padding: 6px 15px; border-radius: 20px;
+            font-size: 0.8rem; margin-top: 10px; color: var(--neon-gold); font-family: monospace;
+            border: 1px solid rgba(255, 215, 0, 0.3); cursor: pointer; user-select: none;
+            display: flex; align-items: center; gap: 8px; transition: 0.3s;
         }
-        .uid-badge:hover { background: rgba(255, 215, 0, 0.1); }
 
         /* LINK BOX */
         .link-wrapper {
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px; padding: 12px 15px;
+            background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px 15px;
             display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid rgba(255,255,255,0.05);
-            width: 100%; box-sizing: border-box; margin-top: 20px;
+            border: 1px solid rgba(255,255,255,0.05); width: 100%; box-sizing: border-box; margin-top: 20px;
         }
         .link-txt { font-family: monospace; color: var(--neon-blue); font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; max-width: 70%; white-space: nowrap; }
-        .copy-btn {
-            background: var(--neon-blue); color: #000;
-            border: none; padding: 6px 15px; border-radius: 20px;
-            font-weight: 800; font-size: 0.75rem; cursor: pointer;
-        }
+        .copy-btn { background: var(--neon-blue); color: #000; border: none; padding: 6px 15px; border-radius: 20px; font-weight: 800; font-size: 0.75rem; cursor: pointer; }
 
         /* STATS GRID */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px; }
         .stat-box {
             background: var(--glass-bg); border: 1px solid var(--glass-border);
-            padding: 20px; border-radius: 18px; position: relative;
-            backdrop-filter: blur(5px);
+            padding: 20px; border-radius: 18px; position: relative; backdrop-filter: blur(5px);
         }
         .stat-label { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
         .stat-num { font-size: 1.8rem; font-weight: 800; margin-top: 10px; color: #fff; }
         .stat-icon { position: absolute; right: 15px; top: 15px; font-size: 1.5rem; opacity: 0.1; color: #fff; }
 
-        /* PROFIT SECTION (USDT) */
+        /* PROFIT SECTION (UPDATED) */
         .profit-card {
             background: var(--glass-bg); border: 1px solid var(--glass-border);
             border-radius: 20px; padding: 20px; margin: 15px 20px;
@@ -134,14 +116,18 @@
         }
         .profit-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .profit-row:last-child { border-bottom: none; padding-bottom: 0; padding-top: 5px; }
+        
         .p-title { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
+        
         .d-gold { background: var(--neon-gold); box-shadow: 0 0 8px var(--neon-gold); }
         .d-green { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
+        .d-blue { background: var(--neon-blue); box-shadow: 0 0 8px var(--neon-blue); }
         
         .p-value { font-size: 1.2rem; font-weight: 700; font-family: monospace; }
         .val-gold { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
         .val-green { color: var(--neon-green); text-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+        .val-blue { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
 
         /* PROGRAMS HEADER */
         .section-title { margin: 25px 20px 10px; font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
@@ -177,8 +163,7 @@
             height: 80px; border-radius: 15px;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             text-align: center; cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.1);
-            position: relative; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         .mc-monthly { background: linear-gradient(135deg, #8E2DE2, #4A00E0); }
@@ -201,18 +186,15 @@
             font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.5rem; letter-spacing: 2px;
         }
         #loader span { color: var(--neon-blue); }
-
     </style>
 </head>
 <body onclick="unlockAudio()">
 
     <div id="loader">SHOPPING<span>28</span></div>
-
-    <!-- Background -->
     <div class="ambient-light al-1"></div>
     <div class="ambient-light al-2"></div>
 
-    <!-- HEADER with PREMIUM LOGO -->
+    <!-- HEADER -->
     <div class="header">
         <div class="logo-container">
             <i class="fas fa-shopping-bag logo-icon"></i>
@@ -221,7 +203,7 @@
         <div class="id-pill" id="headerCode">ID: ...</div>
     </div>
 
-    <!-- PROFILE CARD -->
+    <!-- PROFILE -->
     <div class="profile-card">
         <div class="profile-img-box" onclick="window.location.href='account.html'">
             <img id="u_img" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="User">
@@ -229,7 +211,6 @@
         <h3 class="user-name" id="u_name">Loading...</h3>
         <p class="user-meta" id="u_joined">Joined: ...</p>
         
-        <!-- UID TOGGLE -->
         <div class="uid-badge" onclick="toggleUid()">
             <span id="u_uid_display">UID: Loading...</span>
             <i id="uid_eye" class="fas fa-eye-slash"></i>
@@ -241,7 +222,7 @@
         </div>
     </div>
 
-    <!-- STATS (ACTIVE ONLY) -->
+    <!-- TEAM STATS (Active Only) -->
     <div class="stats-grid">
         <div class="stat-box" onclick="window.location.href='my_team.html'">
             <div class="stat-label">Active Partners <i class="fas fa-info-circle"></i></div>
@@ -249,21 +230,28 @@
             <i class="fas fa-user-friends stat-icon"></i>
         </div>
         <div class="stat-box" onclick="window.location.href='my_team.html'">
-            <div class="stat-label">Total Active Team <i class="fas fa-info-circle"></i></div>
+            <div class="stat-label">Active Team (Total) <i class="fas fa-info-circle"></i></div>
             <div class="stat-num" id="teamCount">0</div>
             <i class="fas fa-users stat-icon"></i>
         </div>
     </div>
 
-    <!-- PROFIT SECTION (USDT BEP20) -->
+    <!-- PROFIT SECTION (USDT) -->
     <div class="profit-card">
+        <!-- 1. Total Lifetime Profit -->
         <div class="profit-row">
             <div class="p-title"><div class="dot d-gold"></div> Total Profit</div>
             <div class="p-value val-gold"><span id="totalProfit">0.00</span> USDT</div>
         </div>
+        <!-- 2. Current Balance -->
         <div class="profit-row">
             <div class="p-title"><div class="dot d-green"></div> Current Balance</div>
             <div class="p-value val-green"><span id="currentBalance">0.00</span> USDT</div>
+        </div>
+        <!-- 3. Today Profit -->
+        <div class="profit-row">
+            <div class="p-title"><div class="dot d-blue"></div> Today Profit</div>
+            <div class="p-value val-blue"><span id="todayProfit">0.00</span> USDT</div>
         </div>
     </div>
 
@@ -313,7 +301,7 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- SCRIPTS -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -346,20 +334,16 @@
             return (parseFloat(taka) / 120).toFixed(2);
         }
 
-        // UID TOGGLE FUNCTION
         function toggleUid() {
             const display = document.getElementById('u_uid_display');
             const icon = document.getElementById('uid_eye');
             isUidHidden = !isUidHidden;
-            
             if(isUidHidden) {
                 display.innerText = "UID: " + fullUid.substring(0, 8) + "•••";
-                icon.className = "fas fa-eye-slash";
-                icon.style.color = "#8b9bb4";
+                icon.className = "fas fa-eye-slash"; icon.style.color = "#8b9bb4";
             } else {
                 display.innerText = "UID: " + fullUid;
-                icon.className = "fas fa-eye";
-                icon.style.color = "#00f2ff";
+                icon.className = "fas fa-eye"; icon.style.color = "#00f2ff";
             }
         }
 
@@ -372,26 +356,23 @@
                         
                         document.getElementById('loader').style.display = 'none';
 
-                        // Basic Info
+                        // Profile
                         document.getElementById('u_name').innerText = data.firstName;
                         document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
                         document.getElementById('u_joined').innerText = "Joined: " + (data.joinDate || "Recent");
                         if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
-                        
-                        // UID Setup
                         fullUid = user.uid;
                         document.getElementById('u_uid_display').innerText = "UID: " + fullUid.substring(0, 8) + "•••";
-
-                        // Link
                         document.getElementById('refLinkText').innerText = `shopping28.io/b/${data.ownCode}`;
 
                         // Financials (Converted)
-                        document.getElementById('currentBalance').innerText = toUSDT(data.balance || 0);
                         document.getElementById('totalProfit').innerText = toUSDT(data.total_income || data.totalEarning || 0);
+                        document.getElementById('currentBalance').innerText = toUSDT(data.balance || 0);
+                        document.getElementById('todayProfit').innerText = toUSDT(data.today_income || data.todayEarning || 0);
 
                         // === TEAM COUNT LOGIC (ACTIVE ONLY) ===
                         if(data.ownCode) {
-                            // 1. Active Direct Partners
+                            // 1. Direct Active Partners
                             db.ref('users').orderByChild('referredBy').equalTo(data.ownCode).on('value', (snap) => {
                                 let activeDirects = 0;
                                 snap.forEach(child => {
@@ -399,65 +380,54 @@
                                 });
                                 document.getElementById('partnerCount').innerText = activeDirects;
                                 
-                                // 2. Trigger Active Deep Search
+                                // 2. Recursive Active Team
                                 calculateActiveTeam(data.ownCode);
                             });
                         }
 
-                        // Voice
                         if(!localStorage.getItem('home_voice_played')) {
                             speak("Welcome to Shopping 28");
                             localStorage.setItem('home_voice_played', 'true');
                         }
                     }
                 });
-            } else {
-                window.location.href = 'login_register.html';
-            }
+            } else { window.location.href = 'login_register.html'; }
         });
 
-        // RECURSIVE ACTIVE TEAM COUNT (L1, L2, L3)
+        // RECURSIVE ACTIVE TEAM COUNT (L1 + L2 + L3)
         function calculateActiveTeam(myCode) {
             let totalActive = 0;
-
-            // Level 1
+            // L1
             db.ref('users').orderByChild('referredBy').equalTo(myCode).once('value', (snap1) => {
                 if(!snap1.exists()) { document.getElementById('teamCount').innerText = 0; return; }
-
                 snap1.forEach(child1 => {
                     const u1 = child1.val();
                     if(u1.status === 'active') totalActive++;
-
+                    // L2
                     if(u1.ownCode) {
-                        // Level 2
                         db.ref('users').orderByChild('referredBy').equalTo(u1.ownCode).once('value', (snap2) => {
                             if(snap2.exists()) {
                                 snap2.forEach(child2 => {
                                     const u2 = child2.val();
                                     if(u2.status === 'active') totalActive++;
-
+                                    // L3
                                     if(u2.ownCode) {
-                                        // Level 3
                                         db.ref('users').orderByChild('referredBy').equalTo(u2.ownCode).once('value', (snap3) => {
                                             if(snap3.exists()) {
                                                 snap3.forEach(child3 => {
                                                     const u3 = child3.val();
                                                     if(u3.status === 'active') totalActive++;
-                                                    
-                                                    // Update UI Deepest level
                                                     document.getElementById('teamCount').innerText = totalActive;
                                                 });
                                             }
                                         });
                                     }
                                 });
-                                // Update UI Level 2
                                 document.getElementById('teamCount').innerText = totalActive;
                             }
                         });
                     }
                 });
-                // Update UI Level 1
                 document.getElementById('teamCount').innerText = totalActive;
             });
         }
