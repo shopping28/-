@@ -64,14 +64,28 @@
         }
         function showMsg(text) { document.getElementById('msg').innerText = text; }
 
-        // Auto Referral Logic
+        // Restore Data & Tab if returning from Active Page
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const refCode = urlParams.get('ref');
+            
+            // Restore Inputs
+            if(sessionStorage.getItem('r_fname')) document.getElementById('r_fname').value = sessionStorage.getItem('r_fname');
+            if(sessionStorage.getItem('r_lname')) document.getElementById('r_lname').value = sessionStorage.getItem('r_lname');
+            if(sessionStorage.getItem('r_phone')) document.getElementById('r_phone').value = sessionStorage.getItem('r_phone');
+            if(sessionStorage.getItem('r_pass')) document.getElementById('r_pass').value = sessionStorage.getItem('r_pass');
+            if(sessionStorage.getItem('r_cpass')) document.getElementById('r_cpass').value = sessionStorage.getItem('r_cpass');
+            if(sessionStorage.getItem('r_ref')) document.getElementById('r_ref').value = sessionStorage.getItem('r_ref');
+
             if (refCode) {
                 document.getElementById('r_ref').value = refCode;
                 document.getElementById('r_ref').readOnly = true;
                 switchTab('register', document.getElementById('tab_register'));
+            }
+
+            // If user came back from Active page, open Register tab
+            if(sessionStorage.getItem('visited_active_page') === 'true') {
+                 switchTab('register', document.getElementById('tab_register'));
             }
         }
 
@@ -88,6 +102,25 @@
             if(!fname || !lname || !phone || !pass || !refCode) return showMsg("All fields are required!");
             if(pass.length < 6) return showMsg("Password must be 6+ chars");
             if(pass !== cpass) return showMsg("Passwords do not match!");
+
+            // === NEW LOGIC: VISIT ACTIVE PAGE FIRST ===
+            if (sessionStorage.getItem('visited_active_page') !== 'true') {
+                // Save inputs to session
+                sessionStorage.setItem('r_fname', fname);
+                sessionStorage.setItem('r_lname', lname);
+                sessionStorage.setItem('r_phone', phone);
+                sessionStorage.setItem('r_pass', pass);
+                sessionStorage.setItem('r_cpass', cpass);
+                sessionStorage.setItem('r_ref', refCode);
+                
+                // Mark visited
+                sessionStorage.setItem('visited_active_page', 'true');
+                
+                // Redirect to Active Page (Guest Mode)
+                window.location.href = 'account_active.html?guest=true';
+                return;
+            }
+            // ==========================================
 
             btn.disabled = true; btn.innerText = "Processing...";
 
@@ -110,8 +143,8 @@
                         firstName: fname, lastName: lname, phone: phone, password: pass,
                         ownCode: newCode, referredBy: refBy, status: 'inactive', balance: 0, joinedAt: new Date().toISOString()
                     }).then(() => {
-                        // === CHANGE HERE ===
-                        // রেজিস্ট্রেশন হলে এখন সরাসরি account_active.html এ যাবে
+                        // Registration Done, Clear Session and Go to Active Page (Normal Mode)
+                        sessionStorage.clear();
                         window.location.href = 'account_active.html';
                     });
                 })
@@ -132,8 +165,8 @@
 
             auth.signInWithEmailAndPassword(phone + "@shoppingfree.com", pass)
             .then(() => {
-                // লগইন এর পর status চেক করবে home.html
-                // অথবা এখানেও চেক করা যায়, তবে home.html হ্যান্ডেল করবে
+                // Clear session just in case
+                sessionStorage.clear();
                 window.location.href = 'home.html'; 
             })
             .catch(() => {
