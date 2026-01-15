@@ -3,189 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile | Ultra Premium</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>My Profile | SHOPPING28</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* === THEME VARIABLES === */
+        /* === PREMIUM VARIABLES === */
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg-dark: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-gold: #ffd700;
             --neon-blue: #00f2ff;
-            --neon-green: #00f260;
-            --neon-pink: #ff0099;
-            --text-white: #ffffff;
+            --neon-green: #00ff88;
+            --neon-red: #ff4757;
+            --text-main: #ffffff;
+            --text-muted: #8b9bb4;
         }
 
-        body { 
-            background: #000; 
-            font-family: 'Outfit', sans-serif; 
-            margin: 0; padding: 20px; 
-            color: white; 
-            min-height: 100vh; 
+        body {
+            margin: 0; padding: 0; padding-bottom: 50px;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
             overflow-x: hidden;
             position: relative;
         }
-        
-        /* =========================================
-           BACKGROUND ANIMATION (AURORA)
-        ========================================= */
-        .premium-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: #0f0c29; overflow: hidden;
-        }
-        .gradient-sphere {
-            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5;
-            animation: moveGradient 15s infinite alternate ease-in-out;
-        }
-        .g-1 { top: -10%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, #764ba2, #667eea); }
-        .g-2 { bottom: -10%; right: -10%; width: 350px; height: 350px; background: radial-gradient(circle, #ff0084, #33001b); animation-delay: -5s; }
-        .g-3 { top: 40%; left: 40%; width: 250px; height: 250px; background: radial-gradient(circle, #00f2ff, #000000); opacity: 0.3; }
-        
-        .stars {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
-                              radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0));
-            background-size: 200px 200px; animation: twinkle 4s linear infinite; opacity: 0.6;
-        }
 
-        @keyframes moveGradient { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, 30px); } }
-        @keyframes twinkle { 0% { opacity: 0.3; } 50% { opacity: 0.8; } 100% { opacity: 0.3; } }
-        
-        /* Entry Animation */
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* AMBIENT LIGHTS */
+        .ambient-light { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; opacity: 0.4; }
+        .al-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, #4c00ff, transparent); }
+        .al-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, #ff0055, transparent); }
 
-        /* =========================================
-           COMPONENTS
-        ========================================= */
-        .header-nav { margin-bottom: 20px; animation: fadeInUp 0.5s ease-out; }
-        .back-btn { 
-            color: #ddd; text-decoration: none; font-size: 1.1rem; 
-            display: flex; align-items: center; gap: 8px; font-weight: 600;
-            transition: 0.3s;
+        /* HEADER */
+        .header {
+            padding: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 100;
         }
-        .back-btn:hover { color: var(--neon-blue); transform: translateX(-5px); }
+        .logo { font-size: 1.2rem; font-weight: 900; letter-spacing: 1px; }
+        .logo span { background: linear-gradient(to right, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .back-btn {
+            color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 5px; transition: 0.3s;
+        }
+        .back-btn:hover { color: var(--neon-blue); }
 
-        /* Profile Card */
+        /* PROFILE CARD */
         .profile-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            padding: 30px; border-radius: 25px; text-align: center;
-            border: 1px solid var(--glass-border); margin-bottom: 25px;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px 20px;
+            margin: 20px;
+            text-align: center;
             position: relative; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            animation: fadeInUp 0.7s ease-out;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* Profile Pic with Rotating Ring */
-        .pic-container { position: relative; width: 100px; height: 100px; margin: 0 auto 15px; }
+        .pic-container { position: relative; width: 100px; height: 100px; margin-bottom: 15px; cursor: pointer; }
         .pic-box {
             width: 100%; height: 100%; border-radius: 50%;
-            background: #000; display: flex; justify-content: center; align-items: center;
-            border: 3px solid transparent; 
-            background-image: linear-gradient(#000, #000), linear-gradient(45deg, #00f2ff, #ff0099);
-            background-origin: border-box; background-clip: content-box, border-box;
+            background: linear-gradient(135deg, #00f2ff, #bc13fe);
+            padding: 4px; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
-            overflow: hidden; cursor: pointer;
         }
-        .pic-box img { width: 100%; height: 100%; object-fit: cover; }
-        
+        .pic-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid #000; }
         .camera-icon {
-            position: absolute; bottom: 5px; right: 5px; background: var(--neon-blue); color: black;
-            width: 28px; height: 28px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-size: 0.9rem; border: 2px solid #1a1a2e; pointer-events: none;
-            box-shadow: 0 0 10px var(--neon-blue);
+            position: absolute; bottom: 0; right: 0;
+            background: var(--neon-blue); color: #000;
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            border: 2px solid #000; font-size: 0.9rem;
         }
 
-        /* Name & Info */
-        .name-area { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 8px; }
-        h2 { margin: 0; font-size: 1.5rem; font-weight: 800; letter-spacing: 0.5px; }
-        .edit-icon { color: #f1c40f; cursor: pointer; font-size: 1rem; transition: 0.3s; }
-        .edit-icon:hover { transform: scale(1.2); }
-        
-        .uid-badge { 
-            background: rgba(255,255,255,0.08); padding: 6px 14px; border-radius: 12px; 
-            font-size: 0.85rem; color: #ddd; margin-top: 5px; display: inline-block; 
-            cursor: pointer; user-select: none; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05);
+        .name-area { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+        .user-name { font-size: 1.5rem; font-weight: 800; margin: 0; }
+        .edit-icon { color: var(--neon-gold); cursor: pointer; font-size: 1rem; }
+
+        .uid-badge {
+            background: rgba(255,255,255,0.08); padding: 5px 12px; border-radius: 10px;
+            font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;
+            border: 1px solid rgba(255,255,255,0.1); font-family: monospace;
         }
-        .uid-badge:hover { background: rgba(255,255,255,0.15); border-color: var(--neon-blue); }
 
-        /* Edit Form */
-        #nameEditForm { display: none; margin-top: 15px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; animation: fadeInUp 0.3s; }
-        .small-input { width: 45%; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; margin-bottom: 10px; outline: none; }
-        .save-btn { background: var(--neon-green); color: black; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: 800; width: 100%; transition: 0.3s; }
-        .save-btn:active { transform: scale(0.95); }
+        /* EDIT FORM */
+        #nameEditForm { display: none; margin-top: 15px; width: 100%; }
+        .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .glass-input {
+            width: 100%; padding: 12px; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border); color: #fff; border-radius: 10px; outline: none;
+        }
+        .glass-input:focus { border-color: var(--neon-blue); }
+        .save-btn {
+            width: 100%; padding: 10px; background: var(--neon-green); color: #000;
+            border: none; border-radius: 10px; font-weight: 800; cursor: pointer;
+        }
 
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; animation: fadeInUp 0.9s ease-out; }
+        /* STATS GRID */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px 25px; }
         .stat-box {
-            background: var(--glass-bg); padding: 20px 15px; border-radius: 20px;
-            text-align: center; border: 1px solid var(--glass-border);
-            transition: 0.3s;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 20px; border-radius: 18px; text-align: center;
         }
-        .stat-box:hover { transform: translateY(-5px); border-color: var(--neon-blue); box-shadow: 0 5px 15px rgba(0, 242, 255, 0.2); }
-        .stat-box h3 { margin: 8px 0 0; font-size: 1.4rem; color: #fff; font-weight: 800; }
-        .stat-box small { color: #aaa; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-        .inc-color { color: var(--neon-green) !important; text-shadow: 0 0 10px rgba(0, 242, 96, 0.4); }
+        .stat-num { font-size: 1.4rem; font-weight: 800; margin: 5px 0 0; }
+        .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .val-gold { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+        .val-blue { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
 
-        /* Menu Items */
-        .menu-list { background: var(--glass-bg); border-radius: 20px; overflow: hidden; margin-bottom: 25px; border: 1px solid var(--glass-border); animation: fadeInUp 1.1s ease-out; }
+        /* MENU LIST */
+        .menu-container { margin: 0 20px; display: flex; flex-direction: column; gap: 10px; }
         .menu-item {
-            padding: 18px 25px; border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.3s;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 15px 20px; border-radius: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: 0.2s;
         }
-        .menu-item:last-child { border-bottom: none; }
-        .menu-item:hover { background: rgba(255,255,255,0.08); }
-        .menu-left { display: flex; align-items: center; gap: 15px; font-size: 1rem; font-weight: 600; }
-        .menu-left i { width: 25px; text-align: center; color: var(--neon-blue); font-size: 1.2rem; }
-        .arrow { color: #666; font-size: 0.9rem; transition: 0.3s; }
-        .menu-item:hover .arrow { color: white; transform: translateX(3px); }
-
-        /* Hidden Sections */
-        .hidden-section { display: none; background: rgba(0,0,0,0.3); padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); animation: fadeInUp 0.4s; }
+        .menu-item:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
+        .menu-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 0.95rem; }
+        .menu-left i { width: 25px; text-align: center; color: var(--neon-blue); font-size: 1.1rem; }
         
-        /* About Content */
-        .about-content h4 { color: var(--neon-green); margin: 20px 0 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; font-size: 1.1rem; }
-        .leader-card {
-            background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px;
-            margin-bottom: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
+        /* DROPDOWN SECTIONS */
+        .hidden-section { 
+            display: none; background: rgba(0,0,0,0.4); 
+            padding: 20px; margin: 0 20px 10px; border-radius: 15px; 
+            border: 1px solid var(--glass-border);
+        }
+        .about-text p { margin: 5px 0; color: #ccc; font-size: 0.9rem; }
+        .update-btn {
+            width: 100%; padding: 12px; background: var(--neon-blue); color: #000;
+            border: none; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 10px;
         }
 
-        /* Inputs */
-        .pass-input { width: 100%; padding: 14px; margin-bottom: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 10px; box-sizing: border-box; outline: none; }
-        .pass-input:focus { border-color: var(--neon-blue); }
-        .update-btn { width: 100%; padding: 14px; background: var(--neon-blue); color: #000; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .update-btn:active { transform: scale(0.98); }
-
-        /* Logout */
+        /* LOGOUT */
         .logout-btn {
-            width: 100%; padding: 16px; 
-            background: linear-gradient(45deg, #ff416c, #ff4b2b); 
-            color: white; border: none; border-radius: 15px;
-            font-weight: 800; font-size: 1rem; cursor: pointer; margin-bottom: 40px;
-            box-shadow: 0 5px 15px rgba(255, 75, 43, 0.3);
-            transition: 0.3s; animation: fadeInUp 1.3s ease-out;
+            margin: 30px 20px; width: calc(100% - 40px); padding: 15px;
+            background: rgba(255, 71, 87, 0.1); border: 1px solid var(--neon-red);
+            color: var(--neon-red); border-radius: 15px; font-weight: 800;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .logout-btn:active { transform: scale(0.95); }
 
     </style>
 </head>
 <body>
 
-    <!-- AURORA BACKGROUND -->
-    <div class="premium-bg">
-        <div class="gradient-sphere g-1"></div>
-        <div class="gradient-sphere g-2"></div>
-        <div class="gradient-sphere g-3"></div>
-        <div class="stars"></div>
+    <div class="ambient-light al-1"></div>
+    <div class="ambient-light al-2"></div>
+
+    <!-- HEADER -->
+    <div class="header">
+        <a href="home.html" class="back-btn"><i class="fas fa-chevron-left"></i> Home</a>
+        <div class="logo">SHOPPING<span>28</span></div>
     </div>
 
-    <div class="header-nav">
-        <a href="home.html" class="back-btn"><i class="fas fa-chevron-left"></i> Back to Home</a>
-    </div>
-
-    <!-- Profile Header -->
+    <!-- PROFILE CARD -->
     <div class="profile-card">
         <div class="pic-container" onclick="document.getElementById('fileInput').click()">
             <div class="pic-box" id="profilePicBox">
@@ -196,101 +170,85 @@
         <input type="file" id="fileInput" hidden accept="image/*" onchange="uploadProfilePic(this)">
 
         <div class="name-area">
-            <h2 id="p_name">Loading...</h2>
-            <i class="fas fa-pencil-alt edit-icon" onclick="toggleNameEdit()"></i>
-        </div>
-
-        <div id="nameEditForm">
-            <input type="text" id="newFName" class="small-input" placeholder="First Name">
-            <input type="text" id="newLName" class="small-input" placeholder="Last Name">
-            <button class="save-btn" onclick="saveNameChange()">Save Changes</button>
-        </div>
-
-        <div class="uid-badge" onclick="togglePhone()" title="Tap to hide/show">
-            <i class="fas fa-phone-alt" style="margin-right:5px; color:#aaa;"></i> 
-            <span id="p_phone">...</span> 
-            <i class="fas fa-eye-slash" style="font-size:0.7rem; margin-left:8px; opacity:0.7;"></i>
-        </div>
-        <br>
-        <div class="uid-badge" style="margin-top:10px; background: rgba(0, 242, 96, 0.1); border-color: rgba(0, 242, 96, 0.3); cursor: default;">
-            Ref Code: <span id="p_code" style="color:#00f260; font-weight:bold;">...</span>
-        </div>
-    </div>
-
-    <!-- Stats -->
-    <div class="stats-grid">
-        <div class="stat-box">
-            <i class="fas fa-wallet" style="color:#f1c40f; font-size:1.5rem; margin-bottom:5px;"></i>
-            <h3 class="inc-color">৳ <span id="p_balance">0</span></h3>
-            <small>Total Income</small>
-        </div>
-        <div class="stat-box">
-            <i class="fas fa-users" style="color:#3498db; font-size:1.5rem; margin-bottom:5px;"></i>
-            <h3 id="p_team">0</h3>
-            <small>Total Team</small>
-        </div>
-    </div>
-
-    <!-- Menu List -->
-    <div class="menu-list">
-
-        <div class="menu-item" onclick="toggleSection('aboutSection')">
-            <div class="menu-left"><i class="fas fa-info-circle"></i><span>About & Rules</span></div>
-            <i class="fas fa-chevron-down arrow"></i>
-        </div>
-        <div id="aboutSection" class="hidden-section about-content">
-            <center>
-                <div style="width:60px; height:60px; background:rgba(255,255,255,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
-                    <i class="fas fa-shopping-bag" style="font-size:1.8rem; color:#00f260;"></i>
-                </div>
-                <h3>ShoppingFree</h3>
-                <small>Operated by <b style="color:#f1c40f;">ART COMMUNITY</b></small>
-            </center>
-
-            <h4>👨‍💻 Developer & Owner</h4>
-            <div class="leader-card">
-                <p><strong>Dev:</strong> <span style="color:#00f260">THE RAFSAN</span></p>
-                <p><strong>Seller:</strong> <span style="color:#3498db">RAFSAN</span></p>
-            </div>
-
-            <h4>🏆 Top Leaders</h4>
-            <div class="leader-card" style="text-align:left; padding-left:20px;">
-                <p style="color:#f1c40f;">★ RAFSAN ❖ THE ART</p>
-                <p style="color:#e74c3c;">★ SHUVO ❖ THE ART</p>
-                <p style="color:#9b59b6;">★ TANISHA ART QUEEN</p>
-                <p style="color:#3498db;">★ MUNNA ART (CEO)</p>
-            </div>
-
-            <h4>💰 Income Plan</h4>
-            <ul style="color:#ddd; padding-left:20px;">
-                <li>Lvl 1: <b style="color:#00f260">130 Tk</b></li>
-                <li>Lvl 2: <b style="color:#3498db">20 Tk</b></li>
-                <li>Lvl 3: <b style="color:#e74c3c">10 Tk</b></li>
-            </ul>
-        </div>
-
-        <div class="menu-item" onclick="window.open('https://t.me/art_community_offical', '_blank')">
-            <div class="menu-left"><i class="fab fa-telegram-plane"></i><span>Join Telegram</span></div>
-            <i class="fas fa-external-link-alt arrow"></i>
+            <h2 class="user-name" id="p_name">Loading...</h2>
+            <i class="fas fa-pen edit-icon" onclick="toggleNameEdit()"></i>
         </div>
         
+        <div class="uid-badge" id="p_uid">UID: ...</div>
+        <div class="uid-badge" style="color:var(--neon-green); border-color:var(--neon-green);">
+            Code: <span id="p_code">...</span>
+        </div>
+
+        <!-- Name Edit Form -->
+        <div id="nameEditForm">
+            <div class="form-row">
+                <input type="text" id="newFName" class="glass-input" placeholder="First Name">
+                <input type="text" id="newLName" class="glass-input" placeholder="Last Name">
+            </div>
+            <button class="save-btn" onclick="saveNameChange()">Update Name</button>
+        </div>
+    </div>
+
+    <!-- STATS (USDT) -->
+    <div class="stats-grid">
+        <div class="stat-box">
+            <i class="fas fa-wallet" style="color:#ffd700; font-size:1.5rem;"></i>
+            <div class="stat-num val-gold"><span id="p_balance">0.00</span> USDT</div>
+            <div class="stat-lbl">Total Profit</div>
+        </div>
+        <div class="stat-box">
+            <i class="fas fa-users" style="color:#00f2ff; font-size:1.5rem;"></i>
+            <div class="stat-num val-blue" id="p_team">0</div>
+            <div class="stat-lbl">Total Team</div>
+        </div>
+    </div>
+
+    <!-- MENU LIST -->
+    <div class="menu-container">
+        
+        <!-- About -->
+        <div class="menu-item" onclick="toggleSection('aboutSection')">
+            <div class="menu-left"><i class="fas fa-info-circle"></i> About & Rules</div>
+            <i class="fas fa-chevron-down" style="color:#666; font-size:0.8rem;"></i>
+        </div>
+        <div id="aboutSection" class="hidden-section about-text">
+            <center style="margin-bottom:15px;">
+                <i class="fas fa-shopping-bag" style="font-size:2rem; color:var(--neon-blue); margin-bottom:10px;"></i>
+                <h3 style="margin:0;">SHOPPING28</h3>
+                <small style="color:#888;">Premium Network</small>
+            </center>
+            <p><strong>CEO:</strong> Munna Art</p>
+            <p><strong>Developer:</strong> The Rafsan</p>
+            <hr style="border-color:rgba(255,255,255,0.1);">
+            <p style="color:var(--neon-green)">Lvl 1 Income: 130 BDT</p>
+            <p style="color:var(--neon-blue)">Lvl 2 Income: 20 BDT</p>
+            <p style="color:var(--neon-gold)">Lvl 3 Income: 10 BDT</p>
+        </div>
+
+        <!-- Telegram -->
+        <div class="menu-item" onclick="window.open('https://t.me/art_community_offical', '_blank')">
+            <div class="menu-left"><i class="fab fa-telegram-plane"></i> Join Telegram</div>
+            <i class="fas fa-external-link-alt" style="color:#666; font-size:0.8rem;"></i>
+        </div>
+
+        <!-- Password -->
         <div class="menu-item" onclick="toggleSection('passSection')">
-            <div class="menu-left"><i class="fas fa-lock" style="color:#ff0099;"></i><span>Change Password</span></div>
-            <i class="fas fa-chevron-down arrow"></i>
+            <div class="menu-left"><i class="fas fa-key"></i> Change Password</div>
+            <i class="fas fa-chevron-down" style="color:#666; font-size:0.8rem;"></i>
         </div>
         <div id="passSection" class="hidden-section">
-            <input type="password" id="oldPass" class="pass-input" placeholder="Old Password">
-            <input type="password" id="newPass" class="pass-input" placeholder="New Password (min 6)">
-            <button class="update-btn" onclick="changePassword()">Update Now</button>
+            <input type="password" id="oldPass" class="glass-input" placeholder="Current Password" style="margin-bottom:10px;">
+            <input type="password" id="newPass" class="glass-input" placeholder="New Password (min 6)">
+            <button class="update-btn" onclick="changePassword()">Change Password</button>
         </div>
 
     </div>
 
     <button class="logout-btn" onclick="logout()">
-        <i class="fas fa-power-off" style="margin-right:8px;"></i> LOG OUT
+        <i class="fas fa-sign-out-alt"></i> LOGOUT
     </button>
 
-    <!-- Firebase SDK (NO CHANGES TO LOGIC) -->
+    <!-- FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -302,16 +260,17 @@
         const db = firebase.database();
 
         let currentUser = null;
-        let currentUserEmail = "";
-        let realPhone = "01xxxxxxxxx";
-        let isPhoneHidden = false;
+
+        // CONVERT TAKA TO USDT (120 BDT = 1 USD)
+        function toUSDT(taka) {
+            if(!taka) return "0.00";
+            return (parseFloat(taka) / 120).toFixed(2);
+        }
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
-                currentUserEmail = user.email;
                 loadUserData(user.uid);
-                loadTeamCount(user.uid);
             } else {
                 window.location.href = 'login_register.html';
             }
@@ -321,36 +280,50 @@
             db.ref('users/' + uid).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
+                    // Profile
                     document.getElementById('p_name').innerText = data.firstName + " " + (data.lastName || "");
-                    realPhone = data.phone;
-                    updatePhoneDisplay();
-                    document.getElementById('p_balance').innerText = data.balance ? data.balance.toFixed(2) : 0;
                     document.getElementById('p_code').innerText = data.ownCode || "N/A";
+                    document.getElementById('p_uid').innerText = "UID: " + uid.substring(0,8) + "...";
+                    if(data.profilePic) document.getElementById('profilePicBox').innerHTML = `<img src="${data.profilePic}">`;
+
+                    // Pre-fill Edit Form
                     document.getElementById('newFName').value = data.firstName;
                     document.getElementById('newLName').value = data.lastName || "";
-                    if(data.profilePic) document.getElementById('profilePicBox').innerHTML = `<img src="${data.profilePic}">`;
+
+                    // Stats (Converted to USDT)
+                    const profit = data.total_income || data.totalEarning || 0;
+                    document.getElementById('p_balance').innerText = toUSDT(profit);
+
+                    // Team Count (Try DB count first, else fallback)
+                    let tCount = data.teamCount || data.team_member || 0;
+                    // If DB count is 0, check referrals
+                    if(tCount == 0 && data.ownCode) {
+                        db.ref('users').orderByChild('referredBy').equalTo(data.ownCode).on('value', snap => {
+                            document.getElementById('p_team').innerText = snap.numChildren();
+                        });
+                    } else {
+                        document.getElementById('p_team').innerText = tCount;
+                    }
                 }
             });
         }
 
-        function togglePhone() { isPhoneHidden = !isPhoneHidden; updatePhoneDisplay(); }
-        function updatePhoneDisplay() {
-            const el = document.getElementById('p_phone');
-            if (isPhoneHidden) {
-                if(realPhone.length >= 11) el.innerText = realPhone.substring(0, 3) + "******" + realPhone.substring(realPhone.length - 2);
-                else el.innerText = "****";
-            } else { el.innerText = realPhone; }
+        // --- ACTIONS ---
+
+        function toggleNameEdit() {
+            const form = document.getElementById('nameEditForm');
+            form.style.display = (form.style.display === 'block') ? 'none' : 'block';
         }
 
-        function toggleNameEdit() { const form = document.getElementById('nameEditForm'); form.style.display = (form.style.display === 'block') ? 'none' : 'block'; }
         function saveNameChange() {
             const f = document.getElementById('newFName').value.trim();
             const l = document.getElementById('newLName').value.trim();
-            if(!f) return alert("First Name cannot be empty.");
+            if(!f) return alert("First name required");
+            
             db.ref('users/' + currentUser.uid).update({ firstName: f, lastName: l }).then(() => {
-                alert("Name Updated Successfully!");
-                document.getElementById('nameEditForm').style.display = 'none';
-            }).catch(e => alert("Error: " + e.message));
+                alert("Name Updated!");
+                toggleNameEdit();
+            });
         }
 
         function uploadProfilePic(input) {
@@ -363,50 +336,43 @@
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    const maxWidth = 200;
+                    const maxWidth = 300; // Resize to max 300px
                     const scaleSize = maxWidth / img.width;
                     canvas.width = maxWidth;
                     canvas.height = img.height * scaleSize;
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    const base64String = canvas.toDataURL('image/jpeg', 0.7);
+                    const base64String = canvas.toDataURL('image/jpeg', 0.8);
+                    
                     db.ref('users/' + currentUser.uid).update({ profilePic: base64String }).then(() => alert("Profile Picture Updated!"));
                 }
             }
             reader.readAsDataURL(file);
         }
 
-        function loadTeamCount(uid) {
-            db.ref('users/' + uid + '/ownCode').once('value', (snap) => {
-                const myCode = snap.val();
-                if(myCode) {
-                    db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', (teamSnap) => {
-                        document.getElementById('p_team').innerText = teamSnap.numChildren();
-                    });
-                }
-            });
+        function toggleSection(id) {
+            const el = document.getElementById(id);
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
         }
 
         function changePassword() {
             const oldPass = document.getElementById('oldPass').value;
             const newPass = document.getElementById('newPass').value;
-            if(newPass.length < 6) return alert("Min 6 chars required.");
-            const credential = firebase.auth.EmailAuthProvider.credential(currentUserEmail, oldPass);
+            if(newPass.length < 6) return alert("Password too short (min 6)");
+
+            const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, oldPass);
             currentUser.reauthenticateWithCredential(credential).then(() => {
                 currentUser.updatePassword(newPass).then(() => {
                     db.ref('users/' + currentUser.uid).update({ password: newPass });
-                    alert("Password updated!");
-                    toggleSection('passSection'); 
-                }).catch((error) => alert("Error: " + error.message));
-            }).catch(() => alert("Incorrect Old Password!"));
-        }
-
-        function toggleSection(id) {
-            const div = document.getElementById(id);
-            div.style.display = (div.style.display === 'block') ? 'none' : 'block';
+                    alert("Password Changed Successfully!");
+                    toggleSection('passSection');
+                }).catch(e => alert(e.message));
+            }).catch(() => alert("Incorrect Old Password"));
         }
 
         function logout() {
-            if(confirm("Logout?")) auth.signOut().then(() => window.location.href = 'login_register.html');
+            if(confirm("Are you sure you want to logout?")) {
+                auth.signOut().then(() => window.location.href = 'login_register.html');
+            }
         }
     </script>
 </body>
