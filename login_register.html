@@ -6,21 +6,16 @@
     <title>Access Account</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; min-height: 100vh; background: #0f0c29; background: linear-gradient(to bottom, #0f0c29, #302b63); font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; padding: 20px; color: white; }
-        .card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; }
+        body { margin: 0; min-height: 100vh; background: linear-gradient(to bottom, #0f0c29, #302b63); font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; padding: 20px; color: white; }
+        .card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; opacity: 0.5; transition: 0.3s; font-weight: 600; }
         .tab.active { opacity: 1; color: #00f260; border-bottom: 2px solid #00f260; }
-        input { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; box-sizing: border-box; outline: none; font-family: 'Poppins'; }
+        input { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; box-sizing: border-box; outline: none; }
         input:focus { border-color: #00f260; background: rgba(0,0,0,0.5); }
-        
-        button { width: 100%; padding: 15px; background: linear-gradient(45deg, #00f260, #0575E6); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1rem; transition: 0.3s; }
-        button:hover { box-shadow: 0 0 15px rgba(0, 242, 96, 0.4); }
-        button:disabled { background: #555; cursor: not-allowed; box-shadow: none; }
-
-        .form-box { display: none; animation: fade 0.5s; }
-        .form-box.active { display: block; }
-        @keyframes fade { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+        button { width: 100%; padding: 15px; background: linear-gradient(45deg, #00f260, #0575E6); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1rem; }
+        button:disabled { background: #555; cursor: not-allowed; }
+        .form-box { display: none; } .form-box.active { display: block; }
         .error { color: #ff4757; font-size: 0.85rem; text-align: center; margin-bottom: 10px; min-height: 20px; }
     </style>
 </head>
@@ -34,7 +29,7 @@
 
         <!-- LOGIN FORM -->
         <div id="login" class="form-box active">
-            <h2 style="text-align:center; margin-top:0;">Welcome Back</h2>
+            <h2 style="text-align:center;">Welcome Back</h2>
             <input type="number" id="l_phone" placeholder="Phone Number">
             <input type="password" id="l_pass" placeholder="Password">
             <button id="loginBtn">LOGIN</button>
@@ -42,14 +37,13 @@
 
         <!-- REGISTER FORM -->
         <div id="register" class="form-box">
-            <h2 style="text-align:center; margin-top:0;">Create Account</h2>
+            <h2 style="text-align:center;">Create Account</h2>
             <div style="display:flex; gap:10px;"><input type="text" id="r_fname" placeholder="First Name"><input type="text" id="r_lname" placeholder="Last Name"></div>
             <input type="number" id="r_phone" placeholder="Phone Number">
             <input type="password" id="r_pass" placeholder="Password">
             <input type="password" id="r_cpass" placeholder="Confirm Password">
-            <!-- Referral ID is r_ref -->
-            <input type="text" id="r_ref" placeholder="Referral Code (Required)" style="border-color: #e74c3c;">
-            <button id="regBtn">REGISTER</button>
+            <input type="text" id="r_ref" placeholder="Referral Code (Required)">
+            <button id="regBtn">REGISTER & ACTIVATE</button>
         </div>
     </div>
 
@@ -65,36 +59,23 @@
         function switchTab(id, el) {
             document.querySelectorAll('.form-box').forEach(d => d.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active'); el.classList.add('active'); showMsg("");
+            document.getElementById(id).classList.add('active'); el.classList.add('active');
+            document.getElementById('msg').innerText = "";
         }
-        function showMsg(text, color="#ff4757") { const m = document.getElementById('msg'); m.style.color = color; m.innerText = text; }
+        function showMsg(text) { document.getElementById('msg').innerText = text; }
 
-        // --- NEW: AUTO REFERRAL CODE LOGIC ---
+        // Auto Referral Logic
         window.onload = function() {
-            // Check URL for ?ref=CODE
             const urlParams = new URLSearchParams(window.location.search);
             const refCode = urlParams.get('ref');
-
             if (refCode) {
-                // 1. Fill the input
-                const refInput = document.getElementById('r_ref');
-                if (refInput) {
-                    refInput.value = refCode;
-                    refInput.readOnly = true; // Lock the field
-                    refInput.style.borderColor = "#00f260"; // Green border to show success
-                    refInput.style.background = "rgba(0, 242, 96, 0.1)";
-                }
-
-                // 2. Automatically switch to Register tab
-                const regTab = document.getElementById('tab_register');
-                if (regTab) {
-                    switchTab('register', regTab);
-                }
+                document.getElementById('r_ref').value = refCode;
+                document.getElementById('r_ref').readOnly = true;
+                switchTab('register', document.getElementById('tab_register'));
             }
         }
-        // -------------------------------------
 
-        // --- REGISTER LOGIC ---
+        // REGISTER LOGIC
         document.getElementById('regBtn').addEventListener('click', () => {
             const fname = document.getElementById('r_fname').value.trim();
             const lname = document.getElementById('r_lname').value.trim();
@@ -108,62 +89,57 @@
             if(pass.length < 6) return showMsg("Password must be 6+ chars");
             if(pass !== cpass) return showMsg("Passwords do not match!");
 
-            // Lock Button
-            btn.disabled = true; btn.innerText = "Verifying...";
+            btn.disabled = true; btn.innerText = "Processing...";
 
+            // Check Referral
             if(refCode === "the_art2000") {
-                createFirebaseAccount(fname, lname, phone, pass, refCode, btn);
+                createAccount(fname, lname, phone, pass, refCode, btn);
             } else {
-                db.ref('users').orderByChild('ownCode').equalTo(refCode).once('value', snapshot => {
-                    if(snapshot.exists()) {
-                        createFirebaseAccount(fname, lname, phone, pass, refCode, btn);
-                    } else {
-                        showMsg("Invalid Referral Code!");
-                        btn.disabled = false; btn.innerText = "REGISTER";
-                    }
+                db.ref('users').orderByChild('ownCode').equalTo(refCode).once('value', s => {
+                    if(s.exists()) createAccount(fname, lname, phone, pass, refCode, btn);
+                    else { showMsg("Invalid Referral Code!"); btn.disabled = false; btn.innerText = "REGISTER & ACTIVATE"; }
                 });
             }
         });
 
-        function createFirebaseAccount(fname, lname, phone, pass, refBy, btn) {
-            btn.innerText = "Creating...";
-            const email = phone + "@shoppingfree.com";
-
-            auth.createUserWithEmailAndPassword(email, pass)
+        function createAccount(fname, lname, phone, pass, refBy, btn) {
+            auth.createUserWithEmailAndPassword(phone + "@shoppingfree.com", pass)
                 .then((cred) => {
                     const newCode = (fname.substring(0,3) + Math.floor(1000 + Math.random() * 9000)).toUpperCase();
                     db.ref('users/' + cred.user.uid).set({
                         firstName: fname, lastName: lname, phone: phone, password: pass,
                         ownCode: newCode, referredBy: refBy, status: 'inactive', balance: 0, joinedAt: new Date().toISOString()
                     }).then(() => {
-                        alert("Account Created Successfully!");
-                        window.location.href = 'home.html';
+                        // === CHANGE HERE ===
+                        // রেজিস্ট্রেশন হলে এখন সরাসরি account_active.html এ যাবে
+                        window.location.href = 'account_active.html';
                     });
                 })
-                .catch((error) => {
-                    btn.disabled = false; btn.innerText = "REGISTER";
-                    showMsg(error.code === 'auth/email-already-in-use' ? "Phone number already registered!" : error.message);
+                .catch((e) => {
+                    btn.disabled = false; btn.innerText = "REGISTER & ACTIVATE";
+                    showMsg(e.code === 'auth/email-already-in-use' ? "Phone already exists!" : e.message);
                 });
         }
 
-        // --- LOGIN LOGIC ---
+        // LOGIN LOGIC
         document.getElementById('loginBtn').addEventListener('click', () => {
             const phone = document.getElementById('l_phone').value.trim();
             const pass = document.getElementById('l_pass').value;
-            const btn = document.getElementById('loginBtn');
-
             if(!phone || !pass) return showMsg("Enter Phone & Password");
-
-            // Lock Button
+            
+            const btn = document.getElementById('loginBtn');
             btn.disabled = true; btn.innerText = "Logging in...";
-            const email = phone + "@shoppingfree.com";
 
-            auth.signInWithEmailAndPassword(email, pass)
-                .then(() => window.location.href = 'home.html')
-                .catch(() => {
-                    btn.disabled = false; btn.innerText = "LOGIN";
-                    showMsg("Invalid Number or Password");
-                });
+            auth.signInWithEmailAndPassword(phone + "@shoppingfree.com", pass)
+            .then(() => {
+                // লগইন এর পর status চেক করবে home.html
+                // অথবা এখানেও চেক করা যায়, তবে home.html হ্যান্ডেল করবে
+                window.location.href = 'home.html'; 
+            })
+            .catch(() => {
+                btn.disabled = false; btn.innerText = "LOGIN";
+                showMsg("Invalid Credentials");
+            });
         });
     </script>
 </body>
