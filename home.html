@@ -288,7 +288,7 @@
                 </div>
             </div>
         </div>
-        <!-- Today Profit (Daily Task Only) -->
+        <!-- Today Profit (Tasks + TODAY'S REFERRALS) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-blue"><i class="fas fa-chart-line"></i></div>
@@ -365,12 +365,14 @@
 
         // === FINANCIAL VARIABLES ===
         const RATE = 120; // 1 USD = 120 BDT
-        
-        // We only need specific money vars
+        const LEGACY_RATES_BDT = { 1: 130, 2: 20, 3: 10 };
+
         let knownUsers = new Set();
         let userCurrentBalance = 0;     // Real Wallet (From DB)
         let userTotalWithdrawn = 0;     // From DB (Approved + Pending)
-        
+        let dbTodayIncome = 0;          // Tasks income from DB
+        let todayReferralEarnings = 0;  // Calculated locally
+
         function unlockAudio() {
             if(isVoiceReady) return;
             window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
@@ -396,6 +398,16 @@
             return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
         }
 
+        // Helper: Check if a date is Today
+        function isToday(timestamp) {
+            if(!timestamp) return false;
+            const date = new Date(timestamp);
+            const today = new Date();
+            return date.getDate() === today.getDate() &&
+                   date.getMonth() === today.getMonth() &&
+                   date.getFullYear() === today.getFullYear();
+        }
+
         auth.onAuthStateChanged((user) => {
             if (user) {
                 db.ref('users/' + user.uid).on('value', (snapshot) => {
@@ -416,25 +428,25 @@
                         realActivationDate = formatDate(rawDate);
                         realRefLink = `shopping28.io/b/${data.ownCode}`;
 
-                        // 1. SET CURRENT BALANCE & TODAY PROFIT (Strictly DB)
+                        // 1. SET CURRENT BALANCE & DB TODAY INCOME
                         userCurrentBalance = parseFloat(data.balance || 0);
-                        const todayIncome = parseFloat(data.today_income || data.todayEarning || 0);
+                        dbTodayIncome = parseFloat(data.today_income || data.todayEarning || 0);
                         
-                        // Display: Current Balance (Real) & Today
+                        // Display Current Balance immediately
                         document.getElementById('currentBalance').innerText = toUSDT(userCurrentBalance);
-                        document.getElementById('todayProfit').innerText = toUSDT(todayIncome);
 
-                        // 2. TRIGGER CALCULATIONS FOR TOTAL PROFIT (LIFETIME SHOWCASE)
-                        // This updates 'userTotalWithdrawn'
+                        // 2. TRIGGER CALCULATIONS
                         fetchWithdrawals(user.uid);
                         
-                        // Team Counts (Only counting members, NOT money anymore to avoid double count)
+                        // Team: Count members AND calculate TODAY'S referral income
                         if(data.ownCode) {
                             knownUsers.clear();
+                            todayReferralEarnings = 0; // Reset
                             document.getElementById('teamCount').innerText = "0";
                             countTeamMembers(data.ownCode, 1);
                         } else {
-                            updateTotalProfitUI(); // Update if no team
+                            updateTotalProfitUI();
+                            updateTodayProfitUI();
                         }
 
                         if(!localStorage.getItem('home_voice_played')) {
@@ -463,7 +475,7 @@
             });
         }
 
-        // B. Count Team Members (Just counting people, no money calculation here)
+        // B. Count Team & Calculate TODAY'S Referral Income
         function countTeamMembers(parentCode, depth) {
             if(depth > 10) return;
 
@@ -484,6 +496,33 @@
                          document.getElementById('partnerCount').innerText = pCount + 1;
                     }
 
+                    // --- CHECK IF JOINED TODAY AND ADD COMMISSION TO "TODAY PROFIT" ---
+                    // Note: We use 'activatedAt' preferably, fallback to 'joinDate'
+                    const activationTime = user.activatedAt || user.joinDate;
+                    
+                    if(isToday(activationTime)) {
+                        let profitBDT = 0;
+                        if(user.locked_commissions && Array.isArray(user.locked_commissions)) {
+                            if(user.locked_commissions[depth - 1]) {
+                                profitBDT = parseFloat(user.locked_commissions[depth - 1].amount);
+                            }
+                        } else if (user.fixed_commissions) {
+                             if(depth === 1) profitBDT = user.fixed_commissions.level1;
+                             if(depth === 2) profitBDT = user.fixed_commissions.level2;
+                             if(depth === 3) profitBDT = user.fixed_commissions.level3;
+                        } else {
+                            if(LEGACY_RATES_BDT[depth]) {
+                                profitBDT = LEGACY_RATES_BDT[depth];
+                            }
+                        }
+
+                        if(!isNaN(profitBDT)) {
+                            todayReferralEarnings += profitBDT;
+                            updateTodayProfitUI(); // Update display
+                        }
+                    }
+                    // -------------------------------------------------------------
+
                     // Recurse
                     if(user.ownCode) {
                         countTeamMembers(user.ownCode, depth + 1);
@@ -492,14 +531,18 @@
             });
         }
 
-        // C. FINAL UPDATE FUNCTION (LIFETIME SHOWCASE LOGIC - CORRECTED)
+        // C. FINAL UPDATE FUNCTIONS
         function updateTotalProfitUI() {
-            // Formula: Current Wallet + All Withdrawals
-            // Since Referral Money is already inside 'Current Wallet', we do NOT add it again.
-            // This prevents the double counting of the $2.20.
-            
+            // Lifetime = Current Balance + Total Withdrawn
             const totalLifetimeBDT = userCurrentBalance + userTotalWithdrawn;
             document.getElementById('totalProfit').innerText = toUSDT(totalLifetimeBDT);
+        }
+
+        function updateTodayProfitUI() {
+            // Today Profit = Task Income (DB) + Referral Income (Calculated Today)
+            // Note: If bonuses (weekly/monthly) are added to 'today_income' in DB, they show here automatically.
+            const totalTodayBDT = dbTodayIncome + todayReferralEarnings;
+            document.getElementById('todayProfit').innerText = toUSDT(totalTodayBDT);
         }
 
         // Toggles
