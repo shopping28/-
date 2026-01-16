@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Withdraw | Premium</title>
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -30,10 +28,9 @@
             min-height: 100vh;
             padding: 20px;
             overflow-x: hidden;
-            position: relative;
         }
 
-        /* AMBIENT GLOW BACKGROUND */
+        /* GLOW EFFECTS */
         .glow-orb { position: fixed; width: 300px; height: 300px; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.4; }
         .orb-1 { top: -50px; left: -50px; background: var(--neon-purple); }
         .orb-2 { bottom: -50px; right: -50px; background: var(--neon-cyan); }
@@ -41,10 +38,7 @@
         .container { max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
 
         /* HEADER */
-        .header { 
-            display: flex; align-items: center; justify-content: space-between; 
-            margin-bottom: 30px; padding: 10px 0;
-        }
+        .header { display: flex; align-items: center; margin-bottom: 30px; padding: 10px 0; }
         .back-btn { 
             width: 40px; height: 40px; border-radius: 12px; 
             background: var(--glass-bg); border: 1px solid var(--glass-border);
@@ -52,113 +46,79 @@
             color: #fff; text-decoration: none; transition: 0.3s;
             backdrop-filter: blur(10px);
         }
-        .back-btn:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); }
-        .page-title { font-size: 1.2rem; font-weight: 700; letter-spacing: 1px; }
+        .back-btn:hover { background: rgba(255,255,255,0.1); }
+        .page-title { margin-left: auto; margin-right: auto; font-size: 1.2rem; font-weight: 700; transform: translateX(-20px); }
 
-        /* BALANCE CARD (Visa Style) */
+        /* BALANCE CARD */
         .balance-card {
             background: linear-gradient(120deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(20px);
             border-radius: 24px; padding: 30px;
-            position: relative; overflow: hidden;
-            margin-bottom: 35px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-        }
-        .balance-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
-            transform: rotate(45deg); pointer-events: none;
+            margin-bottom: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            text-align: left;
         }
         .bal-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
         .bal-amount { 
-            font-size: 2.8rem; font-weight: 700; margin: 15px 0; 
+            font-size: 2.8rem; font-weight: 700; margin: 10px 0; 
             background: linear-gradient(to right, #fff, #a5b4fc); 
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .currency-badge {
-            background: rgba(0, 242, 255, 0.1); border: 1px solid rgba(0, 242, 255, 0.2);
-            color: var(--neon-cyan); padding: 5px 12px; border-radius: 20px;
-            font-size: 0.75rem; font-weight: 600; vertical-align: middle;
-        }
-        .bdt-est { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
-        .bdt-est i { color: var(--neon-cyan); font-size: 0.7rem; }
+        .bdt-est { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+        .tag-usdt { background: rgba(0, 242, 255, 0.15); color: var(--neon-cyan); padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
 
-        /* FORM STYLING */
+        /* INPUTS */
         .input-group { position: relative; margin-bottom: 20px; }
-        .input-icon { 
-            position: absolute; left: 18px; top: 50%; transform: translateY(-50%); 
-            color: var(--text-muted); font-size: 1.1rem; pointer-events: none; transition: 0.3s;
-        }
+        .input-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
         
         select, input {
-            width: 100%; padding: 18px 20px 18px 50px; /* Space for icon */
+            width: 100%; padding: 18px 20px 18px 50px;
             background: #0f0f13; border: 1px solid #2a2a35;
             color: #fff; border-radius: 16px; outline: none;
             font-size: 1rem; font-family: 'Outfit', sans-serif;
-            transition: all 0.3s ease;
+            transition: 0.3s;
         }
-        select { appearance: none; cursor: pointer; }
+        select:focus, input:focus { border-color: var(--neon-cyan); background: #15151a; }
         
-        /* Focus Effects */
-        input:focus, select:focus { 
-            border-color: var(--neon-cyan); 
-            background: #15151a; 
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
-        }
-        input:focus + .input-icon { color: var(--neon-cyan); }
-
-        /* Floating Label Hack (Optional visual tweak) */
-        ::placeholder { color: #555; }
-
         /* BUTTON */
         .btn-withdraw {
             width: 100%; padding: 18px;
             background: var(--gradient-primary);
             border: none; border-radius: 16px;
             color: #fff; font-size: 1.1rem; font-weight: 700;
-            cursor: pointer; position: relative; overflow: hidden;
-            transition: 0.4s; margin-top: 10px;
+            cursor: pointer; transition: 0.4s; margin-top: 10px;
             box-shadow: 0 10px 25px rgba(0, 114, 255, 0.3);
         }
         .btn-withdraw:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0, 114, 255, 0.5); }
-        .btn-withdraw:active { transform: scale(0.98); }
         .btn-withdraw:disabled { background: #333; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        /* HISTORY SECTION */
-        .hist-header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-top: 40px; margin-bottom: 20px; 
+        /* INFO NOTE */
+        .info-note {
+            text-align: center; font-size: 0.85rem; color: var(--text-muted);
+            margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.03);
+            border-radius: 12px; line-height: 1.5;
         }
-        .hist-title { font-size: 1.1rem; font-weight: 600; }
+        .info-note i { color: var(--neon-cyan); margin-right: 5px; }
+
+        /* HISTORY */
+        .hist-header { margin-top: 40px; margin-bottom: 20px; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
         
         .hist-item {
             display: flex; justify-content: space-between; align-items: center;
             background: var(--glass-bg); border: 1px solid var(--glass-border);
             padding: 15px 20px; border-radius: 16px; margin-bottom: 12px;
-            transition: 0.3s;
         }
-        .hist-item:hover { background: rgba(255,255,255,0.06); transform: translateX(5px); }
-        
-        .h-left { display: flex; flex-direction: column; gap: 4px; }
-        .h-method { font-weight: 600; font-size: 0.95rem; color: #fff; }
-        .h-wallet { font-size: 0.75rem; color: #666; font-family: monospace; }
-        
-        .h-right { text-align: right; }
-        .h-amount { font-weight: 700; font-size: 1rem; color: #fff; }
-        .h-status { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .h-method { font-weight: 600; font-size: 0.95rem; color: #fff; margin-bottom: 4px; }
+        .h-time { font-size: 0.75rem; color: var(--text-muted); }
+        .h-amount { font-weight: 700; font-size: 1rem; color: #fff; text-align: right; }
+        .h-status { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: right; margin-top: 4px; }
 
         .st-pending { color: #f1c40f; }
-        .st-approved { color: #00f260; text-shadow: 0 0 10px rgba(0, 242, 96, 0.3); }
-        .st-rejected { color: #ff4757; }
-
-        /* LOADER */
-        .loader { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 20px; }
+        .st-approved { color: #00f260; }
     </style>
 </head>
 <body>
 
-    <!-- Ambient Background -->
     <div class="glow-orb orb-1"></div>
     <div class="glow-orb orb-2"></div>
 
@@ -167,53 +127,58 @@
         <div class="header">
             <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
             <div class="page-title">Withdraw Funds</div>
-            <div style="width: 40px;"></div> <!-- Spacer for center alignment -->
         </div>
 
-        <!-- Balance Card -->
+        <!-- Balance -->
         <div class="balance-card">
             <div class="bal-label">Total Balance</div>
             <div class="bal-amount"><span id="usd">0.00</span></div>
             <div class="bdt-est">
-                <span class="currency-badge">USDT</span>
-                <i class="fas fa-exchange-alt"></i> 
+                <span class="tag-usdt">USDT</span>
+                <i class="fas fa-exchange-alt" style="font-size:0.7rem; color:var(--neon-cyan)"></i> 
                 <span>≈ <span id="bdt">0</span> BDT</span>
             </div>
         </div>
 
-        <!-- Withdrawal Form -->
+        <!-- Form -->
         <div class="input-group">
             <select id="methodSelect">
                 <option value="" disabled selected>Select Payment Method</option>
             </select>
-            <i class="fas fa-wallet input-icon"></i> <!-- Icon -->
+            <i class="fas fa-wallet input-icon"></i>
         </div>
 
         <div class="input-group">
             <input type="text" id="wallet" placeholder="Wallet Address / Number">
-            <i class="fas fa-qrcode input-icon"></i> <!-- Icon -->
+            <i class="fas fa-qrcode input-icon"></i>
         </div>
 
         <div class="input-group">
-            <input type="number" id="amount" placeholder="Amount (Min: 5.00)">
-            <i class="fas fa-dollar-sign input-icon"></i> <!-- Icon -->
+            <input type="number" id="amount" placeholder="Loading limit...">
+            <i class="fas fa-dollar-sign input-icon"></i>
         </div>
 
         <button class="btn-withdraw" id="btn" onclick="withdraw()">
             Confirm Withdrawal <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
         </button>
 
+        <!-- NOTE -->
+        <div class="info-note">
+            <i class="fas fa-clock"></i> 
+            Withdrawal request will be processed to your selected payment method within 24 hours.
+        </div>
+
         <!-- History -->
         <div class="hist-header">
-            <div class="hist-title">Recent Transactions</div>
-            <i class="fas fa-history" style="color: var(--text-muted);"></i>
+            <span>Recent Transactions</span>
+            <i class="fas fa-history" style="color:var(--text-muted); opacity:0.5"></i>
         </div>
-        <div id="hist" class="loader">
-            <i class="fas fa-circle-notch fa-spin"></i> Loading history...
+        <div id="hist">
+            <div style="text-align:center; color:#555; padding:20px;">Loading...</div>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -226,13 +191,30 @@
         const RATE = 120;
 
         let user, bdt=0, usd=0;
+        let minWithdrawLimit = 5; // Default
 
         auth.onAuthStateChanged(u => {
-            if(u) { user = u; loadBal(); loadMethods(); loadHist(); }
+            if(u) { 
+                user = u; 
+                loadBal(); 
+                loadMethods(); 
+                loadLimit(); // Load Admin Limit
+                loadHist(); 
+            }
             else { window.location.href = 'login_register.html'; }
         });
 
-        // 1. Load Balance
+        // 1. Load Admin Limit
+        function loadLimit() {
+            db.ref('settings/withdraw_limit').on('value', snap => {
+                if(snap.exists()) {
+                    minWithdrawLimit = parseFloat(snap.val());
+                }
+                document.getElementById('amount').placeholder = `Amount (Min: ${minWithdrawLimit.toFixed(2)})`;
+            });
+        }
+
+        // 2. Load Balance
         function loadBal() {
             db.ref('users/'+user.uid+'/balance').on('value', s => {
                 bdt = parseFloat(s.val() || 0);
@@ -242,27 +224,23 @@
             });
         }
 
-        // 2. Load Methods from Admin
+        // 3. Load Methods
         function loadMethods() {
             db.ref('settings/payment_methods').on('value', snap => {
                 const select = document.getElementById('methodSelect');
                 select.innerHTML = '<option value="" disabled selected>Select Payment Method</option>';
-                
                 if(snap.exists()){
                     snap.forEach(c => {
                         const m = c.val();
                         const opt = document.createElement('option');
-                        opt.value = m.name;
-                        opt.innerText = m.name;
+                        opt.value = m.name; opt.innerText = m.name;
                         select.appendChild(opt);
                     });
-                } else {
-                    select.innerHTML = '<option disabled>No methods available</option>';
                 }
             });
         }
 
-        // 3. Withdraw Function
+        // 4. Withdraw Logic
         function withdraw() {
             const method = document.getElementById('methodSelect').value;
             const wall = document.getElementById('wallet').value.trim();
@@ -270,15 +248,14 @@
             const btn = document.getElementById('btn');
 
             if(!method) return alert("Please select a payment method.");
-            if(!wall) return alert("Please enter your wallet address or number.");
-            if(!amt || amt < 5) return alert("Minimum withdrawal amount is 5.00 USDT.");
+            if(!wall) return alert("Please enter wallet/number.");
+            if(!amt || amt < minWithdrawLimit) return alert(`Minimum withdrawal amount is ${minWithdrawLimit} USDT.`);
             if(amt > usd) return alert("Insufficient Balance.");
 
-            if(!confirm(`Are you sure you want to withdraw ${amt} USDT via ${method}?`)) return;
+            if(!confirm(`Confirm withdraw of ${amt} USDT via ${method}?`)) return;
 
             btn.disabled = true; 
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            
             const deduct = amt * RATE;
 
             db.ref('users/'+user.uid+'/balance').transaction(c => {
@@ -294,40 +271,58 @@
                         status: 'pending',
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
-                    alert("Withdrawal request submitted successfully!");
+                    alert("Withdrawal submitted successfully!");
                     document.getElementById('wallet').value = "";
                     document.getElementById('amount').value = "";
                 } else {
-                    alert("Transaction Failed. Check your balance.");
+                    alert("Transaction Failed.");
                 }
                 btn.disabled = false; 
                 btn.innerHTML = 'Confirm Withdrawal <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>';
             });
         }
 
-        // 4. Load History
+        // 5. Load History (Filtered & Limited to 5)
         function loadHist() {
-            db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).limitToLast(10).on('value', s => {
+            // Load more than 5 initially to ensure we have enough after filtering
+            db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).limitToLast(20).on('value', s => {
                 const div = document.getElementById('hist'); div.innerHTML = "";
+                
                 if(!s.exists()) { 
-                    div.innerHTML = "<div style='text-align:center; color:#555; padding:20px;'>No transactions yet</div>"; 
+                    div.innerHTML = "<div style='text-align:center; color:#555; padding:20px;'>No recent transactions</div>"; 
                     return; 
                 }
                 
-                const arr=[]; s.forEach(c=>arr.push(c.val()));
-                arr.reverse().forEach(d => {
+                let rawData = [];
+                s.forEach(c => rawData.push(c.val()));
+                
+                // FILTER: Remove Rejected
+                const activeData = rawData.filter(item => item.status !== 'rejected');
+                
+                // REVERSE: Newest first
+                activeData.reverse();
+
+                // LIMIT: Show only top 5
+                const displayData = activeData.slice(0, 5);
+
+                if(displayData.length === 0) {
+                     div.innerHTML = "<div style='text-align:center; color:#555; padding:20px;'>No active transactions</div>";
+                     return;
+                }
+
+                displayData.forEach(d => {
                     let a = d.amountUSDT ? d.amountUSDT.toFixed(2) : (d.amount/RATE).toFixed(2);
-                    let statusClass = 'st-' + d.status; // st-pending, st-approved
-                    
+                    let date = d.timestamp ? new Date(d.timestamp).toLocaleDateString() : 'Recent';
+
                     div.innerHTML += `
                         <div class="hist-item">
                             <div class="h-left">
                                 <div class="h-method">${d.method}</div>
-                                <div class="h-wallet">${d.wallet}</div>
+                                <div class="h-time">${date}</div>
                             </div>
                             <div class="h-right">
                                 <div class="h-amount">$${a}</div>
-                                <div class="h-status ${statusClass}">${d.status}</div>
+                                <div class="h-status st-${d.status}">${d.status}</div>
                             </div>
                         </div>`;
                 });
