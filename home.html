@@ -420,10 +420,11 @@
                         const todayIncome = parseFloat(data.today_income || data.todayEarning || 0);
                         
                         // Display Current Balance & Today Income
+                        // এটা এখন ফিক্সড: শুধুমাত্র ডাটাবেসের ব্যালেন্স দেখাবে ($5.42 টাইপ)
                         document.getElementById('currentBalance').innerText = toUSDT(userBaseBalance);
                         document.getElementById('todayProfit').innerText = toUSDT(todayIncome);
 
-                        // Trigger Stats Calculation
+                        // Trigger Stats Calculation (For Total Profit Only)
                         fetchWithdrawalsAndCalculateTotal(user.uid);
                         
                         // Team Counts only (No Money Calculation)
@@ -455,7 +456,8 @@
                         }
                     });
                 }
-                // Update Total Profit UI
+                // Update Total Profit UI (Lifetime Earning)
+                // Current Wallet + Total Withdrawn
                 const lifetimeProfitBDT = userBaseBalance + userTotalWithdrawn;
                 document.getElementById('totalProfit').innerText = toUSDT(lifetimeProfitBDT);
             });
