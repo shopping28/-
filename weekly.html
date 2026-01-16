@@ -11,21 +11,19 @@
         body { background: var(--bg-dark); color: #fff; font-family: 'Outfit', sans-serif; padding: 20px; padding-bottom: 90px; margin: 0; }
         
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .back-btn { font-size: 1.2rem; color: #fff; }
+        .back-btn { font-size: 1.2rem; color: #fff; text-decoration: none; }
         
-        /* CREDIT CARD */
         .credit-card {
             background: linear-gradient(135deg, #4f46e5, #9333ea);
             padding: 20px; border-radius: 20px; text-align: center;
             box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3); margin-bottom: 25px;
         }
         .credit-val { font-size: 2.5rem; font-weight: 800; margin: 5px 0; }
-        .buy-btn {
-            background: #fff; color: #4f46e5; padding: 8px 20px; border-radius: 30px;
-            font-weight: 700; border: none; cursor: pointer; margin-top: 10px;
-        }
+        
+        .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+        .buy-btn { background: #fff; color: #4f46e5; padding: 10px 20px; border-radius: 30px; font-weight: 700; border: none; cursor: pointer; flex: 1; }
+        .redeem-btn { background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.5); padding: 10px 20px; border-radius: 30px; font-weight: 700; cursor: pointer; flex: 1; }
 
-        /* LEVEL CARD */
         .level-card {
             background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 15px; padding: 15px; margin-bottom: 15px;
@@ -34,21 +32,32 @@
         .lc-header { display: flex; justify-content: space-between; align-items: center; }
         .lvl-badge { background: rgba(0, 242, 255, 0.1); color: var(--neon-blue); padding: 4px 10px; border-radius: 5px; font-size: 0.8rem; font-weight: 700; }
         .reward { color: #00ff88; font-weight: 800; font-size: 1.1rem; }
-        
         .target-desc { margin: 10px 0; font-size: 0.9rem; color: #ccc; }
         .target-desc span { color: #fff; font-weight: 700; }
-
         .action-btn {
             width: 100%; padding: 12px; border-radius: 10px; border: none;
             font-weight: 700; cursor: pointer; margin-top: 10px;
             background: linear-gradient(90deg, #00c6ff, #0072ff); color: #fff;
         }
         .action-btn:disabled { background: #333; color: #777; cursor: not-allowed; }
+
+        /* MODAL STYLES */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; overflow-y: auto; }
+        .modal-content { background: #1e293b; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border: 1px solid #334155; margin: 20px; }
+        .inp-field { width: 90%; padding: 12px; margin: 8px 0; background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 8px; }
         
-        /* MODAL */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #1e293b; padding: 25px; border-radius: 20px; width: 85%; max-width: 400px; text-align: center; border: 1px solid #334155; }
-        .inp-field { width: 90%; padding: 12px; margin: 10px 0; background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 8px; }
+        /* Package Selection */
+        .pkg-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; max-height: 200px; overflow-y: auto; }
+        .pkg-box {
+            background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 10px; cursor: pointer; transition: 0.2s;
+        }
+        .pkg-box.selected { border-color: #00f2ff; background: rgba(0, 242, 255, 0.1); }
+        .pkg-credits { font-size: 1.2rem; font-weight: bold; color: #fff; }
+        .pkg-price { color: #00ff88; font-weight: bold; }
+        .pkg-disc { font-size: 0.7rem; color: #f59e0b; text-decoration: line-through; margin-right: 5px; }
+        .pkg-off { font-size: 0.7rem; background: #f59e0b; color: #000; padding: 2px 4px; border-radius: 3px; }
+
+        .warning-text { color: #ef4444; font-size: 0.8rem; margin: 10px 0; text-align: left; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; border-left: 3px solid #ef4444; }
     </style>
 </head>
 <body>
@@ -62,10 +71,13 @@
     <div class="credit-card">
         <div>Available Credits</div>
         <div class="credit-val" id="userCredits">0</div>
-        <button class="buy-btn" onclick="openBuyModal()">Buy Credits <i class="fas fa-plus-circle"></i></button>
+        <div class="btn-group">
+            <button class="buy-btn" onclick="openBuyModal()">Buy Credits <i class="fas fa-plus-circle"></i></button>
+            <button class="redeem-btn" onclick="openRedeemModal()">Redeem Code <i class="fas fa-gift"></i></button>
+        </div>
     </div>
 
-    <!-- Active Challenge Status (If Any) -->
+    <!-- Active Challenge Status -->
     <div id="activeStatusArea" style="display:none; margin-bottom: 20px;">
         <div style="background: rgba(0,255,136,0.1); border: 1px solid #00ff88; padding: 15px; border-radius: 15px;">
             <h4 style="margin:0; color:#00ff88">Active Challenge: <span id="activeLvlName"></span></h4>
@@ -80,20 +92,42 @@
     <!-- Levels List -->
     <div id="levelsContainer"></div>
 
-    <!-- Buy Modal -->
+    <!-- BUY CREDITS MODAL -->
     <div class="modal" id="buyModal">
         <div class="modal-content">
-            <h3>Buy Credits</h3>
-            <p style="font-size:0.8rem; color:#aaa;">Rate: $1 = <span id="rateDisplay">5</span> Credits</p>
-            <p style="font-size:0.8rem; color:#00f2ff;" id="adminAddr">Loading Address...</p>
+            <h3 style="margin-top:0;">Select Package</h3>
             
-            <input type="number" id="buyAmount" class="inp-field" placeholder="Enter Credits Amount" oninput="calcPrice()">
-            <div style="margin-bottom:10px;">Cost: <span id="costDisplay" style="color:#00ff88">0.00</span> USDT</div>
+            <!-- Dynamic Packages -->
+            <div id="pkgList" class="pkg-container">Loading packages...</div>
+
+            <!-- Payment Info -->
+            <div id="paymentSection" style="display:none; text-align: left; border-top: 1px solid #334155; padding-top: 15px;">
+                <p style="font-size:0.85rem; color:#aaa; margin-bottom:5px;">Send <span id="payAmount" style="color:#00ff88; font-weight:bold;"></span> USDT to:</p>
+                <div style="background:#0f172a; padding:10px; border-radius:8px; font-size:0.8rem; word-break:break-all; color:#00f2ff; border:1px dashed #334155;" onclick="copyAddr()" id="adminAddrDisplay">...</div>
+                
+                <div class="warning-text">
+                    <i class="fas fa-exclamation-triangle"></i> <b>WARNING:</b>
+                    Do not submit fake transaction details. Admin will verify within 30-60 mins. Fake submissions will lead to an <b>Account Ban</b>.
+                </div>
+
+                <input type="text" id="senderAddr" class="inp-field" placeholder="Your Wallet Address (Sender)">
+                <input type="text" id="trxId" class="inp-field" placeholder="Transaction ID (Hash)">
+                
+                <button class="action-btn" onclick="submitOrder()">Submit Payment</button>
+            </div>
             
-            <input type="text" id="trxId" class="inp-field" placeholder="Enter Transaction ID (Hash)">
-            
-            <button class="action-btn" onclick="submitBuy()">Confirm Purchase</button>
-            <button class="action-btn" style="background:#333; margin-top:5px;" onclick="document.getElementById('buyModal').style.display='none'">Cancel</button>
+            <button class="action-btn" style="background:#333; margin-top:10px;" onclick="closeModals()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- REDEEM MODAL -->
+    <div class="modal" id="redeemModal">
+        <div class="modal-content">
+            <h3>Redeem Code</h3>
+            <p style="font-size:0.8rem; color:#aaa;">Enter code to get free credits</p>
+            <input type="text" id="redeemCodeInput" class="inp-field" placeholder="Enter Code (e.g. BONUS100)">
+            <button class="action-btn" onclick="submitRedeem()">Redeem Now</button>
+            <button class="action-btn" style="background:#333; margin-top:5px;" onclick="closeModals()">Cancel</button>
         </div>
     </div>
 
@@ -108,11 +142,10 @@
 
         let currentUser = null;
         let myCredits = 0;
-        let creditRate = 5;
         let adminWallet = "";
-        let currentActiveTarget = null; // { type, level, startCount, target }
+        let currentActiveTarget = null;
+        let selectedPackage = null; // { credits, price }
 
-        // Level Configuration
         const LEVELS = [
             { level: 1, target: 5, reward: 2.5, cost: 2 },
             { level: 2, target: 10, reward: 5.0, cost: 4 },
@@ -126,20 +159,12 @@
             if(user) {
                 currentUser = user;
                 loadUserData();
-                loadSettings();
-            } else {
-                window.location.href = 'login_register.html';
-            }
+                loadAdminData();
+            } else { window.location.href = 'login_register.html'; }
         });
 
-        function loadSettings() {
-            db.ref('settings/credits').on('value', snap => {
-                const s = snap.val() || {};
-                creditRate = s.rate || 5;
-                adminWallet = s.wallet || "Contact Admin";
-                document.getElementById('rateDisplay').innerText = creditRate;
-                document.getElementById('adminAddr').innerText = adminWallet;
-            });
+        function loadAdminData() {
+            db.ref('settings/credits/wallet').on('value', snap => adminWallet = snap.val() || "Loading...");
         }
 
         function loadUserData() {
@@ -147,9 +172,7 @@
                 const u = snap.val();
                 myCredits = u.credits || 0;
                 document.getElementById('userCredits').innerText = myCredits;
-
                 currentActiveTarget = u.active_target || null;
-                
                 renderLevels(u);
                 checkActiveProgress(u);
             });
@@ -162,19 +185,12 @@
 
             LEVELS.forEach(lvl => {
                 const isCompleted = completed[lvl.level];
-                const isLocked = currentActiveTarget !== null; // Lock all if one is active
-                
+                const isLocked = currentActiveTarget !== null; 
                 let btnText = `Start Challenge <small>(${lvl.cost} Credits)</small>`;
                 let btnDisabled = "";
-                let btnClass = "";
-
-                if(isCompleted) {
-                    btnText = "Completed <i class='fas fa-check'></i>";
-                    btnDisabled = "disabled";
-                } else if (isLocked) {
-                    btnText = "Another Challenge Active";
-                    btnDisabled = "disabled";
-                }
+                
+                if(isCompleted) { btnText = "Completed <i class='fas fa-check'></i>"; btnDisabled = "disabled"; }
+                else if (isLocked) { btnText = "Challenge in Progress"; btnDisabled = "disabled"; }
 
                 container.innerHTML += `
                     <div class="level-card">
@@ -182,146 +198,168 @@
                             <span class="lvl-badge">LEVEL ${lvl.level}</span>
                             <span class="reward">$${lvl.reward}</span>
                         </div>
-                        <div class="target-desc">
-                            Target: <span>${lvl.target} New Active Referrals</span>
-                        </div>
-                        <button class="action-btn" ${btnDisabled} onclick="startChallenge(${lvl.level}, ${lvl.target}, ${lvl.reward}, ${lvl.cost})">
-                            ${btnText}
-                        </button>
-                    </div>
-                `;
+                        <div class="target-desc">Target: <span>${lvl.target} New Referrals</span></div>
+                        <button class="action-btn" ${btnDisabled} onclick="startChallenge(${lvl.level}, ${lvl.target}, ${lvl.reward}, ${lvl.cost})">${btnText}</button>
+                    </div>`;
             });
         }
 
         function startChallenge(level, targetCount, reward, cost) {
-            if(myCredits < cost) {
-                alert("Not enough credits! Please buy more.");
-                openBuyModal();
-                return;
-            }
-
-            if(confirm(`Start Level ${level}? This will cost ${cost} Credits.`)) {
-                // 1. Get current active referral count to set baseline
-                db.ref('users').orderByChild('referredBy').equalTo(currentUser.uid).once('value', snap => { // NOTE: This needs to query referredBy = ownCode. Assuming logic.
-                    // Correct approach: Get user's ownCode first
-                     db.ref('users/' + currentUser.uid + '/ownCode').once('value', codeSnap => {
-                        const myCode = codeSnap.val();
-                        
-                        // Count current active
-                        let currentActive = 0;
-                        db.ref('users').orderByChild('referredBy').equalTo(myCode).once('value', teamSnap => {
-                             teamSnap.forEach(t => { if(t.val().status === 'active') currentActive++; });
-                             
-                             // 2. Set Active Target in DB
-                             const targetData = {
-                                 type: 'weekly',
-                                 level: level,
-                                 reward: reward,
-                                 targetCount: targetCount,
-                                 startCount: currentActive, // Baseline
-                                 startTime: Date.now()
-                             };
-
-                             const updates = {};
-                             updates['users/' + currentUser.uid + '/active_target'] = targetData;
-                             updates['users/' + currentUser.uid + '/credits'] = myCredits - cost;
-
-                             db.ref().update(updates).then(() => {
-                                 alert("Challenge Started! Good Luck.");
-                             });
-                        });
-                     });
+            if(myCredits < cost) { alert("Not enough credits! Buy or Redeem."); openBuyModal(); return; }
+            if(confirm(`Start Level ${level} for ${cost} Credits?`)) {
+                db.ref('users/' + currentUser.uid + '/ownCode').once('value', codeSnap => {
+                    const myCode = codeSnap.val();
+                    let currentActive = 0;
+                    db.ref('users').orderByChild('referredBy').equalTo(myCode).once('value', teamSnap => {
+                         teamSnap.forEach(t => { if(t.val().status === 'active') currentActive++; });
+                         const targetData = { type: 'weekly', level: level, reward: reward, targetCount: targetCount, startCount: currentActive, startTime: Date.now() };
+                         const updates = {};
+                         updates['users/' + currentUser.uid + '/active_target'] = targetData;
+                         updates['users/' + currentUser.uid + '/credits'] = myCredits - cost;
+                         db.ref().update(updates).then(() => { alert("Challenge Started!"); });
+                    });
                 });
             }
         }
 
         function checkActiveProgress(user) {
             if(!user.active_target || user.active_target.type !== 'weekly') {
-                document.getElementById('activeStatusArea').style.display = 'none';
-                return;
+                document.getElementById('activeStatusArea').style.display = 'none'; return;
             }
-
             const t = user.active_target;
             document.getElementById('activeStatusArea').style.display = 'block';
             document.getElementById('activeLvlName').innerText = `Level ${t.level}`;
             document.getElementById('activeTarget').innerText = t.targetCount;
 
-            // Recalculate Current Active Referrals
             db.ref('users/' + currentUser.uid + '/ownCode').once('value', codeSnap => {
                 const myCode = codeSnap.val();
                 let nowActive = 0;
                 db.ref('users').orderByChild('referredBy').equalTo(myCode).once('value', teamSnap => {
                     teamSnap.forEach(child => { if(child.val().status === 'active') nowActive++; });
-                    
-                    // Logic: Progress = Current Total Active - Baseline Active at Start
                     let progress = nowActive - t.startCount;
-                    if(progress < 0) progress = 0; // Just in case
-
+                    if(progress < 0) progress = 0; 
                     document.getElementById('activeProgress').innerText = progress;
-                    
-                    const percent = (progress / t.targetCount) * 100;
-                    document.getElementById('progressBar').style.width = Math.min(percent, 100) + "%";
-
-                    if(progress >= t.targetCount) {
-                        document.getElementById('claimBtn').style.display = 'block';
-                    }
+                    document.getElementById('progressBar').style.width = Math.min((progress / t.targetCount) * 100, 100) + "%";
+                    if(progress >= t.targetCount) document.getElementById('claimBtn').style.display = 'block';
                 });
             });
         }
 
         function claimReward() {
             const t = currentActiveTarget;
-            // Add Reward to Balance & Lifetime Profit
-            // Remove active_target
-            // Mark level as completed
-
             db.ref('users/' + currentUser.uid).transaction(userData => {
                 if(userData) {
                     userData.balance = (userData.balance || 0) + t.reward;
-                    // Note: Total Profit in home.html is calculated dynamically (Bal + Withdraw).
-                    // So just adding to balance is enough to reflect in Total Profit.
-                    
                     if(!userData.completed_levels) userData.completed_levels = {};
                     if(!userData.completed_levels.weekly) userData.completed_levels.weekly = {};
                     userData.completed_levels.weekly[t.level] = true;
-                    
-                    userData.active_target = null; // Clear target
+                    userData.active_target = null;
                 }
                 return userData;
-            }, (error, committed) => {
-                if(committed) {
-                    alert(`Congratulations! $${t.reward} added to your balance.`);
-                    location.reload();
-                }
+            }, (error, committed) => { if(committed) { alert(`$${t.reward} Claimed!`); location.reload(); } });
+        }
+
+        // === BUY & REDEEM LOGIC ===
+        function openBuyModal() { 
+            document.getElementById('buyModal').style.display = 'flex'; 
+            loadPackages();
+        }
+        function openRedeemModal() { document.getElementById('redeemModal').style.display = 'flex'; }
+        function closeModals() { 
+            document.getElementById('buyModal').style.display = 'none';
+            document.getElementById('redeemModal').style.display = 'none';
+            document.getElementById('paymentSection').style.display = 'none';
+            selectedPackage = null;
+        }
+
+        function loadPackages() {
+            const pkgList = document.getElementById('pkgList');
+            pkgList.innerHTML = "Loading...";
+            db.ref('settings/credit_packages').once('value', snap => {
+                pkgList.innerHTML = "";
+                if(!snap.exists()) { pkgList.innerHTML = "No packages available."; return; }
+                
+                snap.forEach(child => {
+                    const p = child.val();
+                    // Store package data in element for click handler
+                    const div = document.createElement('div');
+                    div.className = 'pkg-box';
+                    div.innerHTML = `
+                        <div class="pkg-credits">${p.credits} Credits</div>
+                        <div>
+                            <span class="pkg-disc">$${p.originalPrice}</span>
+                            <span class="pkg-off">-${p.discount}%</span>
+                        </div>
+                        <div class="pkg-price">$${p.finalPrice}</div>
+                    `;
+                    div.onclick = () => selectPackage(div, p.credits, p.finalPrice);
+                    pkgList.appendChild(div);
+                });
             });
         }
 
-        // --- BUY CREDIT LOGIC ---
-        function openBuyModal() { document.getElementById('buyModal').style.display = 'flex'; }
-        
-        function calcPrice() {
-            const amt = document.getElementById('buyAmount').value;
-            const price = amt / creditRate;
-            document.getElementById('costDisplay').innerText = price.toFixed(2);
+        function selectPackage(el, credits, price) {
+            // UI Update
+            document.querySelectorAll('.pkg-box').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            
+            // Logic Update
+            selectedPackage = { credits, price };
+            document.getElementById('payAmount').innerText = price;
+            document.getElementById('adminAddrDisplay').innerText = adminWallet;
+            document.getElementById('paymentSection').style.display = 'block';
         }
 
-        function submitBuy() {
-            const amt = parseFloat(document.getElementById('buyAmount').value);
+        function copyAddr() {
+            navigator.clipboard.writeText(adminWallet);
+            alert("Address Copied!");
+        }
+
+        function submitOrder() {
+            if(!selectedPackage) return alert("Select a package");
+            const sender = document.getElementById('senderAddr').value;
             const trx = document.getElementById('trxId').value;
             
-            if(!amt || !trx) { alert("Please fill all fields"); return; }
-            
-            const reqData = {
+            if(!sender || !trx) return alert("Fill all payment details");
+
+            const order = {
                 uid: currentUser.uid,
-                amount: amt,
+                credits: selectedPackage.credits,
+                price: selectedPackage.price,
+                sender: sender,
                 trx: trx,
                 status: 'pending',
-                date: Date.now()
+                timestamp: Date.now()
             };
-            
-            db.ref('credit_requests').push(reqData).then(() => {
-                alert("Request Submitted! Admin will approve shortly.");
-                document.getElementById('buyModal').style.display = 'none';
+
+            db.ref('credit_orders').push(order).then(() => {
+                alert("Order Submitted! Please wait for admin approval (30-60 mins).");
+                closeModals();
+            });
+        }
+
+        function submitRedeem() {
+            const code = document.getElementById('redeemCodeInput').value.trim();
+            if(!code) return alert("Enter Code");
+
+            const codeRef = db.ref('redeem_codes/' + code);
+            codeRef.transaction(codeData => {
+                if (codeData) {
+                    if (codeData.used >= codeData.limit || (codeData.users && codeData.users[currentUser.uid])) return;
+                    codeData.used = (codeData.used || 0) + 1;
+                    if (!codeData.users) codeData.users = {};
+                    codeData.users[currentUser.uid] = true;
+                }
+                return codeData;
+            }, (error, committed, snapshot) => {
+                if (!committed) {
+                    alert("Invalid Code or Limit Reached!");
+                } else {
+                    const amount = snapshot.val().amount;
+                    db.ref('users/' + currentUser.uid + '/credits').transaction(c => (c || 0) + amount);
+                    alert(`Success! You received ${amount} Credits.`);
+                    closeModals();
+                }
             });
         }
     </script>
