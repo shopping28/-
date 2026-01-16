@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP Levels | SHOPPING28</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>VIP Royal Levels</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* === LUXURY VARIABLES === */
@@ -46,7 +46,7 @@
             text-transform: uppercase;
         }
 
-        /* HERO CARD */
+        /* HERO CARD (Premium Gold Look) */
         .hero-card {
             background: linear-gradient(135deg, #1c1c1c 0%, #000000 100%);
             border: 1px solid rgba(191, 149, 63, 0.3);
@@ -141,18 +141,18 @@
         <div class="page-title">VIP ROYAL</div>
     </div>
 
-    <!-- Active Team Stats -->
+    <!-- Active Direct Stats -->
     <div class="hero-card">
         <div class="hero-icon"><i class="fas fa-crown"></i></div>
-        <div class="hero-label">My Active Team</div>
+        <div class="hero-label">Active Direct Partners</div>
         <div class="hero-count" id="myRef">0</div>
-        <div class="hero-desc">Grow your empire & unlock exclusive USDT rewards</div>
+        <div class="hero-desc">Rewards for your personal referrals</div>
     </div>
 
     <!-- Levels List -->
     <div class="level-container" id="levelContainer">
         <div style="text-align:center; padding:50px; color:#444;">
-            <i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Loading VIP Data...
+            <i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Loading...
         </div>
     </div>
 
@@ -167,8 +167,7 @@
         const db = firebase.database();
 
         let currentUser = null;
-        let totalActiveTeam = 0;
-        let knownUsers = new Set();
+        let directActiveCount = 0; // Only Direct Referrals
 
         // VIP LEVELS CONFIGURATION
         const VIP_LEVELS = [
@@ -184,46 +183,34 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
-                calculateTeam(user.uid);
+                calculateDirectReferrals(user.uid);
             } else {
                 window.location.href = 'login_register.html';
             }
         });
 
-        // 1. Recursive Team Calculation
-        function calculateTeam(uid) {
+        // 1. Calculate ONLY Direct Active Referrals
+        function calculateDirectReferrals(uid) {
             db.ref('users/' + uid + '/ownCode').once('value', snap => {
                 const myCode = snap.val();
                 if(!myCode) return;
 
-                knownUsers.clear();
-                totalActiveTeam = 0;
-                countRecursively(myCode, 1);
-            });
-        }
-
-        function countRecursively(parentCode, depth) {
-            if(depth > 10) return;
-
-            db.ref('users').orderByChild('referredBy').equalTo(parentCode).on('child_added', snap => {
-                const user = snap.val();
-                const uid = snap.key;
-
-                if(knownUsers.has(uid)) return;
-                knownUsers.add(uid);
-
-                if(user.status === 'active') {
-                    totalActiveTeam++;
-                    document.getElementById('myRef').innerText = totalActiveTeam;
+                // Query: Select users where 'referredBy' equals 'myCode'
+                db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', teamSnap => {
+                    let count = 0;
+                    if(teamSnap.exists()) {
+                        teamSnap.forEach(child => {
+                            // Check if status is active
+                            if(child.val().status === 'active') {
+                                count++;
+                            }
+                        });
+                    }
+                    directActiveCount = count;
+                    document.getElementById('myRef').innerText = directActiveCount;
                     renderLevels();
-                }
-
-                if(user.ownCode) {
-                    countRecursively(user.ownCode, depth + 1);
-                }
+                });
             });
-            // Initial render
-            renderLevels();
         }
 
         // 2. Render Levels
@@ -234,10 +221,10 @@
                 container.innerHTML = "";
 
                 VIP_LEVELS.forEach((lvl, index) => {
-                    const progress = Math.min(totalActiveTeam, lvl.target);
+                    const progress = Math.min(directActiveCount, lvl.target);
                     const percent = (progress / lvl.target) * 100;
                     const isCompleted = completed[lvl.id];
-                    const isEligible = totalActiveTeam >= lvl.target;
+                    const isEligible = directActiveCount >= lvl.target;
 
                     let statusClass = "locked";
                     let actionHtml = `<div class="status-pill st-lock"><i class="fas fa-lock"></i> LOCKED</div>`;
@@ -248,7 +235,7 @@
                     } else if (isEligible) {
                         statusClass = "running";
                         actionHtml = `<button class="btn-claim" onclick="claimVip(${lvl.id}, ${lvl.reward})">CLAIM $${lvl.reward} NOW</button>`;
-                    } else if (totalActiveTeam > 0) {
+                    } else if (directActiveCount > 0) {
                         statusClass = "running";
                         actionHtml = `<div class="status-pill st-run">IN PROGRESS</div>`;
                     }
@@ -265,7 +252,7 @@
                             </div>
 
                             <div class="card-footer">
-                                <span><i class="fas fa-users"></i> ${totalActiveTeam}/${lvl.target} Active</span>
+                                <span><i class="fas fa-user-friends"></i> ${directActiveCount}/${lvl.target} Directs</span>
                                 <span>${Math.floor(percent)}%</span>
                             </div>
 
@@ -288,7 +275,7 @@
             // B. Mark Completed
             updates['users/' + currentUser.uid + '/completed_levels/vip/' + levelId] = true;
 
-            // C. Add to History (For Home Page 'Today Profit' Logic)
+            // C. Add to History
             const historyKey = db.ref('users/' + currentUser.uid + '/vip_rewards').push().key;
             updates['users/' + currentUser.uid + '/vip_rewards/' + historyKey] = {
                 level: levelId,
