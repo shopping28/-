@@ -3,111 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Withdraw Funds | SHOPPING28</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>User Withdraw</title>
+    <!-- স্টাইল এবং ফন্ট -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* === PREMIUM USER UI === */
-        :root { --bg: #050505; --card: #121212; --primary: #00f2ff; --text: #fff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
         
-        body { background: var(--bg); color: var(--text); padding: 20px; min-height: 100vh; }
+        /* ব্যালেন্স কার্ড */
+        .card { background: #1a1a2e; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #333; margin-bottom: 20px; }
+        .bal { font-size: 2rem; font-weight: bold; color: #00f260; }
         
-        .header { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-        .back-btn { text-decoration: none; color: #aaa; background: #222; padding: 8px 15px; border-radius: 8px; display: flex; align-items: center; gap: 8px; }
-        
-        .balance-card {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            padding: 25px; border-radius: 15px; text-align: center; margin-bottom: 25px;
-            border: 1px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-        .bal-amount { font-size: 2.5rem; font-weight: 800; color: #fff; margin: 10px 0; }
-        .badge { background: rgba(0, 242, 255, 0.15); color: var(--primary); padding: 4px 8px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; }
+        /* ইনপুট এবং বাটন */
+        input { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #00f260; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; font-size: 1rem; }
+        button:disabled { background: #555; }
 
-        .form-box { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #333; }
-        .input-group { margin-bottom: 15px; position: relative; }
-        .label { display: block; color: #888; margin-bottom: 8px; font-size: 0.9rem; }
-        
-        input { 
-            width: 100%; padding: 14px; background: #000; border: 1px solid #333; 
-            color: white; border-radius: 10px; outline: none; font-size: 1rem;
-        }
-        input:focus { border-color: var(--primary); }
-
-        .btn-max { position: absolute; right: 10px; top: 38px; background: #222; color: var(--primary); border: 1px solid #444; padding: 5px 10px; cursor: pointer; border-radius: 5px; }
-        
-        .btn-submit { 
-            width: 100%; padding: 15px; background: var(--primary); color: #000; 
-            border: none; border-radius: 10px; font-weight: 800; font-size: 1.1rem; 
-            cursor: pointer; margin-top: 10px; 
-        }
-        .btn-submit:disabled { background: #333; color: #666; cursor: not-allowed; }
-
-        .history-list { margin-top: 30px; }
-        .h-item { background: #111; padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        .status { padding: 4px 8px; border-radius: 5px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-        .pending { background: #333; color: #f1c40f; }
-        .approved { background: rgba(0,255,136,0.1); color: #00ff88; }
-        .rejected { background: rgba(255,71,87,0.1); color: #ff4757; }
-
-        #toast-box { position: fixed; top: 20px; right: 20px; z-index: 999; }
-        .toast { background: #222; color: #fff; padding: 12px 20px; border-radius: 8px; border-left: 4px solid var(--primary); margin-bottom: 10px; animation: slideIn 0.3s; }
-        @keyframes slideIn { from{transform:translateX(100%)} to{transform:translateX(0)} }
+        /* হিস্ট্রি লিস্ট */
+        .item { background: #222; padding: 10px; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; font-size: 0.9rem; }
+        .pending { color: orange; } .approved { color: #00f260; } .rejected { color: red; }
     </style>
 </head>
 <body>
 
-    <div id="toast-box"></div>
+    <div class="container">
+        <h3>Withdraw Money</h3>
+        
+        <!-- ব্যালেন্স সেকশন -->
+        <div class="card">
+            <div>Available Balance</div>
+            <div class="bal">$<span id="usd">0.00</span></div>
+            <div style="font-size:0.8rem; color:#aaa;">≈ <span id="bdt">0</span> BDT</div>
+        </div>
 
-    <div class="header">
-        <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i> Home</a>
-        <h3 style="margin-left: auto;">WITHDRAW</h3>
+        <!-- ইনপুট ফর্ম -->
+        <label>Wallet Address (USDT BEP20)</label>
+        <input type="text" id="wallet" placeholder="Paste address here...">
+        
+        <label>Amount (Min $5)</label>
+        <input type="number" id="amount" placeholder="5">
+
+        <button onclick="submitReq()" id="btn">Confirm Withdraw</button>
+
+        <h4 style="margin-top:20px; border-bottom:1px solid #333; padding-bottom:10px;">Recent History</h4>
+        <div id="history">Loading...</div>
     </div>
 
-    <!-- BALANCE -->
-    <div class="balance-card">
-        <div style="color:#aaa; font-size:0.9rem;">Available Balance</div>
-        <div class="bal-amount"><span id="usdtBal">0.00</span> <span class="badge">USDT</span></div>
-        <div style="color:#666; font-size:0.85rem;">≈ <span id="bdtBal">0</span> BDT</div>
-    </div>
-
-    <!-- FORM -->
-    <div class="form-box">
-        <div class="input-group">
-            <label class="label">Payment Method</label>
-            <div style="background:#1a1a1a; padding:12px; border-radius:8px; color:#00ff88; text-align:center; border:1px solid #333;">
-                <i class="fas fa-wallet"></i> USDT (BEP20)
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label class="label">Wallet Address</label>
-            <input type="text" id="wWallet" placeholder="Paste your address here">
-        </div>
-
-        <div class="input-group">
-            <label class="label">Amount (USDT)</label>
-            <input type="number" id="wAmount" placeholder="Min: 5.00">
-            <button class="btn-max" onclick="setMax()">MAX</button>
-        </div>
-
-        <div style="font-size:0.8rem; color:#666; margin-bottom:15px;">
-            * Rate: 1 USDT = 120 BDT
-        </div>
-
-        <button class="btn-submit" id="wBtn" onclick="submitWithdraw()">CONFIRM WITHDRAW</button>
-    </div>
-
-    <!-- HISTORY -->
-    <div class="history-list">
-        <h4 style="margin-bottom:15px; border-left:3px solid var(--primary); padding-left:10px;">Recent History</h4>
-        <div id="list">
-            <div style="text-align:center; padding:20px; color:#555;">Loading...</div>
-        </div>
-    </div>
-
-    <!-- FIREBASE -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -117,101 +59,72 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
-        const RATE = 120; // 1 USDT = 120 BDT
+        const RATE = 120; // ১ ডলার = ১২০ টাকা
 
-        let currentUser, currentBDT = 0, currentUSDT = 0;
+        let user, currentBDT=0;
 
-        function showToast(msg) {
-            const box = document.getElementById('toast-box');
-            const t = document.createElement('div');
-            t.className = 'toast'; t.innerText = msg;
-            box.appendChild(t); setTimeout(() => t.remove(), 3000);
-        }
-
-        auth.onAuthStateChanged(user => {
-            if(user) {
-                currentUser = user;
-                loadData();
-                loadHistory();
-            } else {
-                window.location.href = 'login_register.html';
-            }
+        auth.onAuthStateChanged(u => {
+            if(u) { user = u; loadData(); loadHistory(); }
+            else { window.location.href = "login_register.html"; }
         });
 
         function loadData() {
-            db.ref('users/' + currentUser.uid + '/balance').on('value', snap => {
-                currentBDT = parseFloat(snap.val() || 0);
-                currentUSDT = currentBDT / RATE;
-                document.getElementById('bdtBal').innerText = currentBDT.toFixed(2);
-                document.getElementById('usdtBal').innerText = currentUSDT.toFixed(2);
+            db.ref('users/'+user.uid+'/balance').on('value', s => {
+                currentBDT = parseFloat(s.val() || 0);
+                document.getElementById('bdt').innerText = currentBDT.toFixed(2);
+                document.getElementById('usd').innerText = (currentBDT / RATE).toFixed(2);
             });
         }
 
-        function setMax() {
-            document.getElementById('wAmount').value = Math.floor(currentUSDT * 100) / 100;
-        }
+        function submitReq() {
+            const wall = document.getElementById('wallet').value;
+            const amt = parseFloat(document.getElementById('amount').value);
+            const btn = document.getElementById('btn');
 
-        function submitWithdraw() {
-            const wallet = document.getElementById('wWallet').value.trim();
-            const amount = parseFloat(document.getElementById('wAmount').value);
-            const btn = document.getElementById('wBtn');
-
-            if(!wallet || wallet.length < 5) return showToast("Invalid Wallet Address");
-            if(!amount || amount < 5) return showToast("Minimum Withdraw 5 USDT");
-            if(amount > currentUSDT) return showToast("Insufficient Balance");
+            if(!wall || amt < 5) return alert("Minimum withdraw is $5");
+            if((amt * RATE) > currentBDT) return alert("Insufficient Balance!");
 
             if(!confirm("Confirm Withdraw?")) return;
 
             btn.disabled = true; btn.innerText = "Processing...";
-            const deductBDT = amount * RATE;
+            const deduct = amt * RATE;
 
-            // Safe Transaction
-            db.ref('users/' + currentUser.uid + '/balance').transaction(curr => {
-                if(curr >= deductBDT) return curr - deductBDT;
-                return; // Abort
-            }, (error, committed) => {
+            // ব্যালেন্স কাটা এবং রিকোয়েস্ট জমা দেওয়া
+            db.ref('users/'+user.uid+'/balance').transaction(c => {
+                return (c >= deduct) ? c - deduct : undefined; // টাকা থাকলে কাটবে
+            }, (err, committed) => {
                 if(committed) {
                     db.ref('withdraw_requests').push({
-                        uid: currentUser.uid,
+                        uid: user.uid,
                         method: 'USDT (BEP20)',
-                        wallet: wallet,
-                        amountUSDT: amount,
-                        amountBDT: deductBDT,
+                        wallet: wall,
+                        amountUSDT: amt,
+                        amountBDT: deduct,
                         status: 'pending',
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
-                    showToast("Withdraw Successful!");
-                    document.getElementById('wWallet').value = "";
-                    document.getElementById('wAmount').value = "";
+                    alert("Withdraw Request Successful!");
+                    document.getElementById('wallet').value = "";
+                    document.getElementById('amount').value = "";
                 } else {
-                    showToast("Transaction Failed / Low Balance");
+                    alert("Transaction Failed.");
                 }
-                btn.disabled = false; btn.innerText = "CONFIRM WITHDRAW";
+                btn.disabled = false; btn.innerText = "Confirm Withdraw";
             });
         }
 
         function loadHistory() {
-            db.ref('withdraw_requests').orderByChild('uid').equalTo(currentUser.uid).limitToLast(20).on('value', snap => {
-                const list = document.getElementById('list'); list.innerHTML = "";
-                if(!snap.exists()) { list.innerHTML = "<p style='text-align:center; color:#555'>No History</p>"; return; }
+            db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).limitToLast(10).on('value', s => {
+                const div = document.getElementById('history'); div.innerHTML = "";
+                if(!s.exists()) { div.innerHTML = "No history found"; return; }
                 
-                const arr = [];
-                snap.forEach(c => arr.push(c.val()));
-                arr.reverse().forEach(d => {
-                    let amt = d.amountUSDT ? d.amountUSDT.toFixed(2) : (d.amount/RATE).toFixed(2);
-                    let st = d.status;
-                    let cls = st === 'approved' ? 'approved' : (st === 'rejected' ? 'rejected' : 'pending');
-                    
-                    list.innerHTML += `
-                        <div class="h-item">
-                            <div>
-                                <div style="color:white; font-weight:bold;">Withdraw USDT</div>
-                                <div style="font-size:0.75rem; color:#666;">${d.wallet.substr(0,8)}...</div>
-                            </div>
-                            <div style="text-align:right;">
-                                <div style="color:#fff; font-weight:bold;">$${amt}</div>
-                                <span class="status ${cls}">${st}</span>
-                            </div>
+                const data = [];
+                s.forEach(c => data.push(c.val()));
+                data.reverse().forEach(d => {
+                    div.innerHTML += `
+                        <div class="item">
+                            <span>$${d.amountUSDT} - ${d.wallet.substr(0,6)}...</span>
+                            <span class="${d.status}">${d.status}</span>
                         </div>`;
                 });
             });
