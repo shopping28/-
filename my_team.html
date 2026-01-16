@@ -3,66 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Team Dynamic</title>
+    <title>My Team | Earnings History</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Modern Dark Theme */
         :root { --bg: #0f172a; --card: #1e293b; --primary: #3b82f6; --text: #f8fafc; --success: #10b981; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 20px; padding-bottom: 80px;}
         
         .header { display: flex; align-items: center; margin-bottom: 20px; }
         .back-btn { background: var(--card); padding: 10px; border-radius: 10px; color: #94a3b8; text-decoration: none; margin-right: 15px;}
 
-        /* Stats Card */
+        /* Referral Card */
+        .ref-card { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 25px; border-radius: 20px; text-align: center; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3); }
+        .ref-label { font-size: 0.8rem; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px; }
+        .ref-code { font-size: 2.5rem; font-weight: 800; margin: 5px 0 15px 0; color: #fff; }
+        .copy-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s; font-weight: 600; }
+        .copy-btn:hover { background: white; color: #4f46e5; }
+
+        /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .stat-box { background: var(--card); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-label { font-size: 0.8rem; color: #94a3b8; }
         .stat-val { font-size: 1.5rem; font-weight: 700; margin-top: 5px; }
         .money { color: var(--success); }
 
-        /* Dynamic Tabs */
+        /* Tabs */
         .tabs-container { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 10px; scrollbar-width: none; }
-        .tab-btn { background: var(--card); border: 1px solid #333; color: #aaa; padding: 8px 16px; border-radius: 20px; white-space: nowrap; cursor: pointer; transition: 0.3s; }
+        .tab-btn { background: var(--card); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; padding: 8px 16px; border-radius: 20px; white-space: nowrap; cursor: pointer; transition: 0.3s; font-size: 0.9rem; }
         .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* List */
+        /* Lists */
         .list-wrapper { display: none; flex-direction: column; gap: 10px; }
         .list-wrapper.active { display: flex; animation: fade 0.3s; }
         @keyframes fade { from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);} }
 
-        .member-card { background: var(--card); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--primary); }
-        .m-profit { color: var(--success); font-weight: bold; font-size: 0.9rem; }
+        .member-card { background: var(--card); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .m-info h4 { margin: 0; font-size: 0.95rem; font-weight: 600; }
+        .m-info small { color: #64748b; font-size: 0.75rem; font-family: monospace; }
+        .m-right { text-align: right; }
+        .m-profit { color: var(--success); font-weight: bold; font-size: 0.95rem; }
+        .m-badge { font-size: 0.7rem; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; color: #94a3b8; margin-top: 4px; display: inline-block; }
+        
+        .empty-msg { text-align: center; color: #64748b; padding: 30px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-        <h3>My Team</h3>
+        <h3>My Network</h3>
     </div>
 
-    <!-- Referral Code Display (Brief) -->
-    <div style="background: linear-gradient(45deg, #4f46e5, #7c3aed); padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: center;">
-        <div style="color:rgba(255,255,255,0.7); font-size:0.8rem;">REFERRAL CODE</div>
-        <div style="font-size:2rem; font-weight:800;" id="myCode">...</div>
-        <button onclick="copyLink()" style="background:rgba(0,0,0,0.3); border:none; color:white; padding:5px 15px; border-radius:20px; margin-top:5px; cursor:pointer;">Copy Link</button>
+    <!-- Referral Section -->
+    <div class="ref-card">
+        <div class="ref-label">Referral Code</div>
+        <div class="ref-code" id="myCode">...</div>
+        <button class="copy-btn" onclick="copyLink()">Copy Invite Link</button>
     </div>
 
+    <!-- Stats -->
     <div class="stats-grid">
         <div class="stat-box">
-            <div style="font-size:0.8rem; color:#94a3b8;">Total Partners</div>
+            <div class="stat-label">Total Partners</div>
             <div class="stat-val" id="totalCount">0</div>
         </div>
         <div class="stat-box">
-            <div style="font-size:0.8rem; color:#94a3b8;">Total Earnings</div>
+            <div class="stat-label">Total Earnings</div>
             <div class="stat-val money">$<span id="totalMoney">0.00</span></div>
         </div>
     </div>
 
-    <!-- Dynamic Tabs will be injected here -->
+    <!-- Dynamic Tabs -->
     <div class="tabs-container" id="tabsArea"></div>
 
-    <!-- Lists Container -->
+    <!-- Lists -->
     <div id="listsArea"></div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -73,14 +87,23 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
-        const RATE = 120;
+        
+        const RATE = 120; // 1 USD = 120 BDT
+        
+        // === OLD LEGACY RATES (BDT) ===
+        // যাদের কোনো ডাটা নেই, তাদের জন্য এই রেট ব্যবহার হবে
+        const LEGACY_RATES_BDT = {
+            1: 130,  // Level 1: 130 Tk
+            2: 20,   // Level 2: 20 Tk
+            3: 10    // Level 3: 10 Tk
+        };
 
-        let activeLevels = []; // From Admin Settings
+        let activeLevels = []; 
         let myCode = null;
         let totalIncomeBDT = 0;
         let totalMembers = 0;
-        // Object to store counts per level: { 1: 5, 2: 10 }
         let levelCounts = {}; 
+        let knownUsers = new Set();
 
         auth.onAuthStateChanged(user => {
             if(user) {
@@ -93,14 +116,11 @@
         });
 
         function initPage() {
-            // 1. Get Active Levels from Admin Settings
+            // Get Admin's Active Levels (For Tabs Only)
             db.ref('settings/commissions_dynamic').on('value', snap => {
                 activeLevels = snap.val() || [];
-                // If old format fallback
-                if(activeLevels.length === 0) {
-                     // Default fallback if nothing set
-                     activeLevels = [{level:1}, {level:2}, {level:3}];
-                }
+                // Fallback for new system
+                if(activeLevels.length === 0) activeLevels = [{level:1}, {level:2}];
                 
                 setupTabs();
                 loadTeamData();
@@ -114,152 +134,116 @@
             tabs.innerHTML = `<button class="tab-btn active" onclick="showTab('all')">All List</button>`;
             lists.innerHTML = `<div id="list-all" class="list-wrapper active"></div>`;
 
+            // Only create tabs for levels present in Admin Settings
             activeLevels.forEach(lvl => {
                 tabs.innerHTML += `<button class="tab-btn" onclick="showTab(${lvl.level})" id="btn-lvl-${lvl.level}">Level ${lvl.level} (0)</button>`;
                 lists.innerHTML += `<div id="list-${lvl.level}" class="list-wrapper"></div>`;
             });
         }
 
-        // Recursive Function to Load Team
         function loadTeamData() {
             totalIncomeBDT = 0;
             totalMembers = 0;
+            knownUsers.clear();
             levelCounts = {};
             
             // Clear lists
             document.querySelectorAll('.list-wrapper').forEach(el => el.innerHTML = "");
-
-            // Start fetching from Level 1
-            fetchLevelMembers([myCode], 1);
+            
+            // Start Recursion
+            startRecursion(myCode, 1);
         }
-
-        // Recursive function
-        function fetchLevelMembers(parentCodes, currentDepth) {
-            // Stop if we go deeper than reasonable (e.g. 20 levels) to prevent infinite loops
-            if(currentDepth > 20) return;
-            
-            let nextLevelParents = [];
-            let processedCount = 0;
-
-            parentCodes.forEach(code => {
-                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', snap => {
-                    const user = snap.val();
-                    if(user.status === 'active') {
-                        processUser(user, currentDepth);
-                        if(user.ownCode) nextLevelParents.push(user.ownCode);
-                    }
-                });
-            });
-
-            // Wait a bit then load next level (Firebase is async, this is a simple approximation)
-            // Ideally we listen continuously. This structure listens to updates.
-            // For fetching deep levels, we chain the listeners.
-            
-            // To properly handle recursion with listeners, we attach listeners to the children found.
-            // Since `on('child_added')` is persistent, we need to be careful not to duplicate listeners.
-            // For this simpler version, we assume `child_added` works as we expand.
-            
-            // IMPORTANT: We need a mechanism to trigger next level. 
-            // Since we can't know when "child_added" finishes (it never does), 
-            // we rely on the fact that when a child comes in, we attach a listener for THEIR children.
-            
-            // The logic inside `processUser` will handle UI and Maths.
-            // To recurse: We need to attach listeners to the found children.
-            // We do this inside the snapshot callback.
-        }
-        
-        // Better implementation of recursion with listeners
-        // We call this once for Level 1, and it calls itself for children.
-        const knownUsers = new Set();
 
         function startRecursion(parentCode, depth) {
+            // Safety limit (max 10 levels deep)
+            if(depth > 10) return;
+
             db.ref('users').orderByChild('referredBy').equalTo(parentCode).on('child_added', snap => {
                 const user = snap.val();
                 const uid = snap.key;
                 
-                // Avoid duplicates / loops
                 if(knownUsers.has(uid)) return;
                 knownUsers.add(uid);
 
                 if(user.status === 'active') {
-                    // 1. Calculate Profit (HISTORICAL LOGIC)
-                    // We look at the Child's 'locked_commissions' OR 'fixed_commissions'
-                    // If they don't have it, we check global fallback (risky but needed for very old users)
-                    
-                    let profitFromUser = 0;
-                    
-                    // The user object might have an array `locked_commissions` 
-                    // where index 0 is Level 1, index 1 is Level 2, etc.
-                    // Since this user is at `depth` relative to ME:
-                    // My profit is the rate defined for Level `depth`.
-                    
+                    // === PROFIT CALCULATION LOGIC ===
+                    let profitBDT = 0;
+
                     if(user.locked_commissions && Array.isArray(user.locked_commissions)) {
-                        // Check if there is a rate for this depth
-                        // Array index = depth - 1
+                        // 1. NEW USER (Dynamic USD System)
+                        // Saved as BDT in database, array index = depth - 1
                         if(user.locked_commissions[depth - 1]) {
-                            profitFromUser = parseFloat(user.locked_commissions[depth - 1].amount);
+                            profitBDT = parseFloat(user.locked_commissions[depth - 1].amount);
                         }
-                    } else if (user.fixed_commissions) {
-                        // Support for the previous fixed object structure
-                         if(depth === 1) profitFromUser = user.fixed_commissions.level1;
-                         if(depth === 2) profitFromUser = user.fixed_commissions.level2;
-                         if(depth === 3) profitFromUser = user.fixed_commissions.level3;
                     } 
-                    
-                    // Add to total (Use valid number)
-                    if(!isNaN(profitFromUser)) totalIncomeBDT += profitFromUser;
+                    else if (user.fixed_commissions) {
+                         // 2. INTERMEDIATE USER
+                         if(depth === 1) profitBDT = user.fixed_commissions.level1;
+                         if(depth === 2) profitBDT = user.fixed_commissions.level2;
+                         if(depth === 3) profitBDT = user.fixed_commissions.level3;
+                    }
+                    else {
+                        // 3. OLD USER (Legacy Fallback) - THIS SOLVES YOUR ISSUE
+                        // If no saved rates, use the old 130/20/10 structure
+                        if(LEGACY_RATES_BDT[depth]) {
+                            profitBDT = LEGACY_RATES_BDT[depth];
+                        }
+                    }
+
+                    // Update Totals
+                    if(!isNaN(profitBDT)) totalIncomeBDT += profitBDT;
                     totalMembers++;
 
-                    // Update UI Stats
+                    // Update UI Stats (Convert to USD)
                     document.getElementById('totalCount').innerText = totalMembers;
                     document.getElementById('totalMoney').innerText = (totalIncomeBDT / RATE).toFixed(2);
 
-                    // 2. Render to List (ONLY if this level exists in Admin Settings)
-                    // Check if Admin has this level active
-                    const levelExistsInAdmin = activeLevels.find(l => l.level === depth);
+                    // === RENDER TO LISTS ===
                     
-                    if(levelExistsInAdmin) {
-                        // Update Count for Tab
+                    // Always show in All List
+                    renderCard(user, depth, profitBDT, 'list-all');
+
+                    // Show in Specific Tab ONLY if Admin has kept that level
+                    const levelIsActive = activeLevels.find(l => l.level === depth);
+                    if(levelIsActive) {
                         if(!levelCounts[depth]) levelCounts[depth] = 0;
                         levelCounts[depth]++;
+                        
+                        // Update Tab Count
                         const tabBtn = document.getElementById(`btn-lvl-${depth}`);
                         if(tabBtn) tabBtn.innerText = `Level ${depth} (${levelCounts[depth]})`;
 
-                        // Render Card
-                        const profitUSD = (profitFromUser / RATE).toFixed(2);
-                        const html = `
-                            <div class="member-card">
-                                <div>
-                                    <div style="font-weight:600">${user.firstName || 'User'}</div>
-                                    <div style="font-size:0.75rem; color:#aaa;">ID: ${user.ownCode}</div>
-                                </div>
-                                <div style="text-align:right">
-                                    <div class="m-profit">+$${profitUSD}</div>
-                                    <div style="font-size:0.7rem; color:#aaa;">Level ${depth}</div>
-                                </div>
-                            </div>`;
-                        
-                        document.getElementById(`list-${depth}`).innerHTML += html;
-                        document.getElementById(`list-all`).innerHTML += html;
+                        renderCard(user, depth, profitBDT, `list-${depth}`);
                     }
 
-                    // 3. Recurse (Go deeper)
+                    // Recurse deeper
                     if(user.ownCode) {
                         startRecursion(user.ownCode, depth + 1);
                     }
                 }
             });
         }
-        
-        // Override the previous simple loader
-        function loadTeamData() {
-            totalIncomeBDT = 0;
-            totalMembers = 0;
-            knownUsers.clear();
-            levelCounts = {};
-            document.querySelectorAll('.list-wrapper').forEach(el => el.innerHTML = "");
+
+        function renderCard(user, depth, profitBDT, listId) {
+            const list = document.getElementById(listId);
+            if(!list) return;
+
+            // Convert Profit to USD for Display
+            const profitUSD = (profitBDT / RATE).toFixed(2);
+
+            const html = `
+                <div class="member-card">
+                    <div class="m-info">
+                        <h4>${user.firstName || 'User'}</h4>
+                        <small>ID: ${user.ownCode}</small>
+                    </div>
+                    <div class="m-right">
+                        <div class="m-profit">+$${profitUSD}</div>
+                        <span class="m-badge">Level ${depth}</span>
+                    </div>
+                </div>`;
             
-            startRecursion(myCode, 1);
+            list.insertAdjacentHTML('beforeend', html);
         }
 
         function showTab(id) {
@@ -277,7 +261,7 @@
         
         function copyLink() {
             navigator.clipboard.writeText(`https://shopping28.github.io/-/login_register.html?ref=${myCode}`);
-            alert("Copied!");
+            alert("Referral Link Copied!");
         }
 
     </script>
