@@ -7,120 +7,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-dark: #020617;
-            --card-bg: #0f172a;
-            --primary: #9333ea; 
-            --secondary: #db2777; 
-            --neon-purple: #d946ef;
-            --neon-gold: #facc15;
-            --neon-red: #ef4444;
-            --neon-blue: #00f2ff;
-            --neon-green: #10b981;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Outfit', sans-serif;
-            margin: 0; padding: 20px; padding-bottom: 100px;
-            overflow-x: hidden;
-        }
-
-        /* HEADER */
+        /* (Premium Purple CSS) */
+        :root { --bg-dark: #020617; --card-bg: #0f172a; --primary: #9333ea; --secondary: #db2777; --neon-purple: #d946ef; --neon-gold: #facc15; --neon-red: #ef4444; --neon-blue: #00f2ff; --neon-green: #10b981; --text-main: #f8fafc; --text-muted: #94a3b8; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Outfit', sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; overflow-x: hidden; }
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
-        .back-btn { 
-            background: rgba(255,255,255,0.05); width: 40px; height: 40px; 
-            border-radius: 12px; display: flex; justify-content: center; align-items: center; 
-            color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.1);
-        }
+        .back-btn { background: rgba(255,255,255,0.05); width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); }
         .page-title { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.5px; }
-
-        /* CREDIT CARD */
-        .credit-card {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: 25px; border-radius: 24px; text-align: center;
-            box-shadow: 0 10px 40px -10px rgba(147, 51, 234, 0.5);
-            position: relative; overflow: hidden; margin-bottom: 30px;
-        }
-        .cr-label { font-size: 0.9rem; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
-        .cr-val { font-size: 3.5rem; font-weight: 800; margin: 5px 0 15px; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        
+        .credit-card { background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 25px; border-radius: 24px; text-align: center; box-shadow: 0 10px 40px -10px rgba(147, 51, 234, 0.5); position: relative; overflow: hidden; margin-bottom: 30px; }
+        .cr-val { font-size: 3.5rem; font-weight: 800; margin: 5px 0 15px; }
         .btn-group { display: flex; gap: 12px; }
-        .cr-btn {
-            flex: 1; padding: 12px; border-radius: 14px; border: none; font-weight: 700; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem;
-            transition: transform 0.2s;
-        }
-        .btn-buy { background: #fff; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .btn-redeem { background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); }
-        .cr-btn:active { transform: scale(0.96); }
-
-        /* STATUS BOXES */
-        .status-box {
-            padding: 20px; border-radius: 20px; margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
-            animation: slideUp 0.4s ease-out; display: none;
-        }
+        .cr-btn { flex: 1; padding: 12px; border-radius: 14px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
+        .btn-buy { background: #fff; color: var(--primary); }
+        .btn-redeem { background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        .status-box { padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); display: none; }
         .active-box { background: radial-gradient(circle at top right, rgba(217, 70, 239, 0.15), rgba(2, 6, 23, 0.8)); border-color: var(--neon-purple); }
         .pending-box { background: radial-gradient(circle at top right, rgba(250, 204, 21, 0.15), rgba(2, 6, 23, 0.8)); border-color: var(--neon-gold); }
-        .review-box { background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), rgba(2, 6, 23, 0.8)); border-color: var(--neon-blue); }
         .rejected-box { background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.15), rgba(2, 6, 23, 0.8)); border-color: var(--neon-red); }
-
-        .st-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .st-title { margin: 0; font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        
-        /* PROGRESS & TIMER */
-        .progress-track { background: rgba(255,255,255,0.1); height: 10px; border-radius: 10px; overflow: hidden; margin: 15px 0; }
-        .progress-fill { height: 100%; background: var(--neon-purple); width: 0%; transition: width 0.5s ease; box-shadow: 0 0 10px var(--neon-purple); }
-        
-        .timer-display { 
-            background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; text-align: center; 
-            border: 1px solid rgba(255,255,255,0.1); margin-top: 15px; 
-        }
-        .timer-val { font-size: 1.4rem; font-weight: 800; font-family: monospace; letter-spacing: 2px; color: #fff; }
-        .timer-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 4px; }
-
-        /* LEVELS GRID */
+        .review-box { background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), rgba(2, 6, 23, 0.8)); border-color: var(--neon-blue); }
         .levels-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .level-card {
-            background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05);
-            padding: 20px; border-radius: 18px; position: relative; overflow: hidden;
-            transition: 0.3s;
-        }
-        
+        .level-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 18px; position: relative; overflow: hidden; }
         .lc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .lvl-pill { background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); }
-        .lvl-reward { color: var(--neon-gold); font-size: 1.3rem; font-weight: 800; text-shadow: 0 0 10px rgba(250, 204, 21, 0.4); }
-        
-        .lc-target { font-size: 0.95rem; color: #fff; margin-bottom: 15px; }
+        .lvl-pill { background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
+        .lvl-reward { color: var(--neon-gold); font-size: 1.3rem; font-weight: 800; }
         .lc-target span { color: var(--neon-purple); font-weight: 700; }
-
-        .apply-btn {
-            width: 100%; padding: 12px; border: none; border-radius: 12px;
-            background: linear-gradient(90deg, #9333ea, #db2777);
-            color: #fff; font-weight: 700; cursor: pointer; transition: 0.3s;
-            display: flex; justify-content: space-between; align-items: center; padding: 12px 20px;
-        }
-        .apply-btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; opacity: 0.7; }
-        .apply-btn:active:not(:disabled) { transform: scale(0.98); }
-
-        /* MODALS */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
-        .modal-box { background: #1e293b; width: 100%; max-width: 400px; padding: 25px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); text-align: center; position: relative; animation: slideUp 0.3s; }
-        
-        .pkg-list { max-height: 250px; overflow-y: auto; text-align: left; margin: 15px 0; display: flex; flex-direction: column; gap: 10px; }
-        .pkg-item {
-            background: #0f172a; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
-        }
+        .apply-btn { width: 100%; padding: 12px 20px; border: none; border-radius: 12px; background: linear-gradient(90deg, #9333ea, #db2777); color: #fff; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .apply-btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
+        .modal-box { background: #1e293b; width: 100%; max-width: 400px; padding: 25px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        .pkg-item { background: #0f172a; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .pkg-item.selected { border-color: var(--neon-purple); background: rgba(219, 39, 119, 0.1); }
-        .inp { width: 100%; padding: 14px; background: #020617; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 12px; margin: 8px 0; box-sizing: border-box; font-family: inherit; }
+        .inp { width: 100%; padding: 14px; background: #020617; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 12px; margin: 8px 0; box-sizing: border-box; }
         .modal-act { background: #fff; color: #000; width: 100%; padding: 14px; border-radius: 12px; font-weight: 800; border: none; margin-top: 15px; cursor: pointer; }
         .wallet-box { background: #020617; padding: 12px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.2); font-family: monospace; color: var(--neon-purple); font-size: 0.85rem; word-break: break-all; margin-bottom: 15px; cursor: pointer; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -131,89 +49,63 @@
         <div style="width:40px;"></div>
     </div>
 
-    <!-- Credit Balance -->
     <div class="credit-card">
         <div class="cr-label">Your Balance</div>
         <div class="cr-val" id="userCredits">0</div>
         <div class="btn-group">
-            <button class="cr-btn btn-buy" onclick="openBuyModal()">
-                <i class="fas fa-plus"></i> Buy Credits
-            </button>
-            <button class="cr-btn btn-redeem" onclick="openRedeemModal()">
-                <i class="fas fa-gift"></i> Redeem
-            </button>
+            <button class="cr-btn btn-buy" onclick="openBuyModal()"><i class="fas fa-plus"></i> Buy Credits</button>
+            <button class="cr-btn btn-redeem" onclick="openRedeemModal()"><i class="fas fa-gift"></i> Redeem</button>
         </div>
     </div>
 
-    <!-- STATUS 1: REJECTED -->
+    <!-- Statuses (Same Logic as Weekly, Different Colors) -->
     <div id="rejectedArea" class="status-box rejected-box">
-        <div class="st-header">
-            <h4 class="st-title" style="color:var(--neon-red)"><i class="fas fa-times-circle"></i> Application Rejected</h4>
-        </div>
-        <p style="font-size:0.9rem; opacity:0.8; margin-bottom:15px;">Reason: <span id="rejectReason">...</span></p>
-        <button onclick="clearRejection()" style="background:rgba(0,0,0,0.3); color:#fff; padding:8px 16px; border-radius:8px; border:none; cursor:pointer;">Dismiss & Try Again</button>
+        <h4 style="margin:0; color:var(--neon-red)"><i class="fas fa-times-circle"></i> Rejected</h4>
+        <p style="font-size:0.9rem; opacity:0.8; margin-top:5px;">Reason: <span id="rejectReason">...</span></p>
+        <button onclick="clearRejection()" style="background:rgba(0,0,0,0.3); color:#fff; padding:8px 16px; border-radius:8px; border:none; cursor:pointer; margin-top:10px;">Dismiss</button>
     </div>
 
-    <!-- STATUS 2: PENDING APPROVAL -->
     <div id="pendingArea" class="status-box pending-box">
-        <h4 class="st-title" style="color:var(--neon-gold)"><i class="fas fa-clock"></i> Pending Approval</h4>
-        <p style="font-size:0.9rem; opacity:0.8; margin-top:5px;">You applied for <b><span id="pendingLevel"></span></b>. Please wait for Admin approval.</p>
+        <h4 style="margin:0; color:var(--neon-gold)"><i class="fas fa-clock"></i> Pending Approval</h4>
+        <p style="font-size:0.9rem; opacity:0.8; margin-top:5px;">Wait for Admin to approve <b><span id="pendingLevel"></span></b>.</p>
     </div>
 
-    <!-- STATUS 3: REWARD UNDER REVIEW -->
     <div id="reviewArea" class="status-box review-box">
-        <h4 class="st-title" style="color:var(--neon-blue)"><i class="fas fa-search-dollar"></i> Reward Under Review</h4>
-        <p style="font-size:0.9rem; opacity:0.8; margin-top:5px;">You have submitted <b>Level <span id="reviewLevel"></span></b>. Admin is verifying your payment.</p>
+        <h4 style="margin:0; color:var(--neon-blue)"><i class="fas fa-search-dollar"></i> Reward Under Review</h4>
+        <p style="font-size:0.9rem; opacity:0.8; margin-top:5px;">Target submitted for review. Admin is checking.</p>
     </div>
 
-    <!-- STATUS 4: ACTIVE CHALLENGE -->
     <div id="activeStatusArea" class="status-box active-box">
-        <div class="st-header">
-            <h4 class="st-title" style="color:var(--neon-purple)"><i class="fas fa-crown"></i> Active: <span id="activeLvlName">...</span></h4>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h4 style="margin:0; color:var(--neon-purple)">Active: <span id="activeLvlName">...</span></h4>
             <div style="font-weight:700;"><span id="activeProgress">0</span> / <span id="activeTarget">0</span></div>
         </div>
-        
-        <div class="progress-track">
-            <div id="progressBar" class="progress-fill"></div>
+        <div style="background:rgba(255,255,255,0.1); height:10px; border-radius:10px; margin:15px 0;">
+            <div id="progressBar" style="height:100%; background:var(--neon-purple); width:0%; border-radius:10px;"></div>
         </div>
-
-        <div class="timer-display">
-            <span class="timer-lbl">Time Remaining</span>
-            <div class="timer-val" id="timerDisplay">Wait...</div>
+        <div style="background:rgba(0,0,0,0.4); padding:10px; border-radius:10px; text-align:center;">
+            <span style="font-size:0.7rem; color:#94a3b8; text-transform:uppercase;">Time Remaining</span>
+            <div id="timerDisplay" style="font-size:1.2rem; font-weight:800; font-family:monospace;">Wait...</div>
         </div>
-
-        <button id="submitReviewBtn" onclick="submitForReview()" style="display:none; width:100%; margin-top:15px; background:var(--neon-gold); color:#000; padding:14px; border-radius:12px; font-weight:800; border:none; cursor:pointer; box-shadow: 0 0 15px rgba(250, 204, 21, 0.4);">
-            SUBMIT FOR REVIEW <i class="fas fa-paper-plane"></i>
-        </button>
+        <button id="submitReviewBtn" onclick="submitForReview()" style="display:none; width:100%; margin-top:15px; background:var(--neon-gold); color:#000; padding:14px; border-radius:12px; font-weight:800; border:none; cursor:pointer;">SUBMIT FOR REVIEW <i class="fas fa-paper-plane"></i></button>
     </div>
 
-    <!-- LEVELS LIST -->
     <div class="levels-grid" id="levelsContainer"></div>
 
-    <!-- MODALS -->
+    <!-- Modals (Same logic) -->
     <div class="modal-overlay" id="buyModal">
         <div class="modal-box">
-            <h3>Select Package</h3>
-            <div id="pkgList" class="pkg-list">Loading...</div>
+            <h3>Select Package</h3><div id="pkgList" class="pkg-list">Loading...</div>
             <div id="paymentSection" style="display:none; text-align:left; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
-                <p style="font-size:0.85rem; color:#aaa; margin:5px 0;">Send <b id="payAmount" style="color:var(--neon-purple)">0.00</b> USDT to:</p>
+                <p style="font-size:0.85rem; color:#aaa; margin:5px 0;">Send <b id="payAmount" style="color:var(--neon-purple)"></b> USDT to:</p>
                 <div class="wallet-box" onclick="copyAddr()" id="adminAddrDisplay">...</div>
-                <input type="text" id="senderAddr" class="inp" placeholder="Sender Wallet Address">
-                <input type="text" id="trxId" class="inp" placeholder="Transaction Hash (TrxID)">
+                <input type="text" id="senderAddr" class="inp" placeholder="Sender Address"><input type="text" id="trxId" class="inp" placeholder="Transaction Hash">
                 <button class="modal-act" onclick="submitOrder()">Submit Payment</button>
             </div>
             <button onclick="closeModals()" style="background:transparent; color:#94a3b8; border:none; margin-top:10px;">Close</button>
         </div>
     </div>
-
-    <div class="modal-overlay" id="redeemModal">
-        <div class="modal-box">
-            <h3>Redeem Code</h3>
-            <input type="text" id="redeemCodeInput" class="inp" placeholder="Enter Code">
-            <button class="modal-act" onclick="submitRedeem()">Redeem Now</button>
-            <button onclick="closeModals()" style="background:transparent; color:#94a3b8; border:none; margin-top:10px;">Close</button>
-        </div>
-    </div>
+    <div class="modal-overlay" id="redeemModal"><div class="modal-box"><h3>Redeem Code</h3><input type="text" id="redeemCodeInput" class="inp" placeholder="Enter Code"><button class="modal-act" onclick="submitRedeem()">Redeem Now</button><button onclick="closeModals()" style="background:transparent; color:#94a3b8; border:none; margin-top:10px;">Close</button></div></div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -221,189 +113,84 @@
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
+        const db = firebase.database(); const auth = firebase.auth();
+        let currentUser=null, myCredits=0, adminWallet="", currentActiveTarget=null, pendingRequest=null, reviewRequest=null, selectedPackage=null, timerInterval=null;
 
-        let currentUser = null;
-        let myCredits = 0;
-        let adminWallet = "";
-        
-        let currentActiveTarget = null;
-        let pendingRequest = null;
-        let reviewRequest = null;
-        let selectedPackage = null;
-        let timerInterval = null;
-
-        // MONTHLY LEVELS (Cost: 2 Credits)
         const LEVELS = [
-            { level: 1, target: 10, reward: 7, cost: 2 },
-            { level: 2, target: 20, reward: 14, cost: 2 },
-            { level: 3, target: 30, reward: 22, cost: 2 },
-            { level: 4, target: 40, reward: 33, cost: 2 },
-            { level: 5, target: 50, reward: 44, cost: 2 },
-            { level: 6, target: 60, reward: 55, cost: 2 }
+            { level: 1, target: 10, reward: 7, cost: 2 }, { level: 2, target: 20, reward: 14, cost: 2 }, { level: 3, target: 30, reward: 22, cost: 2 },
+            { level: 4, target: 40, reward: 33, cost: 2 }, { level: 5, target: 50, reward: 44, cost: 2 }, { level: 6, target: 60, reward: 55, cost: 2 }
         ];
 
-        auth.onAuthStateChanged(user => {
-            if(user) {
-                currentUser = user;
-                loadUserData();
-                loadAdminData();
-                checkRequests();
-            } else { window.location.href = 'login_register.html'; }
-        });
-
-        function loadAdminData() {
-            db.ref('settings/credits/wallet').on('value', snap => adminWallet = snap.val() || "Loading...");
-        }
-
+        auth.onAuthStateChanged(user => { if(user) { currentUser=user; loadUserData(); loadAdminData(); checkRequests(); } else { window.location.href = 'login_register.html'; } });
+        function loadAdminData() { db.ref('settings/credits/wallet').on('value', snap => adminWallet = snap.val() || "Loading..."); }
+        
         function loadUserData() {
             db.ref('users/' + currentUser.uid).on('value', snap => {
-                const u = snap.val();
-                myCredits = u.credits || 0;
-                document.getElementById('userCredits').innerText = myCredits;
+                const u = snap.val(); myCredits = u.credits || 0;
+                document.getElementById('userCredits').innerText = myCredits; 
                 currentActiveTarget = u.active_target || null;
-                
-                if(u.last_rejection && !u.rejection_seen) {
-                    document.getElementById('rejectedArea').style.display = 'block';
-                    document.getElementById('rejectReason').innerText = u.last_rejection;
-                    document.getElementById('pendingArea').style.display = 'none';
-                } else {
-                    document.getElementById('rejectedArea').style.display = 'none';
-                }
-
-                renderLevels(u);
-                checkActiveProgress(u);
+                if(u.last_rejection && !u.rejection_seen) { document.getElementById('rejectedArea').style.display = 'block'; document.getElementById('rejectReason').innerText = u.last_rejection; document.getElementById('pendingArea').style.display = 'none'; }
+                else { document.getElementById('rejectedArea').style.display = 'none'; }
+                renderLevels(u); checkActiveProgress(u);
             });
         }
 
-        // Check both Application & Reward Review Status
         function checkRequests() {
-            // Application Pending
             db.ref('target_requests').orderByChild('uid').equalTo(currentUser.uid).on('value', snap => {
-                pendingRequest = null;
-                document.getElementById('pendingArea').style.display = 'none';
-                snap.forEach(child => {
-                    const req = child.val();
-                    if(req.status === 'pending' && req.type === 'monthly') pendingRequest = req;
-                });
-                if(pendingRequest) {
-                    document.getElementById('pendingArea').style.display = 'block';
-                    document.getElementById('pendingLevel').innerText = "Monthly Level " + pendingRequest.level;
-                }
+                pendingRequest = null; document.getElementById('pendingArea').style.display = 'none';
+                snap.forEach(child => { const req = child.val(); if(req.status === 'pending' && req.type === 'monthly') pendingRequest = req; });
+                if(pendingRequest) { document.getElementById('pendingArea').style.display = 'block'; document.getElementById('pendingLevel').innerText = "Monthly Level " + pendingRequest.level; }
                 if(currentUser) db.ref('users/' + currentUser.uid).once('value', s => renderLevels(s.val()));
             });
-
-            // Reward Review Pending
             db.ref('reward_requests').orderByChild('uid').equalTo(currentUser.uid).on('value', snap => {
-                reviewRequest = null;
-                document.getElementById('reviewArea').style.display = 'none';
-                snap.forEach(child => {
-                    const req = child.val();
-                    if(req.status === 'pending' && req.type === 'monthly') reviewRequest = req;
-                });
-                if(reviewRequest) {
-                    document.getElementById('reviewArea').style.display = 'block';
-                    document.getElementById('reviewLevel').innerText = reviewRequest.level;
-                    document.getElementById('activeStatusArea').style.display = 'none';
-                }
+                reviewRequest = null; document.getElementById('reviewArea').style.display = 'none';
+                snap.forEach(child => { const req = child.val(); if(req.status === 'pending' && req.type === 'monthly') reviewRequest = req; });
+                if(reviewRequest) { document.getElementById('reviewArea').style.display = 'block'; document.getElementById('reviewLevel').innerText = reviewRequest.level; document.getElementById('activeStatusArea').style.display = 'none'; }
             });
         }
 
         function renderLevels(user) {
-            const container = document.getElementById('levelsContainer');
-            container.innerHTML = "";
-            
-            let isWeeklyActive = false;
-            // Assuming Weekly check is handled via user data or checking active_target type
-            if(currentActiveTarget && currentActiveTarget.type === 'weekly') isWeeklyActive = true;
-            // Also need to check if user has pending weekly requests (simplified here, in real scenario fetch both)
+            const container = document.getElementById('levelsContainer'); container.innerHTML = "";
+            let isWeeklyBusy = false; 
+            if(currentActiveTarget && currentActiveTarget.type === 'weekly') isWeeklyBusy = true;
+            // Also check pending weekly... (Simplified)
 
             LEVELS.forEach(lvl => {
-                let btnLabel = `Apply <i class="fas fa-arrow-right"></i>`;
-                let btnState = "";
-                let costText = `${lvl.cost} Credits`;
-
-                if(reviewRequest && reviewRequest.level == lvl.level) { btnLabel = "Under Review"; btnState = "disabled"; costText = ""; }
+                let btnLabel = `Apply <i class="fas fa-arrow-right"></i>`, btnState = "", costText = `${lvl.cost} Credits`;
+                if(reviewRequest && reviewRequest.level == lvl.level) { btnLabel = "Under Review"; btnState = "disabled"; }
                 else if(currentActiveTarget && currentActiveTarget.level == lvl.level && currentActiveTarget.type === 'monthly') { btnLabel = "Active"; btnState = "disabled"; costText = ""; }
                 else if(pendingRequest && pendingRequest.level == lvl.level) { btnLabel = "Pending..."; btnState = "disabled"; costText = ""; }
-                else if(isWeeklyActive) { btnLabel = "Weekly Active 🚫"; btnState = "disabled"; costText = "Locked"; }
+                else if(isWeeklyBusy) { btnLabel = "Weekly Active 🚫"; btnState = "disabled"; costText = "Locked"; }
 
-                container.innerHTML += `
-                    <div class="level-card">
-                        <div class="lc-top">
-                            <span class="lvl-pill">LEVEL ${lvl.level}</span>
-                            <span class="lvl-reward">$${lvl.reward}</span>
-                        </div>
-                        <div class="lc-target">Target: <span>${lvl.target} New Active Referrals</span></div>
-                        <button class="apply-btn" ${btnState} onclick="applyForChallenge(${lvl.level}, ${lvl.target}, ${lvl.reward}, ${lvl.cost})">
-                            <span>${btnLabel}</span>
-                            <small>${costText}</small>
-                        </button>
-                    </div>`;
+                container.innerHTML += `<div class="level-card"><div class="lc-top"><span class="lvl-pill">LEVEL ${lvl.level}</span><span class="lvl-reward">$${lvl.reward}</span></div><div class="lc-target">Target: <span>${lvl.target} Refs</span></div><button class="apply-btn" ${btnState} onclick="applyForChallenge(${lvl.level}, ${lvl.target}, ${lvl.reward}, ${lvl.cost})"><span>${btnLabel}</span><small>${costText}</small></button></div>`;
             });
         }
 
         function applyForChallenge(level, targetCount, reward, cost) {
             if(myCredits < cost) { alert("Not enough credits!"); openBuyModal(); return; }
             if(confirm(`Apply for Monthly Level ${level}? ${cost} Credits deducted.`)) {
-                
-                const reqData = {
-                    uid: currentUser.uid,
-                    type: 'monthly',
-                    level: level,
-                    targetCount: targetCount,
-                    reward: reward,
-                    cost: cost,
-                    status: 'pending',
-                    timestamp: Date.now()
-                };
-
-                const updates = {};
-                updates['users/' + currentUser.uid + '/credits'] = myCredits - cost;
-                updates['target_requests/' + currentUser.uid + '_monthly'] = reqData;
-
-                db.ref().update(updates).then(() => {
-                    alert("Application Submitted! Wait for Admin.");
-                });
+                const reqData = { uid: currentUser.uid, type: 'monthly', level, targetCount, reward, cost, status: 'pending', timestamp: Date.now() };
+                const updates = {}; updates['users/' + currentUser.uid + '/credits'] = myCredits - cost; updates['target_requests/' + currentUser.uid + '_monthly'] = reqData;
+                db.ref().update(updates).then(() => alert("Submitted for Approval!"));
             }
         }
 
         function checkActiveProgress(user) {
             if(!user.active_target || user.active_target.type !== 'monthly' || reviewRequest) {
-                document.getElementById('activeStatusArea').style.display = 'none';
-                clearInterval(timerInterval);
-                return;
+                document.getElementById('activeStatusArea').style.display = 'none'; clearInterval(timerInterval); return;
             }
-
-            const t = user.active_target;
-            document.getElementById('activeStatusArea').style.display = 'block';
-            document.getElementById('activeLvlName').innerText = `Level ${t.level}`;
-            document.getElementById('activeTarget').innerText = t.targetCount;
-
+            const t = user.active_target; document.getElementById('activeStatusArea').style.display = 'block'; document.getElementById('activeLvlName').innerText = `Level ${t.level}`; document.getElementById('activeTarget').innerText = t.targetCount;
             if(t.endTime) startTimer(t.endTime);
-            else document.getElementById('timerDisplay').innerText = "Starting...";
 
             db.ref('users/' + currentUser.uid + '/ownCode').once('value', codeSnap => {
-                const myCode = codeSnap.val();
-                let nowActive = 0;
+                const myCode = codeSnap.val(); let nowActive = 0;
                 db.ref('users').orderByChild('referredBy').equalTo(myCode).once('value', teamSnap => {
                     teamSnap.forEach(child => { if(child.val().status === 'active') nowActive++; });
-                    
-                    let progress = nowActive - t.startCount;
-                    if(progress < 0) progress = 0; 
-                    
+                    let progress = nowActive - t.startCount; if(progress < 0) progress = 0;
                     document.getElementById('activeProgress').innerText = progress;
                     document.getElementById('progressBar').style.width = Math.min((progress / t.targetCount) * 100, 100) + "%";
-                    
-                    if(progress >= t.targetCount) {
-                        document.getElementById('submitReviewBtn').style.display = 'block';
-                        document.getElementById('timerDisplay').innerText = "TARGET REACHED! 🎉";
-                        document.getElementById('timerDisplay').style.color = "var(--neon-gold)";
-                        clearInterval(timerInterval);
-                    } else {
-                        document.getElementById('submitReviewBtn').style.display = 'none';
-                    }
+                    if(progress >= t.targetCount) document.getElementById('submitReviewBtn').style.display = 'block';
+                    else document.getElementById('submitReviewBtn').style.display = 'none';
                 });
             });
         }
@@ -411,117 +198,37 @@
         function submitForReview() {
             if(!confirm("Submit task for Admin Review?")) return;
             const t = currentActiveTarget;
-            const reqData = {
-                uid: currentUser.uid,
-                type: 'monthly',
-                level: t.level,
-                reward: t.reward,
-                targetCount: t.targetCount,
-                completedAt: Date.now(),
-                status: 'pending'
-            };
-            
-            db.ref('reward_requests').push(reqData).then(() => {
-                alert("Submitted! Admin will check and add funds.");
-            });
+            const reqData = { uid: currentUser.uid, type: 'monthly', level: t.level, reward: t.reward, targetCount: t.targetCount, completedAt: Date.now(), status: 'pending' };
+            db.ref('reward_requests').push(reqData).then(() => { alert("Submitted! Admin will verify and add funds."); });
         }
 
         function startTimer(endTime) {
             clearInterval(timerInterval);
-            const timerEl = document.getElementById('timerDisplay');
-            timerEl.style.color = "#fff";
+            const el = document.getElementById('timerDisplay');
             function update() {
-                const now = Date.now();
-                const distance = endTime - now;
-                if (distance < 0) {
-                    clearInterval(timerInterval);
-                    timerEl.innerText = "EXPIRED ❌";
-                    timerEl.style.color = "var(--neon-red)";
-                    return;
-                }
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                timerEl.innerText = `${days}d ${hours}h ${minutes}m`;
+                const dist = endTime - Date.now();
+                if(dist < 0) { el.innerText = "EXPIRED"; el.style.color="var(--neon-red)"; return; }
+                const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60));
+                el.innerText = `${d}d ${h}h ${m}m`;
             }
-            update();
-            timerInterval = setInterval(update, 1000);
+            update(); timerInterval=setInterval(update, 1000);
         }
 
-        function clearRejection() {
-            db.ref('users/' + currentUser.uid + '/rejection_seen').set(true);
-            document.getElementById('rejectedArea').style.display = 'none';
-        }
-
-        // --- BUY & REDEEM LOGIC (Same) ---
-        function openBuyModal() { document.getElementById('buyModal').style.display = 'flex'; loadPackages(); }
-        function openRedeemModal() { document.getElementById('redeemModal').style.display = 'flex'; }
-        function closeModals() { 
-            document.getElementById('buyModal').style.display = 'none';
-            document.getElementById('redeemModal').style.display = 'none';
-            document.getElementById('paymentSection').style.display = 'none';
-            selectedPackage = null;
-        }
-
-        function loadPackages() {
-            const pkgList = document.getElementById('pkgList');
-            pkgList.innerHTML = "<p style='color:#aaa'>Loading...</p>";
+        function clearRejection() { db.ref('users/' + currentUser.uid + '/rejection_seen').set(true); document.getElementById('rejectedArea').style.display = 'none'; }
+        function openBuyModal(){ document.getElementById('buyModal').style.display='flex'; loadPackages(); }
+        function openRedeemModal(){ document.getElementById('redeemModal').style.display='flex'; }
+        function closeModals(){ document.getElementById('buyModal').style.display='none'; document.getElementById('redeemModal').style.display='none'; document.getElementById('paymentSection').style.display='none'; selectedPackage=null; }
+        function loadPackages(){ 
+            const list = document.getElementById('pkgList'); list.innerHTML="Loading...";
             db.ref('settings/credit_packages').once('value', snap => {
-                pkgList.innerHTML = "";
-                if(!snap.exists()) { pkgList.innerHTML = "<p style='color:#aaa'>No packages available.</p>"; return; }
-                snap.forEach(child => {
-                    const p = child.val();
-                    const div = document.createElement('div');
-                    div.className = 'pkg-item';
-                    div.innerHTML = `<div class="pkg-cr">${p.credits} Credits</div><div><span class="pkg-old">$${p.originalPrice}</span><span class="pkg-badge">-${p.discount}%</span><span class="pkg-pr">$${p.finalPrice}</span></div>`;
-                    div.onclick = () => selectPackage(div, p.credits, p.finalPrice);
-                    pkgList.appendChild(div);
-                });
+                list.innerHTML=""; if(!snap.exists()){ list.innerHTML="No packages."; return; }
+                snap.forEach(c => { const p=c.val(); const d=document.createElement('div'); d.className='pkg-item'; d.innerHTML=`<div><b>${p.credits} Credits</b></div><div style='color:var(--neon-purple)'>$${p.finalPrice}</div>`; d.onclick=()=>selectPackage(d,p); list.appendChild(d); });
             });
         }
-
-        function selectPackage(el, credits, price) {
-            document.querySelectorAll('.pkg-item').forEach(b => b.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedPackage = { credits, price };
-            document.getElementById('payAmount').innerText = price;
-            document.getElementById('adminAddrDisplay').innerText = adminWallet;
-            document.getElementById('paymentSection').style.display = 'block';
-        }
-
-        function copyAddr() { navigator.clipboard.writeText(adminWallet); alert("Address Copied!"); }
-
-        function submitOrder() {
-            if(!selectedPackage) return alert("Select a package");
-            const sender = document.getElementById('senderAddr').value;
-            const trx = document.getElementById('trxId').value;
-            if(!sender || !trx) return alert("Fill all details");
-
-            const order = { uid: currentUser.uid, credits: selectedPackage.credits, price: selectedPackage.price, sender: sender, trx: trx, status: 'pending', timestamp: Date.now() };
-            db.ref('credit_orders').push(order).then(() => { alert("Order Submitted!"); closeModals(); });
-        }
-
-        function submitRedeem() {
-            const code = document.getElementById('redeemCodeInput').value.trim();
-            if(!code) return alert("Enter Code");
-            const codeRef = db.ref('redeem_codes/' + code);
-            codeRef.transaction(codeData => {
-                if (codeData) {
-                    if (codeData.used >= codeData.limit || (codeData.users && codeData.users[currentUser.uid])) return;
-                    codeData.used = (codeData.used || 0) + 1;
-                    if (!codeData.users) codeData.users = {};
-                    codeData.users[currentUser.uid] = true;
-                }
-                return codeData;
-            }, (error, committed, snapshot) => {
-                if (!committed) { alert("Invalid or Used Code!"); } 
-                else {
-                    const amount = snapshot.val().amount;
-                    db.ref('users/' + currentUser.uid + '/credits').transaction(c => (c || 0) + amount);
-                    alert(`Received ${amount} Credits!`); closeModals();
-                }
-            });
-        }
+        function selectPackage(el, p){ document.querySelectorAll('.pkg-item').forEach(b=>b.classList.remove('selected')); el.classList.add('selected'); selectedPackage={credits:p.credits, price:p.finalPrice}; document.getElementById('payAmount').innerText=p.finalPrice; document.getElementById('adminAddrDisplay').innerText=adminWallet; document.getElementById('paymentSection').style.display='block'; }
+        function copyAddr(){ navigator.clipboard.writeText(adminWallet); alert("Copied!"); }
+        function submitOrder(){ if(!selectedPackage) return; const s=document.getElementById('senderAddr').value, t=document.getElementById('trxId').value; if(!s||!t) return; db.ref('credit_orders').push({uid:currentUser.uid, ...selectedPackage, sender:s, trx:t, status:'pending', timestamp:Date.now()}).then(()=>{alert("Submitted"); closeModals();}); }
+        function submitRedeem(){ const c=document.getElementById('redeemCodeInput').value; if(!c) return; db.ref('redeem_codes/'+c).transaction(d=>{ if(d && d.used<d.limit && (!d.users || !d.users[currentUser.uid])) { d.used++; if(!d.users) d.users={}; d.users[currentUser.uid]=true; return d; } }, (e,c,s)=>{ if(c) { db.ref('users/'+currentUser.uid+'/credits').transaction(v=>(v||0)+s.val().amount); alert("Success!"); closeModals(); } else alert("Invalid!"); }); }
     </script>
 </body>
 </html>
