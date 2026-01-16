@@ -3,162 +3,543 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monthly Membership</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Monthly Challenge | SHOPPING28</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* DARK PREMIUM THEME */
+        :root {
+            --bg-dark: #020617;
+            --card-bg: #0f172a;
+            --primary: #9333ea; /* Purple for Monthly */
+            --secondary: #db2777; /* Pink */
+            --neon-purple: #d946ef;
+            --neon-gold: #facc15;
+            --neon-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
         body {
-            background: #0f0c29; 
-            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
-            font-family: 'Poppins', sans-serif;
-            color: white;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            margin: 0; padding: 20px; padding-bottom: 100px;
+            overflow-x: hidden;
         }
 
-        /* ICON ANIMATION (Pink/Purple for Monthly) */
-        .monthly-icon {
-            font-size: 4rem;
-            background: -webkit-linear-gradient(#ff9a9e, #fecfef);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 10px rgba(255, 154, 158, 0.3));
-        }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-
-        h1 { margin: 0; font-size: 2rem; letter-spacing: 1px; }
-        p { color: #aaa; margin-bottom: 40px; font-size: 0.9rem; }
-
-        /* COUNTDOWN BOXES */
-        .countdown {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 40px;
-        }
-        .time-box {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 15px;
-            min-width: 70px;
-            border: 1px solid rgba(255, 154, 158, 0.3); /* Pink Border */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        .time-val {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #ff9a9e; /* Pink Text */
-            display: block;
-        }
-        .time-label {
-            font-size: 0.7rem;
-            color: #ccc;
-            text-transform: uppercase;
-        }
-
-        /* BUTTON */
-        .btn {
-            padding: 12px 40px;
-            border: 2px solid #ff9a9e;
-            color: #ff9a9e;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
+        /* HEADER */
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+        .back-btn { 
+            background: rgba(255,255,255,0.05); width: 40px; height: 40px; 
+            border-radius: 12px; display: flex; justify-content: center; align-items: center; 
+            color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.1);
             transition: 0.3s;
-            background: rgba(255,255,255,0.05);
         }
-        .btn:hover {
-            background: #ff9a9e;
-            color: #000;
-            box-shadow: 0 0 20px #ff9a9e;
-        }
-        
-        .lock-msg {
-            background: rgba(231, 76, 60, 0.2);
-            color: #e74c3c;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-bottom: 20px;
-            border: 1px solid #e74c3c;
-        }
+        .back-btn:active { transform: scale(0.95); }
+        .page-title { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.5px; }
 
+        /* CREDIT CARD - PURPLE GRADIENT */
+        .credit-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 25px; border-radius: 24px; text-align: center;
+            box-shadow: 0 10px 40px -10px rgba(147, 51, 234, 0.5);
+            position: relative; overflow: hidden; margin-bottom: 30px;
+        }
+        .credit-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg); pointer-events: none;
+        }
+        .cr-label { font-size: 0.9rem; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+        .cr-val { font-size: 3.5rem; font-weight: 800; margin: 5px 0 15px; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        .btn-group { display: flex; gap: 12px; }
+        .cr-btn {
+            flex: 1; padding: 12px; border-radius: 14px; border: none; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem;
+            transition: transform 0.2s;
+        }
+        .btn-buy { background: #fff; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .btn-redeem { background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); }
+        .cr-btn:active { transform: scale(0.96); }
+
+        /* STATUS BOXES */
+        .status-box {
+            padding: 20px; border-radius: 20px; margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
+            animation: slideUp 0.4s ease-out; display: none;
+        }
+        .active-box { background: radial-gradient(circle at top right, rgba(217, 70, 239, 0.15), rgba(2, 6, 23, 0.8)); border-color: var(--neon-purple); }
+        .pending-box { background: radial-gradient(circle at top right, rgba(250, 204, 21, 0.15), rgba(2, 6, 23, 0.8)); border-color: var(--neon-gold); }
+        .rejected-box { background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.15), rgba(2, 6, 23, 0.8)); border-color: var(--neon-red); }
+
+        .st-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .st-title { margin: 0; font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        
+        /* PROGRESS & TIMER */
+        .progress-track { background: rgba(255,255,255,0.1); height: 10px; border-radius: 10px; overflow: hidden; margin: 15px 0; }
+        .progress-fill { height: 100%; background: var(--neon-purple); width: 0%; transition: width 0.5s ease; box-shadow: 0 0 10px var(--neon-purple); }
+        
+        .timer-display { 
+            background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; text-align: center; 
+            border: 1px solid rgba(255,255,255,0.1); margin-top: 15px; 
+        }
+        .timer-val { font-size: 1.4rem; font-weight: 800; font-family: monospace; letter-spacing: 2px; color: #fff; }
+        .timer-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 4px; }
+
+        /* LEVELS GRID */
+        .levels-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .level-card {
+            background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05);
+            padding: 20px; border-radius: 18px; position: relative; overflow: hidden;
+            transition: 0.3s;
+        }
+        .level-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+        
+        .lc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .lvl-pill { background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); }
+        .lvl-reward { color: var(--neon-gold); font-size: 1.3rem; font-weight: 800; text-shadow: 0 0 10px rgba(250, 204, 21, 0.4); }
+        
+        .lc-target { font-size: 0.95rem; color: #fff; margin-bottom: 15px; }
+        .lc-target span { color: var(--neon-purple); font-weight: 700; }
+
+        .apply-btn {
+            width: 100%; padding: 12px; border: none; border-radius: 12px;
+            background: linear-gradient(90deg, #9333ea, #db2777);
+            color: #fff; font-weight: 700; cursor: pointer; transition: 0.3s;
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 20px;
+        }
+        .apply-btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; opacity: 0.7; }
+        .apply-btn:active:not(:disabled) { transform: scale(0.98); }
+
+        /* MODALS (Reused Logic) */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
+        .modal-box { background: #1e293b; width: 100%; max-width: 400px; padding: 25px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); text-align: center; position: relative; animation: slideUp 0.3s; }
+        
+        .pkg-list { max-height: 250px; overflow-y: auto; text-align: left; margin: 15px 0; display: flex; flex-direction: column; gap: 10px; }
+        .pkg-item {
+            background: #0f172a; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
+        }
+        .pkg-item.selected { border-color: var(--neon-purple); background: rgba(219, 39, 119, 0.1); }
+        .pkg-cr { font-weight: 700; color: #fff; }
+        .pkg-pr { color: var(--neon-gold); font-weight: 700; }
+        .pkg-old { font-size: 0.75rem; text-decoration: line-through; color: #64748b; margin-right: 5px; }
+        .pkg-badge { background: var(--neon-gold); color: #000; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+
+        .inp { width: 100%; padding: 14px; background: #020617; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 12px; margin: 8px 0; box-sizing: border-box; font-family: inherit; }
+        .modal-act { background: #fff; color: #000; width: 100%; padding: 14px; border-radius: 12px; font-weight: 800; border: none; margin-top: 15px; cursor: pointer; }
+        .modal-close { background: transparent; color: #94a3b8; border: none; margin-top: 10px; cursor: pointer; text-decoration: underline; font-size: 0.9rem; }
+
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .wallet-box { background: #020617; padding: 12px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.2); font-family: monospace; color: var(--neon-purple); font-size: 0.85rem; word-break: break-all; margin-bottom: 15px; cursor: pointer; }
+        .warning { font-size: 0.8rem; color: var(--neon-red); background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; text-align: left; margin-bottom: 10px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
-    <div class="monthly-icon">
-        <i class="fas fa-calendar-alt"></i>
+    <!-- Header -->
+    <div class="header">
+        <a href="home.html" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">Monthly Challenge</div>
+        <div style="width:40px;"></div>
     </div>
 
-    <h1>Monthly Membership</h1>
-    <p>Big Rewards for Monthly Members</p>
-
-    <div class="lock-msg">
-        <i class="fas fa-lock"></i> CURRENTLY LOCKED
-    </div>
-
-    <div class="countdown">
-        <div class="time-box">
-            <span class="time-val" id="days">16</span>
-            <span class="time-label">Days</span>
-        </div>
-        <div class="time-box">
-            <span class="time-val" id="hours">00</span>
-            <span class="time-label">Hours</span>
-        </div>
-        <div class="time-box">
-            <span class="time-val" id="minutes">00</span>
-            <span class="time-label">Mins</span>
-        </div>
-        <div class="time-box">
-            <span class="time-val" id="seconds">00</span>
-            <span class="time-label">Secs</span>
+    <!-- Credit Balance -->
+    <div class="credit-card">
+        <div class="cr-label">Your Balance</div>
+        <div class="cr-val" id="userCredits">0</div>
+        <div class="btn-group">
+            <button class="cr-btn btn-buy" onclick="openBuyModal()">
+                <i class="fas fa-plus"></i> Buy Credits
+            </button>
+            <button class="cr-btn btn-redeem" onclick="openRedeemModal()">
+                <i class="fas fa-gift"></i> Redeem
+            </button>
         </div>
     </div>
 
-    <a href="home.html" class="btn">Go Back</a>
+    <!-- STATUS AREA: REJECTED -->
+    <div id="rejectedArea" class="status-box rejected-box">
+        <div class="st-header">
+            <h4 class="st-title" style="color:var(--neon-red)"><i class="fas fa-times-circle"></i> Application Rejected</h4>
+        </div>
+        <p style="font-size:0.9rem; opacity:0.8; margin-bottom:15px;">Reason: <span id="rejectReason">...</span></p>
+        <button onclick="clearRejection()" style="background:rgba(0,0,0,0.3); color:#fff; padding:8px 16px; border-radius:8px; border:none; cursor:pointer;">Dismiss</button>
+    </div>
 
+    <!-- STATUS AREA: PENDING -->
+    <div id="pendingArea" class="status-box pending-box">
+        <h4 class="st-title" style="color:var(--neon-gold)"><i class="fas fa-clock"></i> Pending Approval</h4>
+        <p style="font-size:0.9rem; opacity:0.8; margin-top:5px;">You applied for <b><span id="pendingLevel"></span></b>. Wait for Admin approval.</p>
+    </div>
+
+    <!-- STATUS AREA: ACTIVE -->
+    <div id="activeStatusArea" class="status-box active-box">
+        <div class="st-header">
+            <h4 class="st-title" style="color:var(--neon-purple)"><i class="fas fa-crown"></i> Active: <span id="activeLvlName">...</span></h4>
+            <div style="font-weight:700;"><span id="activeProgress">0</span> / <span id="activeTarget">0</span></div>
+        </div>
+        
+        <div class="progress-track">
+            <div id="progressBar" class="progress-fill"></div>
+        </div>
+
+        <div class="timer-display">
+            <span class="timer-lbl">Time Remaining</span>
+            <div class="timer-val" id="timerDisplay">00d 00h 00m 00s</div>
+        </div>
+
+        <button id="claimBtn" onclick="claimReward()" style="display:none; width:100%; margin-top:15px; background:var(--neon-gold); color:#000; padding:14px; border-radius:12px; font-weight:800; border:none; cursor:pointer; box-shadow: 0 0 15px rgba(250, 204, 21, 0.4);">
+            CLAIM REWARD <i class="fas fa-check-circle"></i>
+        </button>
+    </div>
+
+    <!-- LEVELS LIST -->
+    <div class="levels-grid" id="levelsContainer">
+        <!-- JS Generates Levels Here -->
+    </div>
+
+    <!-- BUY MODAL -->
+    <div class="modal-overlay" id="buyModal">
+        <div class="modal-box">
+            <h3 style="margin-top:0;">Select Package</h3>
+            <div id="pkgList" class="pkg-list">Loading...</div>
+            
+            <div id="paymentSection" style="display:none; text-align:left; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
+                <p style="font-size:0.85rem; color:#aaa; margin:5px 0;">Send <b id="payAmount" style="color:var(--neon-purple)">0.00</b> USDT to:</p>
+                <div class="wallet-box" onclick="copyAddr()" id="adminAddrDisplay">...</div>
+                <div class="warning"><i class="fas fa-exclamation-triangle"></i> Incorrect/Fake transactions = Ban.</div>
+                
+                <input type="text" id="senderAddr" class="inp" placeholder="Sender Wallet Address">
+                <input type="text" id="trxId" class="inp" placeholder="Transaction Hash (TrxID)">
+                <button class="modal-act" onclick="submitOrder()">Submit Payment</button>
+            </div>
+            
+            <button class="modal-close" onclick="closeModals()">Close</button>
+        </div>
+    </div>
+
+    <!-- REDEEM MODAL -->
+    <div class="modal-overlay" id="redeemModal">
+        <div class="modal-box">
+            <h3>Redeem Code</h3>
+            <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:20px;">Enter your promotional code.</p>
+            <input type="text" id="redeemCodeInput" class="inp" placeholder="Enter Code" style="text-align:center; font-weight:bold; letter-spacing:1px;">
+            <button class="modal-act" onclick="submitRedeem()">Redeem Now</button>
+            <button class="modal-close" onclick="closeModals()">Close</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-        // 1. Set the date we're counting down to (16 days from now)
-        const now = new Date().getTime();
-        // 16 Days * 24 Hours * 60 Mins * 60 Secs * 1000 Ms
-        const countDownDate = new Date(now + (16 * 24 * 60 * 60 * 1000)).getTime();
+        const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
 
-        // 2. Update the count down every 1 second
-        const x = setInterval(function() {
+        let currentUser = null;
+        let myCredits = 0;
+        let adminWallet = "";
+        
+        let currentActiveTarget = null; // Can be weekly or monthly
+        let pendingRequest = null;
+        let selectedPackage = null;
+        let timerInterval = null;
 
-            const currentTime = new Date().getTime();
-            const distance = countDownDate - currentTime;
+        // === MONTHLY CONFIGURATION (1 Month Duration, 2 Credits Cost) ===
+        const LEVELS = [
+            { level: 1, target: 10, reward: 7, cost: 2 },
+            { level: 2, target: 20, reward: 14, cost: 2 },
+            { level: 3, target: 30, reward: 22, cost: 2 },
+            { level: 4, target: 40, reward: 33, cost: 2 },
+            { level: 5, target: 50, reward: 44, cost: 2 },
+            { level: 6, target: 60, reward: 55, cost: 2 }
+        ];
 
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        auth.onAuthStateChanged(user => {
+            if(user) {
+                currentUser = user;
+                loadUserData();
+                loadAdminData();
+                checkPendingRequests();
+            } else { window.location.href = 'login_register.html'; }
+        });
 
-            document.getElementById("days").innerHTML = days;
-            document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
-            document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
-            document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
+        function loadAdminData() {
+            db.ref('settings/credits/wallet').on('value', snap => adminWallet = snap.val() || "Loading...");
+        }
 
-            if (distance < 0) {
-                clearInterval(x);
-                document.querySelector(".countdown").innerHTML = "OPEN NOW!";
+        function loadUserData() {
+            db.ref('users/' + currentUser.uid).on('value', snap => {
+                const u = snap.val();
+                myCredits = u.credits || 0;
+                document.getElementById('userCredits').innerText = myCredits;
+                currentActiveTarget = u.active_target || null;
+                
+                // Show Rejection
+                if(u.last_rejection && !u.rejection_seen) {
+                    document.getElementById('rejectedArea').style.display = 'block';
+                    document.getElementById('rejectReason').innerText = u.last_rejection;
+                } else {
+                    document.getElementById('rejectedArea').style.display = 'none';
+                }
+
+                renderLevels(u);
+                checkActiveProgress(u);
+            });
+        }
+
+        function checkPendingRequests() {
+            db.ref('target_requests').orderByChild('uid').equalTo(currentUser.uid).on('value', snap => {
+                pendingRequest = null;
+                document.getElementById('pendingArea').style.display = 'none';
+                snap.forEach(child => {
+                    const req = child.val();
+                    if(req.status === 'pending') pendingRequest = req;
+                });
+                if(pendingRequest) {
+                    // Only show pending here if it's monthly, or generic "Pending"
+                    if(pendingRequest.type === 'monthly') {
+                        document.getElementById('pendingArea').style.display = 'block';
+                        document.getElementById('pendingLevel').innerText = "Monthly Level " + pendingRequest.level;
+                    }
+                }
+                // Refresh buttons state
+                if(currentUser) db.ref('users/' + currentUser.uid).once('value', s => renderLevels(s.val()));
+            });
+        }
+
+        function renderLevels(user) {
+            const container = document.getElementById('levelsContainer');
+            container.innerHTML = "";
+            const completed = user.completed_levels?.monthly || {};
+
+            // CHECK FOR CONFLICT (Weekly vs Monthly)
+            let isWeeklyActive = false;
+            if(currentActiveTarget && currentActiveTarget.type === 'weekly') isWeeklyActive = true;
+            if(pendingRequest && pendingRequest.type === 'weekly') isWeeklyActive = true;
+
+            LEVELS.forEach(lvl => {
+                const isCompleted = completed[lvl.level];
+                const isActive = (currentActiveTarget && currentActiveTarget.type === 'monthly');
+                const isPending = (pendingRequest && pendingRequest.type === 'monthly');
+                
+                let btnLabel = `Apply <i class="fas fa-arrow-right"></i>`;
+                let btnState = "";
+                let costText = `${lvl.cost} Credits`;
+
+                if(isCompleted) { btnLabel = `Completed <i class="fas fa-check"></i>`; btnState = "disabled"; costText = ""; }
+                else if (isActive) { btnLabel = "Challenge Active"; btnState = "disabled"; }
+                else if (isPending) { btnLabel = "Pending..."; btnState = "disabled"; }
+                else if (isWeeklyActive) { btnLabel = "Weekly Active 🚫"; btnState = "disabled"; costText = "One choice only"; }
+
+                container.innerHTML += `
+                    <div class="level-card">
+                        <div class="lc-top">
+                            <span class="lvl-pill">LEVEL ${lvl.level}</span>
+                            <span class="lvl-reward">$${lvl.reward}</span>
+                        </div>
+                        <div class="lc-target">Target: <span>${lvl.target} New Active Referrals</span></div>
+                        <button class="apply-btn" ${btnState} onclick="applyForChallenge(${lvl.level}, ${lvl.target}, ${lvl.reward}, ${lvl.cost})">
+                            <span>${btnLabel}</span>
+                            <small>${costText}</small>
+                        </button>
+                    </div>`;
+            });
+        }
+
+        function applyForChallenge(level, targetCount, reward, cost) {
+            if(myCredits < cost) { alert("Not enough credits!"); openBuyModal(); return; }
+            if(confirm(`Apply for Monthly Level ${level}? ${cost} Credits will be deducted.`)) {
+                
+                const newCredits = myCredits - cost;
+                const reqData = {
+                    uid: currentUser.uid,
+                    type: 'monthly', // Important
+                    level: level,
+                    targetCount: targetCount,
+                    reward: reward,
+                    cost: cost,
+                    status: 'pending',
+                    timestamp: Date.now()
+                };
+
+                const updates = {};
+                updates['users/' + currentUser.uid + '/credits'] = newCredits;
+                updates['target_requests/' + currentUser.uid + '_monthly'] = reqData; // Unique key
+
+                db.ref().update(updates).then(() => {
+                    alert("Monthly Application Submitted! Wait for Approval.");
+                });
             }
-        }, 1000);
-    </script>
+        }
 
+        function checkActiveProgress(user) {
+            // Only show if type is monthly
+            if(!user.active_target || user.active_target.type !== 'monthly') {
+                document.getElementById('activeStatusArea').style.display = 'none';
+                clearInterval(timerInterval);
+                return;
+            }
+
+            const t = user.active_target;
+            document.getElementById('activeStatusArea').style.display = 'block';
+            document.getElementById('activeLvlName').innerText = `Level ${t.level}`;
+            document.getElementById('activeTarget').innerText = t.targetCount;
+
+            // Timer
+            if(t.endTime) startTimer(t.endTime);
+            else document.getElementById('timerDisplay').innerText = "Starting...";
+
+            db.ref('users/' + currentUser.uid + '/ownCode').once('value', codeSnap => {
+                const myCode = codeSnap.val();
+                let nowActive = 0;
+                db.ref('users').orderByChild('referredBy').equalTo(myCode).once('value', teamSnap => {
+                    teamSnap.forEach(child => { if(child.val().status === 'active') nowActive++; });
+                    
+                    let progress = nowActive - t.startCount;
+                    if(progress < 0) progress = 0; 
+                    
+                    document.getElementById('activeProgress').innerText = progress;
+                    document.getElementById('progressBar').style.width = Math.min((progress / t.targetCount) * 100, 100) + "%";
+                    
+                    if(progress >= t.targetCount) {
+                        document.getElementById('claimBtn').style.display = 'block';
+                        document.getElementById('timerDisplay').innerText = "TARGET REACHED! 🎉";
+                        document.getElementById('timerDisplay').style.color = "var(--neon-green)";
+                        clearInterval(timerInterval);
+                    } else {
+                        document.getElementById('claimBtn').style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function startTimer(endTime) {
+            clearInterval(timerInterval);
+            const timerEl = document.getElementById('timerDisplay');
+            timerEl.style.color = "#fff";
+            
+            function update() {
+                const now = Date.now();
+                const distance = endTime - now;
+
+                if (distance < 0) {
+                    clearInterval(timerInterval);
+                    timerEl.innerText = "EXPIRED ❌";
+                    timerEl.style.color = "var(--neon-red)";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                timerEl.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            }
+            update();
+            timerInterval = setInterval(update, 1000);
+        }
+
+        function claimReward() {
+            const t = currentActiveTarget;
+            db.ref('users/' + currentUser.uid).transaction(userData => {
+                if(userData) {
+                    userData.balance = (userData.balance || 0) + t.reward;
+                    if(!userData.completed_levels) userData.completed_levels = {};
+                    if(!userData.completed_levels.monthly) userData.completed_levels.monthly = {};
+                    userData.completed_levels.monthly[t.level] = true;
+                    userData.active_target = null;
+                }
+                return userData;
+            }, (error, committed) => { if(committed) { alert(`$${t.reward} Claimed!`); location.reload(); } });
+        }
+
+        function clearRejection() {
+            db.ref('users/' + currentUser.uid + '/rejection_seen').set(true);
+            document.getElementById('rejectedArea').style.display = 'none';
+        }
+
+        // --- BUY & REDEEM LOGIC (Copied from Weekly) ---
+        function openBuyModal() { document.getElementById('buyModal').style.display = 'flex'; loadPackages(); }
+        function openRedeemModal() { document.getElementById('redeemModal').style.display = 'flex'; }
+        function closeModals() { 
+            document.getElementById('buyModal').style.display = 'none';
+            document.getElementById('redeemModal').style.display = 'none';
+            document.getElementById('paymentSection').style.display = 'none';
+            selectedPackage = null;
+        }
+
+        function loadPackages() {
+            const pkgList = document.getElementById('pkgList');
+            pkgList.innerHTML = "<p style='color:#aaa'>Loading...</p>";
+            db.ref('settings/credit_packages').once('value', snap => {
+                pkgList.innerHTML = "";
+                if(!snap.exists()) { pkgList.innerHTML = "<p style='color:#aaa'>No packages available.</p>"; return; }
+                snap.forEach(child => {
+                    const p = child.val();
+                    const div = document.createElement('div');
+                    div.className = 'pkg-item';
+                    div.innerHTML = `
+                        <div class="pkg-cr">${p.credits} Credits</div>
+                        <div>
+                            <span class="pkg-old">$${p.originalPrice}</span>
+                            <span class="pkg-badge">-${p.discount}%</span>
+                            <span class="pkg-pr">$${p.finalPrice}</span>
+                        </div>
+                    `;
+                    div.onclick = () => selectPackage(div, p.credits, p.finalPrice);
+                    pkgList.appendChild(div);
+                });
+            });
+        }
+
+        function selectPackage(el, credits, price) {
+            document.querySelectorAll('.pkg-item').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedPackage = { credits, price };
+            document.getElementById('payAmount').innerText = price;
+            document.getElementById('adminAddrDisplay').innerText = adminWallet;
+            document.getElementById('paymentSection').style.display = 'block';
+        }
+
+        function copyAddr() { navigator.clipboard.writeText(adminWallet); alert("Address Copied!"); }
+
+        function submitOrder() {
+            if(!selectedPackage) return alert("Select a package");
+            const sender = document.getElementById('senderAddr').value;
+            const trx = document.getElementById('trxId').value;
+            if(!sender || !trx) return alert("Fill all details");
+
+            const order = { uid: currentUser.uid, credits: selectedPackage.credits, price: selectedPackage.price, sender: sender, trx: trx, status: 'pending', timestamp: Date.now() };
+            db.ref('credit_orders').push(order).then(() => { alert("Order Submitted!"); closeModals(); });
+        }
+
+        function submitRedeem() {
+            const code = document.getElementById('redeemCodeInput').value.trim();
+            if(!code) return alert("Enter Code");
+            const codeRef = db.ref('redeem_codes/' + code);
+            codeRef.transaction(codeData => {
+                if (codeData) {
+                    if (codeData.used >= codeData.limit || (codeData.users && codeData.users[currentUser.uid])) return;
+                    codeData.used = (codeData.used || 0) + 1;
+                    if (!codeData.users) codeData.users = {};
+                    codeData.users[currentUser.uid] = true;
+                }
+                return codeData;
+            }, (error, committed, snapshot) => {
+                if (!committed) { alert("Invalid or Used Code!"); } 
+                else {
+                    const amount = snapshot.val().amount;
+                    db.ref('users/' + currentUser.uid + '/credits').transaction(c => (c || 0) + amount);
+                    alert(`Received ${amount} Credits!`); closeModals();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
