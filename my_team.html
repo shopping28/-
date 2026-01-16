@@ -3,65 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Team | Network</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>My Team | Live Stats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --primary: #3b82f6; --text: #f8fafc; --success: #10b981; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 20px; padding-bottom: 80px;}
-        .header { display: flex; align-items: center; margin-bottom: 20px; }
-        .back-btn { background: var(--card); padding: 10px; border-radius: 10px; color: #94a3b8; text-decoration: none; margin-right: 15px;}
-        .ref-card { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 25px; border-radius: 20px; text-align: center; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3); }
-        .ref-code { font-size: 2.5rem; font-weight: 800; margin: 5px 0 15px 0; color: #fff; }
-        .copy-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s; font-weight: 600; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: var(--card); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .stat-val { font-size: 1.5rem; font-weight: 700; margin-top: 5px; }
-        .money { color: var(--success); }
-        .tabs-container { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 10px; }
-        .tab-btn { background: var(--card); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; }
-        .tab-btn.active { background: var(--primary); color: white; }
-        .member-card { background: var(--card); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); margin-bottom: 10px; }
-        .list-wrapper { display: none; flex-direction: column; }
-        .list-wrapper.active { display: flex; }
+        :root { --bg-dark: #020617; --card-bg: #0f172a; --primary: #3b82f6; --success: #10b981; --text: #f8fafc; }
+        body { background-color: var(--bg-dark); color: var(--text); font-family: 'Outfit', sans-serif; margin: 0; padding: 20px; overflow-x: hidden; }
+        
+        .header { display: flex; align-items: center; margin-bottom: 25px; }
+        .back-btn { background: rgba(255,255,255,0.05); width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); margin-right: 15px; }
+        
+        /* INVITE CARD */
+        .invite-card { background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4); margin-bottom: 30px; position: relative; overflow: hidden; }
+        .invite-code { font-size: 2.5rem; font-weight: 800; margin: 10px 0; letter-spacing: 2px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .copy-btn { background: #fff; color: #6366f1; padding: 8px 20px; border-radius: 30px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: transform 0.2s; }
+        .copy-btn:active { transform: scale(0.95); }
+
+        /* LEVEL BOXES (16:9 Aspect Ratio) */
+        .level-grid { display: flex; flex-direction: column; gap: 20px; }
+        .level-box {
+            background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px; position: relative; overflow: hidden;
+            aspect-ratio: 16/9; /* YouTube Thumbnail Size */
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s;
+        }
+        .level-box:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-5px); }
+        
+        /* Level Colors */
+        .lvl-1 { background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.2), #0f172a); border-left: 5px solid #10b981; }
+        .lvl-2 { background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.2), #0f172a); border-left: 5px solid #3b82f6; }
+        .lvl-3 { background: radial-gradient(circle at top right, rgba(245, 158, 11, 0.2), #0f172a); border-left: 5px solid #f59e0b; }
+
+        .lb-title { font-size: 1.2rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+        .lb-profit { font-size: 2.5rem; font-weight: 800; color: #fff; }
+        .lb-count { font-size: 0.9rem; color: #64748b; margin-top: 5px; }
+
+        /* NOTIFICATION AREA */
+        .notif-container {
+            position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 100;
+            display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+        }
+        .notif-card {
+            background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px; border-radius: 12px; backdrop-filter: blur(10px);
+            display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slideIn 0.5s ease-out forwards;
+            pointer-events: auto;
+        }
+        @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideOut { to { transform: translateX(100%); opacity: 0; } }
+
+        .notif-icon { width: 40px; height: 40px; background: rgba(16, 185, 129, 0.2); color: #10b981; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
+        .notif-text h4 { margin: 0; font-size: 0.95rem; font-weight: 700; color: #fff; }
+        .notif-text p { margin: 2px 0 0; font-size: 0.8rem; color: #94a3b8; }
+        .time-ago { font-size: 0.7rem; color: #64748b; margin-left: auto; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-        <h3>My Network</h3>
+        <h3>My Team Stats</h3>
     </div>
 
-    <div class="ref-card">
-        <div style="font-size:0.8rem; text-transform:uppercase;">Referral Code</div>
-        <div class="ref-code" id="myCode">...</div>
-        <button class="copy-btn" onclick="copyLink()">Copy Invite Link</button>
+    <!-- REFERRAL CARD -->
+    <div class="invite-card">
+        <div style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">Your Referral Code</div>
+        <div class="invite-code" id="myCode">...</div>
+        <button class="copy-btn" onclick="copyLink()">Copy Invite Link <i class="fas fa-copy"></i></button>
     </div>
 
-    <div class="stats-grid">
-        <div class="stat-box">
-            <div style="color:#94a3b8; font-size:0.8rem;">Total Partners</div>
-            <div class="stat-val" id="totalCount">0</div>
+    <!-- LEVEL BOXES (16:9) -->
+    <div class="level-grid" id="levelGrid">
+        <!-- Level 1 -->
+        <div class="level-box lvl-1">
+            <div class="lb-title">Level 1 Profit</div>
+            <div class="lb-profit">$<span id="p1">0.00</span></div>
+            <div class="lb-count"><span id="c1">0</span> Members</div>
         </div>
-        <div class="stat-box">
-            <div style="color:#94a3b8; font-size:0.8rem;">Total Earnings</div>
-            <!-- Syncs with Home Total Profit -->
-            <div class="stat-val money" id="totalMoney">$0.00</div>
+        <!-- Level 2 -->
+        <div class="level-box lvl-2">
+            <div class="lb-title">Level 2 Profit</div>
+            <div class="lb-profit">$<span id="p2">0.00</span></div>
+            <div class="lb-count"><span id="c2">0</span> Members</div>
+        </div>
+        <!-- Level 3 -->
+        <div class="level-box lvl-3">
+            <div class="lb-title">Level 3 Profit</div>
+            <div class="lb-profit">$<span id="p3">0.00</span></div>
+            <div class="lb-count"><span id="c3">0</span> Members</div>
         </div>
     </div>
 
-    <div class="tabs-container" id="tabsArea">
-        <button class="tab-btn active" onclick="showTab('all')">All List</button>
-        <button class="tab-btn" onclick="showTab(1)">Level 1</button>
-        <button class="tab-btn" onclick="showTab(2)">Level 2</button>
-        <button class="tab-btn" onclick="showTab(3)">Level 3</button>
-    </div>
-
-    <div id="list-all" class="list-wrapper active"></div>
-    <div id="list-1" class="list-wrapper"></div>
-    <div id="list-2" class="list-wrapper"></div>
-    <div id="list-3" class="list-wrapper"></div>
+    <!-- NOTIFICATION AREA (Popups appear here) -->
+    <div class="notif-container" id="notifArea"></div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -71,86 +108,110 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
-        const RATE = 120;
+
+        const RATE = 120; // 1 USD = 120 BDT
+        
+        // DEFAULT RATES (If not in DB)
+        const LEGACY_RATES = { 1: 130, 2: 20, 3: 10 }; 
+
+        let processedUsers = new Set(); // To prevent duplicate notifications on reload
 
         auth.onAuthStateChanged(user => {
             if(user) {
-                // Fetch Total Earnings like Home Page
-                db.ref('users/' + user.uid).on('value', snap => {
-                    const data = snap.val();
-                    if(data) {
-                        document.getElementById('myCode').innerText = data.ownCode || "...";
-                        
-                        // Calculate Total Profit (Balance + Withdraw)
-                        let current = parseFloat(data.balance || 0);
-                        let withdrawn = 0;
-                        db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).once('value', wSnap => {
-                            if(wSnap.exists()) {
-                                wSnap.forEach(c => {
-                                    const w = c.val();
-                                    if(w.status === 'approved' || w.status === 'pending') withdrawn += parseFloat(w.amountBDT || w.amount || 0);
-                                });
-                            }
-                            const total = (current + withdrawn) / RATE;
-                            document.getElementById('totalMoney').innerText = "$" + total.toFixed(2);
-                        });
-
-                        loadTeamData(data.ownCode);
-                    }
+                db.ref('users/' + user.uid + '/ownCode').once('value', snap => {
+                    const code = snap.val();
+                    document.getElementById('myCode').innerText = code || "...";
+                    if(code) startTracking(code);
                 });
+            } else {
+                window.location.href = 'login_register.html';
             }
         });
 
-        function loadTeamData(myCode) {
-            let totalMembers = 0;
-            let seen = new Set();
-            
-            document.querySelectorAll('.list-wrapper').forEach(el => el.innerHTML = "");
+        function startTracking(myCode) {
+            // Level 1 Tracking
+            trackLevel(myCode, 1);
+        }
 
-            function recurse(code, depth) {
-                if(depth > 3) return;
-                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', s => {
-                    if(seen.has(s.key)) return;
-                    seen.add(s.key);
-                    const u = s.val();
+        function trackLevel(parentCode, level) {
+            if(level > 3) return; // Only up to level 3
+
+            db.ref('users').orderByChild('referredBy').equalTo(parentCode).on('child_added', snap => {
+                const user = snap.val();
+                const uid = snap.key;
+
+                // Update Stats
+                if(user.status === 'active') {
+                    updateLevelStats(level, user);
                     
-                    if(u.status === 'active') {
-                        totalMembers++;
-                        document.getElementById('totalCount').innerText = totalMembers;
-                        renderCard(u, depth);
+                    // Show Notification if NEW (within last 10 mins)
+                    const joinTime = user.activatedAt || user.joinDate || 0;
+                    const tenMinsAgo = Date.now() - (10 * 60 * 1000);
+                    
+                    if(joinTime > tenMinsAgo && !processedUsers.has(uid)) {
+                        showNotification(level, user.firstName || "New User", user.ownCode);
+                        processedUsers.add(uid);
                     }
-                    if(u.ownCode) recurse(u.ownCode, depth + 1);
-                });
+                }
+
+                // Go Deeper
+                if(user.ownCode) {
+                    trackLevel(user.ownCode, level + 1);
+                }
+            });
+        }
+
+        let stats = { 1: {money:0, count:0}, 2: {money:0, count:0}, 3: {money:0, count:0} };
+
+        function updateLevelStats(level, user) {
+            // Calculate Profit for this user
+            let profitBDT = 0;
+            
+            // Check Admin Dynamic Rates First
+            // (Assuming you might add dynamic later, for now using legacy or fixed)
+            if(user.fixed_commissions) {
+                if(level === 1) profitBDT = user.fixed_commissions.level1;
+                if(level === 2) profitBDT = user.fixed_commissions.level2;
+                if(level === 3) profitBDT = user.fixed_commissions.level3;
+            } else {
+                // Fallback
+                profitBDT = LEGACY_RATES[level] || 0;
             }
-            recurse(myCode, 1);
+
+            stats[level].money += profitBDT;
+            stats[level].count += 1;
+
+            // Update UI
+            document.getElementById(`p${level}`).innerText = (stats[level].money / RATE).toFixed(2);
+            document.getElementById(`c${level}`).innerText = stats[level].count;
         }
 
-        function renderCard(user, depth) {
-            const html = `
-                <div class="member-card">
-                    <div>
-                        <div style="font-weight:600;">${user.firstName || 'User'}</div>
-                        <small style="color:#64748b;">ID: ${user.ownCode}</small>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="color:#10b981; font-weight:bold;">Active</div>
-                        <span style="font-size:0.7rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">Level ${depth}</span>
-                    </div>
-                </div>`;
-            document.getElementById('list-all').insertAdjacentHTML('beforeend', html);
-            document.getElementById(`list-${depth}`).insertAdjacentHTML('beforeend', html);
+        function showNotification(level, name, id) {
+            const container = document.getElementById('notifArea');
+            
+            const div = document.createElement('div');
+            div.className = 'notif-card';
+            div.innerHTML = `
+                <div class="notif-icon"><i class="fas fa-user-plus"></i></div>
+                <div class="notif-text">
+                    <h4>New Level ${level} Member!</h4>
+                    <p>${name} (ID: ${id}) just joined.</p>
+                </div>
+                <div class="time-ago">Just now</div>
+            `;
+
+            container.appendChild(div);
+
+            // Remove after 10 seconds
+            setTimeout(() => {
+                div.style.animation = "slideOut 0.5s forwards";
+                setTimeout(() => div.remove(), 500);
+            }, 10000);
         }
 
-        function showTab(id) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.list-wrapper').forEach(l => l.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(`list-${id}`).classList.add('active');
-        }
-        
         function copyLink() {
             navigator.clipboard.writeText(`https://shopping28.github.io/-/login_register.html?ref=${document.getElementById('myCode').innerText}`);
-            alert("Copied!");
+            alert("Invite Link Copied!");
         }
     </script>
 </body>
