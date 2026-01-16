@@ -112,7 +112,7 @@
         .apply-btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; opacity: 0.7; }
         .apply-btn:active:not(:disabled) { transform: scale(0.98); }
 
-        /* MODALS (Reused Logic) */
+        /* MODALS */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
         .modal-box { background: #1e293b; width: 100%; max-width: 400px; padding: 25px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); text-align: center; position: relative; animation: slideUp 0.3s; }
         
@@ -165,7 +165,7 @@
             <h4 class="st-title" style="color:var(--neon-red)"><i class="fas fa-times-circle"></i> Application Rejected</h4>
         </div>
         <p style="font-size:0.9rem; opacity:0.8; margin-bottom:15px;">Reason: <span id="rejectReason">...</span></p>
-        <button onclick="clearRejection()" style="background:rgba(0,0,0,0.3); color:#fff; padding:8px 16px; border-radius:8px; border:none; cursor:pointer;">Dismiss</button>
+        <button onclick="clearRejection()" style="background:rgba(0,0,0,0.3); color:#fff; padding:8px 16px; border-radius:8px; border:none; cursor:pointer;">Dismiss & Try Again</button>
     </div>
 
     <!-- STATUS AREA: PENDING -->
@@ -196,9 +196,7 @@
     </div>
 
     <!-- LEVELS LIST -->
-    <div class="levels-grid" id="levelsContainer">
-        <!-- JS Generates Levels Here -->
-    </div>
+    <div class="levels-grid" id="levelsContainer"></div>
 
     <!-- BUY MODAL -->
     <div class="modal-overlay" id="buyModal">
@@ -209,7 +207,7 @@
             <div id="paymentSection" style="display:none; text-align:left; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
                 <p style="font-size:0.85rem; color:#aaa; margin:5px 0;">Send <b id="payAmount" style="color:var(--neon-purple)">0.00</b> USDT to:</p>
                 <div class="wallet-box" onclick="copyAddr()" id="adminAddrDisplay">...</div>
-                <div class="warning"><i class="fas fa-exclamation-triangle"></i> Incorrect/Fake transactions = Ban.</div>
+                <div class="warning"><i class="fas fa-exclamation-triangle"></i> Incorrect or fake transactions will result in an immediate ban.</div>
                 
                 <input type="text" id="senderAddr" class="inp" placeholder="Sender Wallet Address">
                 <input type="text" id="trxId" class="inp" placeholder="Transaction Hash (TrxID)">
@@ -224,7 +222,7 @@
     <div class="modal-overlay" id="redeemModal">
         <div class="modal-box">
             <h3>Redeem Code</h3>
-            <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:20px;">Enter your promotional code.</p>
+            <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:20px;">Enter your promotional code below.</p>
             <input type="text" id="redeemCodeInput" class="inp" placeholder="Enter Code" style="text-align:center; font-weight:bold; letter-spacing:1px;">
             <button class="modal-act" onclick="submitRedeem()">Redeem Now</button>
             <button class="modal-close" onclick="closeModals()">Close</button>
@@ -243,13 +241,12 @@
         let currentUser = null;
         let myCredits = 0;
         let adminWallet = "";
-        
-        let currentActiveTarget = null; // Can be weekly or monthly
+        let currentActiveTarget = null;
         let pendingRequest = null;
         let selectedPackage = null;
         let timerInterval = null;
 
-        // === MONTHLY CONFIGURATION (1 Month Duration, 2 Credits Cost) ===
+        // === FIXED: 2 Credits Cost for Monthly ===
         const LEVELS = [
             { level: 1, target: 10, reward: 7, cost: 2 },
             { level: 2, target: 20, reward: 14, cost: 2 },
@@ -279,10 +276,11 @@
                 document.getElementById('userCredits').innerText = myCredits;
                 currentActiveTarget = u.active_target || null;
                 
-                // Show Rejection
+                // REJECTION LOGIC FIX
                 if(u.last_rejection && !u.rejection_seen) {
                     document.getElementById('rejectedArea').style.display = 'block';
                     document.getElementById('rejectReason').innerText = u.last_rejection;
+                    document.getElementById('pendingArea').style.display = 'none';
                 } else {
                     document.getElementById('rejectedArea').style.display = 'none';
                 }
@@ -295,19 +293,22 @@
         function checkPendingRequests() {
             db.ref('target_requests').orderByChild('uid').equalTo(currentUser.uid).on('value', snap => {
                 pendingRequest = null;
+                // Important: Reset display first
                 document.getElementById('pendingArea').style.display = 'none';
+                
                 snap.forEach(child => {
                     const req = child.val();
-                    if(req.status === 'pending') pendingRequest = req;
-                });
-                if(pendingRequest) {
-                    // Only show pending here if it's monthly, or generic "Pending"
-                    if(pendingRequest.type === 'monthly') {
-                        document.getElementById('pendingArea').style.display = 'block';
-                        document.getElementById('pendingLevel').innerText = "Monthly Level " + pendingRequest.level;
+                    // ONLY show if status is explicitly 'pending'. If 'rejected', don't show here.
+                    if(req.status === 'pending' && req.type === 'monthly') {
+                        pendingRequest = req;
                     }
+                });
+
+                if(pendingRequest) {
+                    document.getElementById('pendingArea').style.display = 'block';
+                    document.getElementById('pendingLevel').innerText = "Monthly Level " + pendingRequest.level;
                 }
-                // Refresh buttons state
+                
                 if(currentUser) db.ref('users/' + currentUser.uid).once('value', s => renderLevels(s.val()));
             });
         }
@@ -317,7 +318,6 @@
             container.innerHTML = "";
             const completed = user.completed_levels?.monthly || {};
 
-            // CHECK FOR CONFLICT (Weekly vs Monthly)
             let isWeeklyActive = false;
             if(currentActiveTarget && currentActiveTarget.type === 'weekly') isWeeklyActive = true;
             if(pendingRequest && pendingRequest.type === 'weekly') isWeeklyActive = true;
@@ -334,7 +334,7 @@
                 if(isCompleted) { btnLabel = `Completed <i class="fas fa-check"></i>`; btnState = "disabled"; costText = ""; }
                 else if (isActive) { btnLabel = "Challenge Active"; btnState = "disabled"; }
                 else if (isPending) { btnLabel = "Pending..."; btnState = "disabled"; }
-                else if (isWeeklyActive) { btnLabel = "Weekly Active 🚫"; btnState = "disabled"; costText = "One choice only"; }
+                else if (isWeeklyActive) { btnLabel = "Weekly Active 🚫"; btnState = "disabled"; costText = "One Choice Only"; }
 
                 container.innerHTML += `
                     <div class="level-card">
@@ -353,32 +353,33 @@
 
         function applyForChallenge(level, targetCount, reward, cost) {
             if(myCredits < cost) { alert("Not enough credits!"); openBuyModal(); return; }
+            
             if(confirm(`Apply for Monthly Level ${level}? ${cost} Credits will be deducted.`)) {
                 
                 const newCredits = myCredits - cost;
+                
                 const reqData = {
                     uid: currentUser.uid,
-                    type: 'monthly', // Important
+                    type: 'monthly',
                     level: level,
                     targetCount: targetCount,
                     reward: reward,
-                    cost: cost,
+                    cost: cost, // Stored to refund later if rejected
                     status: 'pending',
                     timestamp: Date.now()
                 };
 
                 const updates = {};
                 updates['users/' + currentUser.uid + '/credits'] = newCredits;
-                updates['target_requests/' + currentUser.uid + '_monthly'] = reqData; // Unique key
+                updates['target_requests/' + currentUser.uid + '_monthly'] = reqData;
 
                 db.ref().update(updates).then(() => {
-                    alert("Monthly Application Submitted! Wait for Approval.");
+                    alert("Application Submitted! Wait for Approval.");
                 });
             }
         }
 
         function checkActiveProgress(user) {
-            // Only show if type is monthly
             if(!user.active_target || user.active_target.type !== 'monthly') {
                 document.getElementById('activeStatusArea').style.display = 'none';
                 clearInterval(timerInterval);
@@ -390,7 +391,6 @@
             document.getElementById('activeLvlName').innerText = `Level ${t.level}`;
             document.getElementById('activeTarget').innerText = t.targetCount;
 
-            // Timer
             if(t.endTime) startTimer(t.endTime);
             else document.getElementById('timerDisplay').innerText = "Starting...";
 
@@ -422,23 +422,19 @@
             clearInterval(timerInterval);
             const timerEl = document.getElementById('timerDisplay');
             timerEl.style.color = "#fff";
-            
             function update() {
                 const now = Date.now();
                 const distance = endTime - now;
-
                 if (distance < 0) {
                     clearInterval(timerInterval);
                     timerEl.innerText = "EXPIRED ❌";
                     timerEl.style.color = "var(--neon-red)";
                     return;
                 }
-
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
                 timerEl.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
             }
             update();
@@ -464,7 +460,7 @@
             document.getElementById('rejectedArea').style.display = 'none';
         }
 
-        // --- BUY & REDEEM LOGIC (Copied from Weekly) ---
+        // --- BUY & REDEEM LOGIC ---
         function openBuyModal() { document.getElementById('buyModal').style.display = 'flex'; loadPackages(); }
         function openRedeemModal() { document.getElementById('redeemModal').style.display = 'flex'; }
         function closeModals() { 
@@ -484,14 +480,7 @@
                     const p = child.val();
                     const div = document.createElement('div');
                     div.className = 'pkg-item';
-                    div.innerHTML = `
-                        <div class="pkg-cr">${p.credits} Credits</div>
-                        <div>
-                            <span class="pkg-old">$${p.originalPrice}</span>
-                            <span class="pkg-badge">-${p.discount}%</span>
-                            <span class="pkg-pr">$${p.finalPrice}</span>
-                        </div>
-                    `;
+                    div.innerHTML = `<div class="pkg-cr">${p.credits} Credits</div><div><span class="pkg-old">$${p.originalPrice}</span><span class="pkg-badge">-${p.discount}%</span><span class="pkg-pr">$${p.finalPrice}</span></div>`;
                     div.onclick = () => selectPackage(div, p.credits, p.finalPrice);
                     pkgList.appendChild(div);
                 });
