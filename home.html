@@ -268,7 +268,7 @@
 
     <!-- PREMIUM PROFIT CARD -->
     <div class="profit-card">
-        <!-- Total Profit (LIFETIME: Current + ALL Withdrawals + Team) -->
+        <!-- Total Profit (LIFETIME: Current + ALL Withdrawals) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-gold"><i class="fas fa-coins"></i></div>
@@ -365,12 +365,11 @@
 
         // === FINANCIAL VARIABLES ===
         const RATE = 120; // 1 USD = 120 BDT
-        const LEGACY_RATES_BDT = { 1: 130, 2: 20, 3: 10 };
-
+        
+        // We only need specific money vars
         let knownUsers = new Set();
         let userCurrentBalance = 0;     // Real Wallet (From DB)
         let userTotalWithdrawn = 0;     // From DB (Approved + Pending)
-        let teamLifetimeEarnings = 0;   // Calculated from Tree
         
         function unlockAudio() {
             if(isVoiceReady) return;
@@ -426,14 +425,14 @@
                         document.getElementById('todayProfit').innerText = toUSDT(todayIncome);
 
                         // 2. TRIGGER CALCULATIONS FOR TOTAL PROFIT (LIFETIME SHOWCASE)
+                        // This updates 'userTotalWithdrawn'
                         fetchWithdrawals(user.uid);
                         
-                        // Team Calculations (For Lifetime Profit only)
+                        // Team Counts (Only counting members, NOT money anymore to avoid double count)
                         if(data.ownCode) {
                             knownUsers.clear();
-                            teamLifetimeEarnings = 0;
                             document.getElementById('teamCount').innerText = "0";
-                            calculateTeamStats(data.ownCode, 1);
+                            countTeamMembers(data.ownCode, 1);
                         } else {
                             updateTotalProfitUI(); // Update if no team
                         }
@@ -447,16 +446,13 @@
             } else { window.location.href = 'login_register.html'; }
         });
 
-        // A. Fetch Withdrawals (FIXED: Now includes 'pending' to keep Total Profit stable)
+        // A. Fetch Withdrawals (Includes 'pending' to prevent total profit dropping)
         function fetchWithdrawals(uid) {
             userTotalWithdrawn = 0;
             db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
                 if(snap.exists()) {
                     snap.forEach(child => {
                         const w = child.val();
-                        // IMPORTANT FIX: Count both approved AND pending withdrawals.
-                        // Because when you withdraw, balance drops immediately (pending).
-                        // If we don't count pending, Total Profit will drop temporarily.
                         if(w.status === 'approved' || w.status === 'pending') {
                             let amt = parseFloat(w.amountBDT || w.amount || 0);
                             userTotalWithdrawn += amt;
@@ -467,8 +463,8 @@
             });
         }
 
-        // B. Calculate Team Earnings (Recursive)
-        function calculateTeamStats(parentCode, depth) {
+        // B. Count Team Members (Just counting people, no money calculation here)
+        function countTeamMembers(parentCode, depth) {
             if(depth > 10) return;
 
             db.ref('users').orderByChild('referredBy').equalTo(parentCode).on('child_added', snap => {
@@ -488,41 +484,21 @@
                          document.getElementById('partnerCount').innerText = pCount + 1;
                     }
 
-                    // CALCULATE MONEY (For Total Profit Display Only)
-                    let profitBDT = 0;
-                    if(user.locked_commissions && Array.isArray(user.locked_commissions)) {
-                        if(user.locked_commissions[depth - 1]) {
-                            profitBDT = parseFloat(user.locked_commissions[depth - 1].amount);
-                        }
-                    } else if (user.fixed_commissions) {
-                         if(depth === 1) profitBDT = user.fixed_commissions.level1;
-                         if(depth === 2) profitBDT = user.fixed_commissions.level2;
-                         if(depth === 3) profitBDT = user.fixed_commissions.level3;
-                    } else {
-                        if(LEGACY_RATES_BDT[depth]) {
-                            profitBDT = LEGACY_RATES_BDT[depth];
-                        }
-                    }
-
-                    if(!isNaN(profitBDT)) {
-                        teamLifetimeEarnings += profitBDT;
-                        updateTotalProfitUI(); // Update UI with new earnings found
-                    }
-
                     // Recurse
                     if(user.ownCode) {
-                        calculateTeamStats(user.ownCode, depth + 1);
+                        countTeamMembers(user.ownCode, depth + 1);
                     }
                 }
             });
         }
 
-        // C. FINAL UPDATE FUNCTION (LIFETIME SHOWCASE LOGIC)
+        // C. FINAL UPDATE FUNCTION (LIFETIME SHOWCASE LOGIC - CORRECTED)
         function updateTotalProfitUI() {
-            // Formula: Current Wallet + (All Withdrawals including Pending) + Team Earnings
-            // This ensures Total Profit NEVER decreases.
+            // Formula: Current Wallet + All Withdrawals
+            // Since Referral Money is already inside 'Current Wallet', we do NOT add it again.
+            // This prevents the double counting of the $2.20.
             
-            const totalLifetimeBDT = userCurrentBalance + userTotalWithdrawn + teamLifetimeEarnings;
+            const totalLifetimeBDT = userCurrentBalance + userTotalWithdrawn;
             document.getElementById('totalProfit').innerText = toUSDT(totalLifetimeBDT);
         }
 
