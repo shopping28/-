@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP Royal Levels</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <title>VIP Levels | SHOPPING28</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* === LUXURY VARIABLES === */
@@ -46,7 +46,7 @@
             text-transform: uppercase;
         }
 
-        /* HERO CARD (Premium Gold Look) */
+        /* HERO CARD */
         .hero-card {
             background: linear-gradient(135deg, #1c1c1c 0%, #000000 100%);
             border: 1px solid rgba(191, 149, 63, 0.3);
@@ -170,7 +170,7 @@
         let totalActiveTeam = 0;
         let knownUsers = new Set();
 
-        // VIP LEVELS CONFIGURATION (Your Settings)
+        // VIP LEVELS CONFIGURATION
         const VIP_LEVELS = [
             { id: 1, target: 5, reward: 0.83 },
             { id: 2, target: 20, reward: 1.67 },
@@ -226,7 +226,7 @@
             renderLevels();
         }
 
-        // 2. Render Levels (Based on your Design)
+        // 2. Render Levels
         function renderLevels() {
             db.ref('users/' + currentUser.uid + '/completed_levels/vip').once('value', snap => {
                 const completed = snap.val() || {};
@@ -253,7 +253,6 @@
                         actionHtml = `<div class="status-pill st-run">IN PROGRESS</div>`;
                     }
 
-                    // Using YOUR exact HTML structure
                     const html = `
                         <div class="vip-card ${statusClass} fade-up" style="animation-delay: ${index * 0.1}s">
                             <div class="card-header">
