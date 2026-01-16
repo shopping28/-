@@ -268,7 +268,7 @@
 
     <!-- PREMIUM PROFIT CARD -->
     <div class="profit-card">
-        <!-- Total Profit (LIFETIME: Current + ALL Withdrawals including Pending) -->
+        <!-- Total Profit (LIFETIME) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-gold"><i class="fas fa-coins"></i></div>
@@ -278,7 +278,7 @@
                 </div>
             </div>
         </div>
-        <!-- Current Balance (Real Wallet Balance) -->
+        <!-- Current Balance -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-green"><i class="fas fa-wallet"></i></div>
@@ -288,7 +288,7 @@
                 </div>
             </div>
         </div>
-        <!-- Today Profit (Tasks + TODAY'S REFERRALS + Bonuses) -->
+        <!-- Today Profit -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-blue"><i class="fas fa-chart-line"></i></div>
@@ -358,7 +358,6 @@
         let realActivationDate = "Verified"; 
         let realRefLink = "";
         
-        // Toggle States
         let isUidHidden = true;
         let isDateHidden = true;
         let isVoiceReady = false;
@@ -368,10 +367,13 @@
         const LEGACY_RATES_BDT = { 1: 130, 2: 20, 3: 10 };
 
         let knownUsers = new Set();
-        let userCurrentBalance = 0;     
-        let userTotalWithdrawn = 0;     
+        let userCurrentBalance = 0;     // Real Wallet (From DB)
+        let userTotalWithdrawn = 0;     // From DB (Approved + Pending)
         let dbTodayIncome = 0;          
-        let todayReferralEarnings = 0;  
+        
+        // Tracking Team Earnings
+        let totalTeamEarnings = 0;  // Total from Tree
+        let todayTeamEarnings = 0;  // Earned today from tree
 
         function unlockAudio() {
             if(isVoiceReady) return;
@@ -398,7 +400,6 @@
             return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
         }
 
-        // Helper: Check if a date is Today (Local Time)
         function isToday(timestamp) {
             if(!timestamp) return false;
             const date = new Date(timestamp);
@@ -418,30 +419,28 @@
                         document.getElementById('loader').style.display = 'none';
                         fullUid = user.uid;
 
-                        // Basic Info
                         document.getElementById('u_name').innerText = data.firstName || "User";
                         document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
                         if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
 
-                        // Date & Link
                         const rawDate = data.activatedAt || data.joinDate; 
                         realActivationDate = formatDate(rawDate);
                         realRefLink = `shopping28.io/b/${data.ownCode}`;
 
-                        // 1. SET CURRENT BALANCE & DB TODAY INCOME
-                        // userCurrentBalance includes everything (Tasks + Ref + Bonuses) IF backend handles it correctly.
-                        // dbTodayIncome = Task Income (mostly)
+                        // 1. GET CURRENT BALANCE & DB TODAY INCOME
                         userCurrentBalance = parseFloat(data.balance || 0);
                         dbTodayIncome = parseFloat(data.today_income || data.todayEarning || 0);
                         
                         document.getElementById('currentBalance').innerText = toUSDT(userCurrentBalance);
 
-                        // 2. TRIGGER CALCULATIONS
+                        // 2. FETCH WITHDRAWALS
                         fetchWithdrawals(user.uid);
                         
+                        // 3. TEAM CALCULATIONS
                         if(data.ownCode) {
                             knownUsers.clear();
-                            todayReferralEarnings = 0; // Reset
+                            totalTeamEarnings = 0;
+                            todayTeamEarnings = 0;
                             document.getElementById('teamCount').innerText = "0";
                             countTeamMembers(data.ownCode, 1);
                         } else {
@@ -458,14 +457,12 @@
             } else { window.location.href = 'login_register.html'; }
         });
 
-        // A. Fetch Withdrawals (Includes 'pending' to prevent lifetime drop)
         function fetchWithdrawals(uid) {
             userTotalWithdrawn = 0;
             db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
                 if(snap.exists()) {
                     snap.forEach(child => {
                         const w = child.val();
-                        // Count Pending + Approved
                         if(w.status === 'approved' || w.status === 'pending') {
                             let amt = parseFloat(w.amountBDT || w.amount || 0);
                             userTotalWithdrawn += amt;
@@ -476,7 +473,6 @@
             });
         }
 
-        // B. Count Team & Calculate TODAY'S Referral Income
         function countTeamMembers(parentCode, depth) {
             if(depth > 10) return;
 
@@ -488,41 +484,44 @@
                 knownUsers.add(uid);
 
                 if(user.status === 'active') {
-                    // Update Counts
+                    // Count
                     let currentTeamCount = parseInt(document.getElementById('teamCount').innerText) || 0;
                     document.getElementById('teamCount').innerText = currentTeamCount + 1;
-
                     if(depth === 1) {
                          let pCount = parseInt(document.getElementById('partnerCount').innerText) || 0;
                          document.getElementById('partnerCount').innerText = pCount + 1;
                     }
 
-                    // --- CHECK IF JOINED TODAY AND ADD COMMISSION TO "TODAY PROFIT" ---
-                    const activationTime = user.activatedAt || user.joinDate;
-                    
-                    if(isToday(activationTime)) {
-                        let profitBDT = 0;
-                        if(user.locked_commissions && Array.isArray(user.locked_commissions)) {
-                            if(user.locked_commissions[depth - 1]) {
-                                profitBDT = parseFloat(user.locked_commissions[depth - 1].amount);
-                            }
-                        } else if (user.fixed_commissions) {
-                             if(depth === 1) profitBDT = user.fixed_commissions.level1;
-                             if(depth === 2) profitBDT = user.fixed_commissions.level2;
-                             if(depth === 3) profitBDT = user.fixed_commissions.level3;
-                        } else {
-                            if(LEGACY_RATES_BDT[depth]) {
-                                profitBDT = LEGACY_RATES_BDT[depth];
-                            }
+                    // Calculate Money (Total & Today)
+                    let profitBDT = 0;
+                    if(user.locked_commissions && Array.isArray(user.locked_commissions)) {
+                        if(user.locked_commissions[depth - 1]) {
+                            profitBDT = parseFloat(user.locked_commissions[depth - 1].amount);
                         }
-
-                        if(!isNaN(profitBDT)) {
-                            todayReferralEarnings += profitBDT;
-                            updateTodayProfitUI(); 
+                    } else if (user.fixed_commissions) {
+                         if(depth === 1) profitBDT = user.fixed_commissions.level1;
+                         if(depth === 2) profitBDT = user.fixed_commissions.level2;
+                         if(depth === 3) profitBDT = user.fixed_commissions.level3;
+                    } else {
+                        if(LEGACY_RATES_BDT[depth]) {
+                            profitBDT = LEGACY_RATES_BDT[depth];
                         }
                     }
 
-                    // Recurse
+                    if(!isNaN(profitBDT)) {
+                        // Add to Total Team Earnings
+                        totalTeamEarnings += profitBDT;
+                        
+                        // Check if Today
+                        const activationTime = user.activatedAt || user.joinDate;
+                        if(isToday(activationTime)) {
+                            todayTeamEarnings += profitBDT;
+                        }
+                    }
+
+                    updateTotalProfitUI(); 
+                    updateTodayProfitUI();
+
                     if(user.ownCode) {
                         countTeamMembers(user.ownCode, depth + 1);
                     }
@@ -530,21 +529,22 @@
             });
         }
 
-        // C. FINAL UPDATE FUNCTIONS
         function updateTotalProfitUI() {
-            // Lifetime = Current Balance + Total Withdrawn (Pending+Approved)
-            // This is the stable "Bank" logic you requested.
-            const totalLifetimeBDT = userCurrentBalance + userTotalWithdrawn;
+            // === FIXED LOGIC ===
+            // Total Profit = (Current Balance + Total Withdrawn) + (Total Team - Today's Team)
+            // This prevents double counting the New Referral ($2.20) which is already in Current Balance.
+            // But it includes the Old Referral ($22.00) which is missing from Balance.
+            
+            const totalLifetimeBDT = (userCurrentBalance + userTotalWithdrawn) + (totalTeamEarnings - todayTeamEarnings);
             document.getElementById('totalProfit').innerText = toUSDT(totalLifetimeBDT);
         }
 
         function updateTodayProfitUI() {
-            // Today Profit = Task Income (DB) + Referral Income (Calculated Today)
-            const totalTodayBDT = dbTodayIncome + todayReferralEarnings;
+            // Today Profit = DB Task Income + Today's Referral Income
+            const totalTodayBDT = dbTodayIncome + todayTeamEarnings;
             document.getElementById('todayProfit').innerText = toUSDT(totalTodayBDT);
         }
 
-        // Toggles
         function toggleUid() {
             const display = document.getElementById('u_uid_display');
             const icon = document.getElementById('uid_eye');
