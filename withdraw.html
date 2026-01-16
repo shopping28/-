@@ -3,50 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Withdraw</title>
-    <!-- স্টাইল এবং ফন্ট -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Withdraw | Premium</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { background: #0f0c29; color: white; font-family: 'Poppins', sans-serif; padding: 20px; }
-        .container { max-width: 500px; margin: 0 auto; }
-        
-        /* ব্যালেন্স কার্ড */
-        .card { background: #1a1a2e; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #333; margin-bottom: 20px; }
-        .bal { font-size: 2rem; font-weight: bold; color: #00f260; }
-        
-        /* ইনপুট এবং বাটন */
-        input { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #00f260; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; font-size: 1rem; }
-        button:disabled { background: #555; }
+        /* === ULTRA PREMIUM VARIABLES === */
+        :root {
+            --bg-deep: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-cyan: #00f2ff;
+            --neon-purple: #bd00ff;
+            --text-main: #ffffff;
+            --text-muted: #8f9ba8;
+            --gradient-primary: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+        }
 
-        /* হিস্ট্রি লিস্ট */
-        .item { background: #222; padding: 10px; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; font-size: 0.9rem; }
-        .pending { color: orange; } .approved { color: #00f260; } .rejected { color: red; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* AMBIENT GLOW BACKGROUND */
+        .glow-orb { position: fixed; width: 300px; height: 300px; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.4; }
+        .orb-1 { top: -50px; left: -50px; background: var(--neon-purple); }
+        .orb-2 { bottom: -50px; right: -50px; background: var(--neon-cyan); }
+
+        .container { max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
+
+        /* HEADER */
+        .header { 
+            display: flex; align-items: center; justify-content: space-between; 
+            margin-bottom: 30px; padding: 10px 0;
+        }
+        .back-btn { 
+            width: 40px; height: 40px; border-radius: 12px; 
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; text-decoration: none; transition: 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); }
+        .page-title { font-size: 1.2rem; font-weight: 700; letter-spacing: 1px; }
+
+        /* BALANCE CARD (Visa Style) */
+        .balance-card {
+            background: linear-gradient(120deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            border-radius: 24px; padding: 30px;
+            position: relative; overflow: hidden;
+            margin-bottom: 35px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        .balance-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
+            transform: rotate(45deg); pointer-events: none;
+        }
+        .bal-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
+        .bal-amount { 
+            font-size: 2.8rem; font-weight: 700; margin: 15px 0; 
+            background: linear-gradient(to right, #fff, #a5b4fc); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .currency-badge {
+            background: rgba(0, 242, 255, 0.1); border: 1px solid rgba(0, 242, 255, 0.2);
+            color: var(--neon-cyan); padding: 5px 12px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 600; vertical-align: middle;
+        }
+        .bdt-est { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
+        .bdt-est i { color: var(--neon-cyan); font-size: 0.7rem; }
+
+        /* FORM STYLING */
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-icon { 
+            position: absolute; left: 18px; top: 50%; transform: translateY(-50%); 
+            color: var(--text-muted); font-size: 1.1rem; pointer-events: none; transition: 0.3s;
+        }
+        
+        select, input {
+            width: 100%; padding: 18px 20px 18px 50px; /* Space for icon */
+            background: #0f0f13; border: 1px solid #2a2a35;
+            color: #fff; border-radius: 16px; outline: none;
+            font-size: 1rem; font-family: 'Outfit', sans-serif;
+            transition: all 0.3s ease;
+        }
+        select { appearance: none; cursor: pointer; }
+        
+        /* Focus Effects */
+        input:focus, select:focus { 
+            border-color: var(--neon-cyan); 
+            background: #15151a; 
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+        }
+        input:focus + .input-icon { color: var(--neon-cyan); }
+
+        /* Floating Label Hack (Optional visual tweak) */
+        ::placeholder { color: #555; }
+
+        /* BUTTON */
+        .btn-withdraw {
+            width: 100%; padding: 18px;
+            background: var(--gradient-primary);
+            border: none; border-radius: 16px;
+            color: #fff; font-size: 1.1rem; font-weight: 700;
+            cursor: pointer; position: relative; overflow: hidden;
+            transition: 0.4s; margin-top: 10px;
+            box-shadow: 0 10px 25px rgba(0, 114, 255, 0.3);
+        }
+        .btn-withdraw:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0, 114, 255, 0.5); }
+        .btn-withdraw:active { transform: scale(0.98); }
+        .btn-withdraw:disabled { background: #333; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* HISTORY SECTION */
+        .hist-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-top: 40px; margin-bottom: 20px; 
+        }
+        .hist-title { font-size: 1.1rem; font-weight: 600; }
+        
+        .hist-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 15px 20px; border-radius: 16px; margin-bottom: 12px;
+            transition: 0.3s;
+        }
+        .hist-item:hover { background: rgba(255,255,255,0.06); transform: translateX(5px); }
+        
+        .h-left { display: flex; flex-direction: column; gap: 4px; }
+        .h-method { font-weight: 600; font-size: 0.95rem; color: #fff; }
+        .h-wallet { font-size: 0.75rem; color: #666; font-family: monospace; }
+        
+        .h-right { text-align: right; }
+        .h-amount { font-weight: 700; font-size: 1rem; color: #fff; }
+        .h-status { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+        .st-pending { color: #f1c40f; }
+        .st-approved { color: #00f260; text-shadow: 0 0 10px rgba(0, 242, 96, 0.3); }
+        .st-rejected { color: #ff4757; }
+
+        /* LOADER */
+        .loader { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 20px; }
     </style>
 </head>
 <body>
 
+    <!-- Ambient Background -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
     <div class="container">
-        <h3>Withdraw Money</h3>
-        
-        <!-- ব্যালেন্স সেকশন -->
-        <div class="card">
-            <div>Available Balance</div>
-            <div class="bal">$<span id="usd">0.00</span></div>
-            <div style="font-size:0.8rem; color:#aaa;">≈ <span id="bdt">0</span> BDT</div>
+        <!-- Header -->
+        <div class="header">
+            <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+            <div class="page-title">Withdraw Funds</div>
+            <div style="width: 40px;"></div> <!-- Spacer for center alignment -->
         </div>
 
-        <!-- ইনপুট ফর্ম -->
-        <label>Wallet Address (USDT BEP20)</label>
-        <input type="text" id="wallet" placeholder="Paste address here...">
-        
-        <label>Amount (Min $5)</label>
-        <input type="number" id="amount" placeholder="5">
+        <!-- Balance Card -->
+        <div class="balance-card">
+            <div class="bal-label">Total Balance</div>
+            <div class="bal-amount"><span id="usd">0.00</span></div>
+            <div class="bdt-est">
+                <span class="currency-badge">USDT</span>
+                <i class="fas fa-exchange-alt"></i> 
+                <span>≈ <span id="bdt">0</span> BDT</span>
+            </div>
+        </div>
 
-        <button onclick="submitReq()" id="btn">Confirm Withdraw</button>
+        <!-- Withdrawal Form -->
+        <div class="input-group">
+            <select id="methodSelect">
+                <option value="" disabled selected>Select Payment Method</option>
+            </select>
+            <i class="fas fa-wallet input-icon"></i> <!-- Icon -->
+        </div>
 
-        <h4 style="margin-top:20px; border-bottom:1px solid #333; padding-bottom:10px;">Recent History</h4>
-        <div id="history">Loading...</div>
+        <div class="input-group">
+            <input type="text" id="wallet" placeholder="Wallet Address / Number">
+            <i class="fas fa-qrcode input-icon"></i> <!-- Icon -->
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="amount" placeholder="Amount (Min: 5.00)">
+            <i class="fas fa-dollar-sign input-icon"></i> <!-- Icon -->
+        </div>
+
+        <button class="btn-withdraw" id="btn" onclick="withdraw()">
+            Confirm Withdrawal <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+        </button>
+
+        <!-- History -->
+        <div class="hist-header">
+            <div class="hist-title">Recent Transactions</div>
+            <i class="fas fa-history" style="color: var(--text-muted);"></i>
+        </div>
+        <div id="hist" class="loader">
+            <i class="fas fa-circle-notch fa-spin"></i> Loading history...
+        </div>
     </div>
 
     <!-- Firebase SDK -->
@@ -59,72 +223,112 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
-        const RATE = 120; // ১ ডলার = ১২০ টাকা
+        const RATE = 120;
 
-        let user, currentBDT=0;
+        let user, bdt=0, usd=0;
 
         auth.onAuthStateChanged(u => {
-            if(u) { user = u; loadData(); loadHistory(); }
-            else { window.location.href = "login_register.html"; }
+            if(u) { user = u; loadBal(); loadMethods(); loadHist(); }
+            else { window.location.href = 'login_register.html'; }
         });
 
-        function loadData() {
+        // 1. Load Balance
+        function loadBal() {
             db.ref('users/'+user.uid+'/balance').on('value', s => {
-                currentBDT = parseFloat(s.val() || 0);
-                document.getElementById('bdt').innerText = currentBDT.toFixed(2);
-                document.getElementById('usd').innerText = (currentBDT / RATE).toFixed(2);
+                bdt = parseFloat(s.val() || 0);
+                usd = bdt / RATE;
+                document.getElementById('bdt').innerText = bdt.toFixed(2);
+                document.getElementById('usd').innerText = usd.toFixed(2);
             });
         }
 
-        function submitReq() {
-            const wall = document.getElementById('wallet').value;
+        // 2. Load Methods from Admin
+        function loadMethods() {
+            db.ref('settings/payment_methods').on('value', snap => {
+                const select = document.getElementById('methodSelect');
+                select.innerHTML = '<option value="" disabled selected>Select Payment Method</option>';
+                
+                if(snap.exists()){
+                    snap.forEach(c => {
+                        const m = c.val();
+                        const opt = document.createElement('option');
+                        opt.value = m.name;
+                        opt.innerText = m.name;
+                        select.appendChild(opt);
+                    });
+                } else {
+                    select.innerHTML = '<option disabled>No methods available</option>';
+                }
+            });
+        }
+
+        // 3. Withdraw Function
+        function withdraw() {
+            const method = document.getElementById('methodSelect').value;
+            const wall = document.getElementById('wallet').value.trim();
             const amt = parseFloat(document.getElementById('amount').value);
             const btn = document.getElementById('btn');
 
-            if(!wall || amt < 5) return alert("Minimum withdraw is $5");
-            if((amt * RATE) > currentBDT) return alert("Insufficient Balance!");
+            if(!method) return alert("Please select a payment method.");
+            if(!wall) return alert("Please enter your wallet address or number.");
+            if(!amt || amt < 5) return alert("Minimum withdrawal amount is 5.00 USDT.");
+            if(amt > usd) return alert("Insufficient Balance.");
 
-            if(!confirm("Confirm Withdraw?")) return;
+            if(!confirm(`Are you sure you want to withdraw ${amt} USDT via ${method}?`)) return;
 
-            btn.disabled = true; btn.innerText = "Processing...";
+            btn.disabled = true; 
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            
             const deduct = amt * RATE;
 
-            // ব্যালেন্স কাটা এবং রিকোয়েস্ট জমা দেওয়া
             db.ref('users/'+user.uid+'/balance').transaction(c => {
-                return (c >= deduct) ? c - deduct : undefined; // টাকা থাকলে কাটবে
+                return (c >= deduct) ? c - deduct : undefined;
             }, (err, committed) => {
                 if(committed) {
                     db.ref('withdraw_requests').push({
                         uid: user.uid,
-                        method: 'USDT (BEP20)',
+                        method: method,
                         wallet: wall,
                         amountUSDT: amt,
                         amountBDT: deduct,
                         status: 'pending',
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
-                    alert("Withdraw Request Successful!");
+                    alert("Withdrawal request submitted successfully!");
                     document.getElementById('wallet').value = "";
                     document.getElementById('amount').value = "";
                 } else {
-                    alert("Transaction Failed.");
+                    alert("Transaction Failed. Check your balance.");
                 }
-                btn.disabled = false; btn.innerText = "Confirm Withdraw";
+                btn.disabled = false; 
+                btn.innerHTML = 'Confirm Withdrawal <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>';
             });
         }
 
-        function loadHistory() {
+        // 4. Load History
+        function loadHist() {
             db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).limitToLast(10).on('value', s => {
-                const div = document.getElementById('history'); div.innerHTML = "";
-                if(!s.exists()) { div.innerHTML = "No history found"; return; }
+                const div = document.getElementById('hist'); div.innerHTML = "";
+                if(!s.exists()) { 
+                    div.innerHTML = "<div style='text-align:center; color:#555; padding:20px;'>No transactions yet</div>"; 
+                    return; 
+                }
                 
-                const data = [];
-                s.forEach(c => data.push(c.val()));
-                data.reverse().forEach(d => {
+                const arr=[]; s.forEach(c=>arr.push(c.val()));
+                arr.reverse().forEach(d => {
+                    let a = d.amountUSDT ? d.amountUSDT.toFixed(2) : (d.amount/RATE).toFixed(2);
+                    let statusClass = 'st-' + d.status; // st-pending, st-approved
+                    
                     div.innerHTML += `
-                        <div class="item">
-                            <span>$${d.amountUSDT} - ${d.wallet.substr(0,6)}...</span>
-                            <span class="${d.status}">${d.status}</span>
+                        <div class="hist-item">
+                            <div class="h-left">
+                                <div class="h-method">${d.method}</div>
+                                <div class="h-wallet">${d.wallet}</div>
+                            </div>
+                            <div class="h-right">
+                                <div class="h-amount">$${a}</div>
+                                <div class="h-status ${statusClass}">${d.status}</div>
+                            </div>
                         </div>`;
                 });
             });
