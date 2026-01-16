@@ -268,7 +268,7 @@
 
     <!-- PREMIUM PROFIT CARD -->
     <div class="profit-card">
-        <!-- Total Profit (Current + Lifetime Withdrawn) -->
+        <!-- Total Profit (Current + Lifetime Withdrawn + TEAM INCOME) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-gold"><i class="fas fa-coins"></i></div>
@@ -365,10 +365,13 @@
 
         // === FINANCIAL VARIABLES ===
         const RATE = 120; // 1 USD = 120 BDT
-        let knownUsers = new Set();
-        let userBaseBalance = 0;        
-        let userTotalWithdrawn = 0;     
+        const LEGACY_RATES_BDT = { 1: 130, 2: 20, 3: 10 };
 
+        let knownUsers = new Set();
+        let userCurrentBalance = 0;     // Real Wallet (From DB)
+        let userTotalWithdrawn = 0;     // From DB
+        let teamLifetimeEarnings = 0;   // Calculated from Tree
+        
         function unlockAudio() {
             if(isVoiceReady) return;
             window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
@@ -414,24 +417,24 @@
                         realActivationDate = formatDate(rawDate);
                         realRefLink = `shopping28.io/b/${data.ownCode}`;
 
-                        // === FINANCIALS (Strictly from DB) ===
-                        // ডাটাবেসে যা আছে তাই দেখাবে, নতুন করে টিম ইনকাম যোগ করবে না
-                        userBaseBalance = parseFloat(data.balance || 0);
+                        // 1. SET CURRENT BALANCE & TODAY PROFIT (Strictly DB)
+                        userCurrentBalance = parseFloat(data.balance || 0);
                         const todayIncome = parseFloat(data.today_income || data.todayEarning || 0);
                         
-                        // Display Current Balance & Today Income
-                        // এটা এখন ফিক্সড: শুধুমাত্র ডাটাবেসের ব্যালেন্স দেখাবে ($5.42 টাইপ)
-                        document.getElementById('currentBalance').innerText = toUSDT(userBaseBalance);
+                        document.getElementById('currentBalance').innerText = toUSDT(userCurrentBalance);
                         document.getElementById('todayProfit').innerText = toUSDT(todayIncome);
 
-                        // Trigger Stats Calculation (For Total Profit Only)
-                        fetchWithdrawalsAndCalculateTotal(user.uid);
+                        // 2. TRIGGER CALCULATIONS FOR TOTAL PROFIT
+                        fetchWithdrawals(user.uid);
                         
-                        // Team Counts only (No Money Calculation)
                         if(data.ownCode) {
+                            // Reset Team Calc
                             knownUsers.clear();
+                            teamLifetimeEarnings = 0;
                             document.getElementById('teamCount').innerText = "0";
-                            countTeamMembers(data.ownCode, 1);
+                            calculateTeamStats(data.ownCode, 1);
+                        } else {
+                            updateTotalProfitUI(); // Update if no team
                         }
 
                         if(!localStorage.getItem('home_voice_played')) {
@@ -443,8 +446,8 @@
             } else { window.location.href = 'login_register.html'; }
         });
 
-        // 1. Calculate Total Profit (Current DB Balance + Lifetime Withdrawals)
-        function fetchWithdrawalsAndCalculateTotal(uid) {
+        // A. Fetch Withdrawals
+        function fetchWithdrawals(uid) {
             userTotalWithdrawn = 0;
             db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
                 if(snap.exists()) {
@@ -456,15 +459,12 @@
                         }
                     });
                 }
-                // Update Total Profit UI (Lifetime Earning)
-                // Current Wallet + Total Withdrawn
-                const lifetimeProfitBDT = userBaseBalance + userTotalWithdrawn;
-                document.getElementById('totalProfit').innerText = toUSDT(lifetimeProfitBDT);
+                updateTotalProfitUI();
             });
         }
 
-        // 2. Count Team Members ONLY (Don't touch money)
-        function countTeamMembers(parentCode, depth) {
+        // B. Calculate Team Earnings (Recursive)
+        function calculateTeamStats(parentCode, depth) {
             if(depth > 10) return;
 
             db.ref('users').orderByChild('referredBy').equalTo(parentCode).on('child_added', snap => {
@@ -475,22 +475,53 @@
                 knownUsers.add(uid);
 
                 if(user.status === 'active') {
-                    // Update Total Team Count
+                    // Update Counts
                     let currentTeamCount = parseInt(document.getElementById('teamCount').innerText) || 0;
                     document.getElementById('teamCount').innerText = currentTeamCount + 1;
 
-                    // Update Direct Partner Count
                     if(depth === 1) {
                          let pCount = parseInt(document.getElementById('partnerCount').innerText) || 0;
                          document.getElementById('partnerCount').innerText = pCount + 1;
                     }
 
-                    // Go Deeper for counting
+                    // CALCULATE MONEY (For Total Profit Display Only)
+                    let profitBDT = 0;
+                    if(user.locked_commissions && Array.isArray(user.locked_commissions)) {
+                        if(user.locked_commissions[depth - 1]) {
+                            profitBDT = parseFloat(user.locked_commissions[depth - 1].amount);
+                        }
+                    } else if (user.fixed_commissions) {
+                         if(depth === 1) profitBDT = user.fixed_commissions.level1;
+                         if(depth === 2) profitBDT = user.fixed_commissions.level2;
+                         if(depth === 3) profitBDT = user.fixed_commissions.level3;
+                    } else {
+                        if(LEGACY_RATES_BDT[depth]) {
+                            profitBDT = LEGACY_RATES_BDT[depth];
+                        }
+                    }
+
+                    if(!isNaN(profitBDT)) {
+                        teamLifetimeEarnings += profitBDT;
+                        updateTotalProfitUI(); // Update UI with new earnings found
+                    }
+
+                    // Recurse
                     if(user.ownCode) {
-                        countTeamMembers(user.ownCode, depth + 1);
+                        calculateTeamStats(user.ownCode, depth + 1);
                     }
                 }
             });
+        }
+
+        // C. FINAL UPDATE FUNCTION
+        function updateTotalProfitUI() {
+            // Formula: Current Wallet + Total Withdrawn + Team Earnings
+            // This ensures Total Profit shows EVERYTHING earned.
+            // Even if you withdraw, Current goes down, Withdrawn goes up, so Total stays same.
+            // Team earnings are added on top as requested.
+            
+            const totalLifetimeBDT = userCurrentBalance + userTotalWithdrawn + teamLifetimeEarnings;
+            document.getElementById('totalProfit').innerText = toUSDT(totalLifetimeBDT);
         }
 
         // Toggles
