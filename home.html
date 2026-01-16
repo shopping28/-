@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOPPING28 | Premium Dashboard</title>
+    <title>SHOPPING28 | Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -28,7 +28,7 @@
             position: relative;
         }
 
-        /* AMBIENT BACKGROUND LIGHTS */
+        /* BACKGROUND */
         .ambient-light { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; opacity: 0.4; }
         .al-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, #4c00ff, transparent); }
         .al-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, #ff0055, transparent); }
@@ -57,7 +57,7 @@
             box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
         }
 
-        /* === PROFILE CARD (UPDATED) === */
+        /* PROFILE CARD */
         .profile-card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -124,7 +124,7 @@
         .stat-num { font-size: 1.8rem; font-weight: 800; margin-top: 10px; color: #fff; }
         .stat-icon { position: absolute; right: 15px; top: 15px; font-size: 1.5rem; opacity: 0.1; color: #fff; }
 
-        /* === PREMIUM PROFIT CARD === */
+        /* PROFIT CARD */
         .profit-card {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -236,7 +236,7 @@
                 <i id="uid_eye" class="fas fa-eye-slash" style="margin-left:5px;"></i>
             </div>
 
-            <!-- Activation Date Toggle -->
+            <!-- Activation Date Toggle (UPDATED LOGIC) -->
             <div class="meta-badge date-active" onclick="toggleDate()">
                 <i class="fas fa-calendar-check"></i>
                 <span id="u_date_display">Active: ••••••••</span>
@@ -355,7 +355,7 @@
         const db = firebase.database();
         
         let fullUid = "";
-        let realActivationDate = "Pending";
+        let realActivationDate = "Verified"; 
         let realRefLink = "";
         
         // Toggle States
@@ -382,10 +382,11 @@
             return (val / 120).toFixed(2);
         }
 
-        // Helper: Format Date
+        // === FIXED DATE FORMATTER ===
         function formatDate(timestamp) {
-            if(!timestamp) return "Pending";
+            if(!timestamp) return "Verified"; // Fix for pending issue
             const date = new Date(timestamp);
+            if (isNaN(date.getTime())) return "Verified"; 
             return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
         }
 
@@ -400,16 +401,15 @@
                         fullUid = user.uid;
 
                         // Basic Info
-                        document.getElementById('u_name').innerText = data.firstName;
+                        document.getElementById('u_name').innerText = data.firstName || "User";
                         document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
                         if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
 
-                        // Setup Real Activation Date
-                        // Use 'activatedAt' (real timestamp), fallback to 'joinDate' if old user
+                        // === DATE LOGIC ===
                         const rawDate = data.activatedAt || data.joinDate; 
                         realActivationDate = formatDate(rawDate);
 
-                        // Setup Link
+                        // Link Logic
                         realRefLink = `shopping28.io/b/${data.ownCode}`;
 
                         // Financials
@@ -419,7 +419,6 @@
                         document.getElementById('currentBalance').innerText = toUSDT(currentBalance);
                         document.getElementById('todayProfit').innerText = toUSDT(todayIncome);
 
-                        // Total Profit
                         calculateTotalLifetimeProfit(user.uid, currentBalance);
 
                         // Team Logic
@@ -473,7 +472,6 @@
             navigator.clipboard.writeText(fullUrl).then(() => { alert("Link Revealed & Copied!"); });
         }
 
-        // Financial Helper Functions
         function calculateTotalLifetimeProfit(uid, currentBal) {
             let totalWithdrawn = 0;
             db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
