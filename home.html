@@ -363,6 +363,14 @@
         let isDateHidden = true;
         let isVoiceReady = false;
 
+        // TEAM & BALANCE VARS
+        const RATE = 120; // 1 USD = 120 BDT
+        const LEGACY_RATES_BDT = { 1: 130, 2: 20, 3: 10 };
+        let knownUsers = new Set();
+        let totalReferralIncomeBDT = 0;
+        let userBaseBalance = 0; // Balance from tasks/DB
+        let userTotalWithdrawn = 0;
+
         function unlockAudio() {
             if(isVoiceReady) return;
             window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
@@ -379,12 +387,11 @@
         function toUSDT(taka) {
             let val = parseFloat(taka);
             if(isNaN(val)) val = 0;
-            return (val / 120).toFixed(2);
+            return (val / RATE).toFixed(2);
         }
 
-        // === FIXED DATE FORMATTER ===
         function formatDate(timestamp) {
-            if(!timestamp) return "Verified"; // Fix for pending issue
+            if(!timestamp) return "Verified"; 
             const date = new Date(timestamp);
             if (isNaN(date.getTime())) return "Verified"; 
             return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -412,24 +419,14 @@
                         // Link Logic
                         realRefLink = `shopping28.io/b/${data.ownCode}`;
 
-                        // Financials
-                        const currentBalance = parseFloat(data.balance || 0);
+                        // === FINANCIALS SETUP ===
+                        userBaseBalance = parseFloat(data.balance || 0);
                         const todayIncome = parseFloat(data.today_income || data.todayEarning || 0);
                         
-                        document.getElementById('currentBalance').innerText = toUSDT(currentBalance);
                         document.getElementById('todayProfit').innerText = toUSDT(todayIncome);
 
-                        calculateTotalLifetimeProfit(user.uid, currentBalance);
-
-                        // Team Logic
-                        if(data.ownCode) {
-                            db.ref('users').orderByChild('referredBy').equalTo(data.ownCode).on('value', (snap) => {
-                                let activeDirects = 0;
-                                snap.forEach(child => { if(child.val().status === 'active') activeDirects++; });
-                                document.getElementById('partnerCount').innerText = activeDirects;
-                                calculateActiveTeam(data.ownCode);
-                            });
-                        }
+                        // Trigger Calculation Sequence
+                        fetchWithdrawalsAndCalculate(user.uid, data.ownCode);
 
                         if(!localStorage.getItem('home_voice_played')) {
                             speak("Welcome to Shopping 28");
@@ -439,6 +436,97 @@
                 });
             } else { window.location.href = 'login_register.html'; }
         });
+
+        // 1. Fetch Withdrawals first
+        function fetchWithdrawalsAndCalculate(uid, myCode) {
+            userTotalWithdrawn = 0;
+            db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
+                if(snap.exists()) {
+                    snap.forEach(child => {
+                        const w = child.val();
+                        if(w.status === 'approved') {
+                            let amt = parseFloat(w.amountBDT || w.amount || 0);
+                            userTotalWithdrawn += amt;
+                        }
+                    });
+                }
+                // 2. Start Team Calculation after getting withdrawals
+                if(myCode) {
+                    // Reset Team Stats
+                    knownUsers.clear();
+                    totalReferralIncomeBDT = 0;
+                    document.getElementById('teamCount').innerText = "0";
+                    startRecursion(myCode, 1);
+                } else {
+                    updateDashboardUI(); // No team code, just update with base
+                }
+            });
+        }
+
+        // 3. Recursive Logic (Same as My Team Page)
+        function startRecursion(parentCode, depth) {
+            if(depth > 10) return;
+
+            db.ref('users').orderByChild('referredBy').equalTo(parentCode).on('child_added', snap => {
+                const user = snap.val();
+                const uid = snap.key;
+                
+                if(knownUsers.has(uid)) return;
+                knownUsers.add(uid);
+
+                if(user.status === 'active') {
+                    // Count Member
+                    let currentTeamCount = parseInt(document.getElementById('teamCount').innerText) || 0;
+                    document.getElementById('teamCount').innerText = currentTeamCount + 1;
+
+                    // Direct Partner Count
+                    if(depth === 1) {
+                         let pCount = parseInt(document.getElementById('partnerCount').innerText) || 0;
+                         document.getElementById('partnerCount').innerText = pCount + 1;
+                    }
+
+                    // Calculate Profit
+                    let profitBDT = 0;
+                    if(user.locked_commissions && Array.isArray(user.locked_commissions)) {
+                        if(user.locked_commissions[depth - 1]) {
+                            profitBDT = parseFloat(user.locked_commissions[depth - 1].amount);
+                        }
+                    } else if (user.fixed_commissions) {
+                         if(depth === 1) profitBDT = user.fixed_commissions.level1;
+                         if(depth === 2) profitBDT = user.fixed_commissions.level2;
+                         if(depth === 3) profitBDT = user.fixed_commissions.level3;
+                    } else {
+                        if(LEGACY_RATES_BDT[depth]) {
+                            profitBDT = LEGACY_RATES_BDT[depth];
+                        }
+                    }
+
+                    if(!isNaN(profitBDT)) {
+                        totalReferralIncomeBDT += profitBDT;
+                        updateDashboardUI(); // Update UI on every new member found
+                    }
+
+                    // Go Deeper
+                    if(user.ownCode) {
+                        startRecursion(user.ownCode, depth + 1);
+                    }
+                }
+            });
+        }
+
+        // 4. Update the Dashboard HTML
+        function updateDashboardUI() {
+            // My Team Income + Base Wallet Balance = Current Available Balance
+            // Note: Assuming 'data.balance' in DB does NOT already include the dynamic referral commission.
+            // If data.balance ALREADY has it, remove 'totalReferralIncomeBDT' from this line.
+            const totalCurrentBDT = userBaseBalance + totalReferralIncomeBDT;
+            
+            // Total Profit = Current Balance + Total Withdrawn
+            const lifetimeProfitBDT = totalCurrentBDT + userTotalWithdrawn;
+
+            document.getElementById('currentBalance').innerText = toUSDT(totalCurrentBDT);
+            document.getElementById('totalProfit').innerText = toUSDT(lifetimeProfitBDT);
+        }
 
         // Toggle Functions
         function toggleUid() {
@@ -470,57 +558,6 @@
             
             const fullUrl = `https://shopping28.github.io/-/login_register.html?ref=${realRefLink.split('/').pop()}`;
             navigator.clipboard.writeText(fullUrl).then(() => { alert("Link Revealed & Copied!"); });
-        }
-
-        function calculateTotalLifetimeProfit(uid, currentBal) {
-            let totalWithdrawn = 0;
-            db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
-                if(snap.exists()) {
-                    snap.forEach(child => {
-                        const w = child.val();
-                        if(w.status === 'approved') {
-                            let amt = parseFloat(w.amountBDT || w.amount || 0);
-                            totalWithdrawn += amt;
-                        }
-                    });
-                }
-                const lifetimeProfit = currentBal + totalWithdrawn;
-                document.getElementById('totalProfit').innerText = toUSDT(lifetimeProfit);
-            });
-        }
-
-        function calculateActiveTeam(myCode) {
-            let totalActive = 0;
-            db.ref('users').orderByChild('referredBy').equalTo(myCode).once('value', (snap1) => {
-                if(!snap1.exists()) { document.getElementById('teamCount').innerText = 0; return; }
-                snap1.forEach(child1 => {
-                    const u1 = child1.val();
-                    if(u1.status === 'active') totalActive++;
-                    if(u1.ownCode) {
-                        db.ref('users').orderByChild('referredBy').equalTo(u1.ownCode).once('value', (snap2) => {
-                            if(snap2.exists()) {
-                                snap2.forEach(child2 => {
-                                    const u2 = child2.val();
-                                    if(u2.status === 'active') totalActive++;
-                                    if(u2.ownCode) {
-                                        db.ref('users').orderByChild('referredBy').equalTo(u2.ownCode).once('value', (snap3) => {
-                                            if(snap3.exists()) {
-                                                snap3.forEach(child3 => {
-                                                    const u3 = child3.val();
-                                                    if(u3.status === 'active') totalActive++;
-                                                    document.getElementById('teamCount').innerText = totalActive;
-                                                });
-                                            }
-                                        });
-                                    }
-                                });
-                                document.getElementById('teamCount').innerText = totalActive;
-                            }
-                        });
-                    }
-                });
-                document.getElementById('teamCount').innerText = totalActive;
-            });
         }
     </script>
 </body>
