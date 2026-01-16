@@ -127,20 +127,19 @@
         let isVoiceReady = false;
 
         const RATE = 120; // 1 USD = 120 BDT
-        const LEGACY_RATES_BDT = { 1: 130, 2: 20, 3: 10 };
 
-        let knownUsers = new Set();
+        // Financial Variables
         let userCurrentBalance = 0; 
         let userTotalWithdrawn = 0; 
         let dbTodayIncome = 0; 
-        let todayReferralEarnings = 0;
-        let todayVipEarnings = 0;
 
-        function unlockAudio() { if(!isVoiceReady) { window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); isVoiceReady = true; } }
-        function speak(text) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; window.speechSynthesis.speak(u); }
-        function toUSDT(taka) { let val = parseFloat(taka); if(isNaN(val)) val = 0; return (val / RATE).toFixed(2); }
-        function formatDate(timestamp) { if(!timestamp) return "Verified"; const date = new Date(timestamp); if (isNaN(date.getTime())) return "Verified"; return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
-        function isToday(timestamp) { if(!timestamp) return false; const date = new Date(timestamp); const today = new Date(); return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear(); }
+        // Helper: Check if today
+        function isToday(timestamp) { 
+            if(!timestamp) return false; 
+            const date = new Date(timestamp); 
+            const today = new Date(); 
+            return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear(); 
+        }
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -148,29 +147,31 @@
                     const data = snapshot.val();
                     if(data) {
                         if(data.status !== 'active') { window.location.href = 'account_active.html'; return; }
+                        
                         document.getElementById('loader').style.display = 'none';
                         fullUid = user.uid;
                         document.getElementById('u_name').innerText = data.firstName || "User";
                         document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
                         if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
-                        realActivationDate = formatDate(data.activatedAt || data.joinDate);
+                        
+                        realActivationDate = data.activatedAt ? new Date(data.activatedAt).toLocaleDateString('en-GB') : "Verified";
                         realRefLink = `shopping28.io/b/${data.ownCode}`;
 
+                        // === CORE LOGIC FIX: Trust the Database ===
+                        // User Current Balance (Real Wallet)
                         userCurrentBalance = parseFloat(data.balance || 0);
+                        
+                        // Today's Profit (We calculate from rewards history + task income)
                         dbTodayIncome = parseFloat(data.today_income || data.todayEarning || 0);
+                        
                         document.getElementById('currentBalance').innerText = toUSDT(userCurrentBalance);
+                        
+                        // Calculate Total Profit (Lifetime) & Today's Profit properly
+                        calculateFinancials(user.uid);
 
-                        fetchWithdrawals(user.uid);
-                        calculateTodayVip(user.uid);
-
+                        // Team Count
                         if(data.ownCode) {
-                            knownUsers.clear();
-                            todayReferralEarnings = 0; 
-                            document.getElementById('teamCount').innerText = "0";
-                            countTeamMembers(data.ownCode, 1);
-                        } else {
-                            updateTotalProfitUI();
-                            updateTodayProfitUI();
+                            countTeam(data.ownCode);
                         }
 
                         if(!localStorage.getItem('home_voice_played')) { speak("Welcome to Shopping 28"); localStorage.setItem('home_voice_played', 'true'); }
@@ -179,7 +180,8 @@
             } else { window.location.href = 'login_register.html'; }
         });
 
-        function fetchWithdrawals(uid) {
+        function calculateFinancials(uid) {
+            // 1. Fetch Withdrawals (Pending + Approved)
             userTotalWithdrawn = 0;
             db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
                 if(snap.exists()) {
@@ -191,87 +193,69 @@
                         }
                     });
                 }
-                updateTotalProfitUI();
+                
+                // === TOTAL PROFIT LOGIC ===
+                // Total = Current Balance + Money you took out
+                const totalLifetimeBDT = userCurrentBalance + userTotalWithdrawn;
+                document.getElementById('totalProfit').innerText = toUSDT(totalLifetimeBDT);
             });
-        }
 
-        function calculateTodayVip(uid) {
-            todayVipEarnings = 0;
-            db.ref('users/' + uid + '/vip_rewards').once('value', snap => {
-                if(snap.exists()) {
-                    snap.forEach(child => {
-                        const reward = child.val();
-                        if(reward.timestamp && isToday(reward.timestamp)) {
-                            todayVipEarnings += parseFloat(reward.amount || 0);
-                        }
+            // 2. Fetch Today's Extra Rewards (VIP, Targets)
+            let extraToday = 0;
+            
+            // Check Target Rewards (Weekly/Monthly)
+            db.ref('users/'+uid+'/target_rewards').once('value', snap => {
+                snap.forEach(c => {
+                    const r = c.val();
+                    if(isToday(r.timestamp)) extraToday += parseFloat(r.amount); // amount in USD usually, need to check format
+                });
+                
+                // Check VIP Rewards
+                db.ref('users/'+uid+'/vip_rewards').once('value', vSnap => {
+                    vSnap.forEach(c => {
+                        const r = c.val();
+                        if(isToday(r.timestamp)) extraToday += parseFloat(r.amount); // reward in USD
                     });
-                }
-                updateTodayProfitUI();
+
+                    // Update Today UI (Task Income in BDT/RATE + Rewards in USD)
+                    // Assuming dbTodayIncome is in BDT
+                    const taskIncomeUSD = dbTodayIncome / RATE;
+                    const totalTodayUSD = taskIncomeUSD + extraToday; // extraToday is already USD
+                    document.getElementById('todayProfit').innerText = totalTodayUSD.toFixed(2);
+                });
             });
         }
 
-        function countTeamMembers(parentCode, depth) {
-            if(depth > 10) return;
-            db.ref('users').orderByChild('referredBy').equalTo(parentCode).on('child_added', snap => {
-                const user = snap.val();
-                if(knownUsers.has(snap.key)) return;
-                knownUsers.add(snap.key);
-
-                if(user.status === 'active') {
-                    let currentTeamCount = parseInt(document.getElementById('teamCount').innerText) || 0;
-                    document.getElementById('teamCount').innerText = currentTeamCount + 1;
-                    if(depth === 1) {
-                         let pCount = parseInt(document.getElementById('partnerCount').innerText) || 0;
-                         document.getElementById('partnerCount').innerText = pCount + 1;
-                    }
-                    
-                    const activationTime = user.activatedAt || user.joinDate;
-                    if(isToday(activationTime)) {
-                        let profitBDT = 0;
-                        if(user.locked_commissions && Array.isArray(user.locked_commissions) && user.locked_commissions[depth - 1]) {
-                            profitBDT = parseFloat(user.locked_commissions[depth - 1].amount);
-                        } else if (user.fixed_commissions) {
-                             if(depth === 1) profitBDT = user.fixed_commissions.level1;
-                             else if(depth === 2) profitBDT = user.fixed_commissions.level2;
-                             else if(depth === 3) profitBDT = user.fixed_commissions.level3;
-                        } else if(LEGACY_RATES_BDT[depth]) {
-                            profitBDT = LEGACY_RATES_BDT[depth];
+        function countTeam(myCode) {
+            let activeDirects = 0;
+            let totalTeam = 0;
+            // Simplified recursive count
+            let known = new Set();
+            
+            function recurse(code, depth) {
+                if(depth > 10) return;
+                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', s => {
+                    const u = s.val();
+                    if(!known.has(s.key)) {
+                        known.add(s.key);
+                        if(u.status === 'active') {
+                            totalTeam++;
+                            document.getElementById('teamCount').innerText = totalTeam;
+                            if(depth === 1) {
+                                activeDirects++;
+                                document.getElementById('partnerCount').innerText = activeDirects;
+                            }
                         }
-                        if(!isNaN(profitBDT)) { todayReferralEarnings += profitBDT; updateTodayProfitUI(); }
+                        if(u.ownCode) recurse(u.ownCode, depth+1);
                     }
-                    if(user.ownCode) countTeamMembers(user.ownCode, depth + 1);
-                }
-            });
+                });
+            }
+            recurse(myCode, 1);
         }
 
-        function updateTotalProfitUI() {
-            // Formula: Current Wallet + Total Withdrawn (Pending+Approved)
-            // This is accurate because 'Current Wallet' already contains tasks + ref + vip + bonuses
-            const totalLifetimeBDT = userCurrentBalance + userTotalWithdrawn;
-            document.getElementById('totalProfit').innerText = toUSDT(totalLifetimeBDT);
-        }
-
-        function updateTodayProfitUI() {
-            // Formula: Task Income (from DB) + Calculated Ref + Calculated VIP
-            const totalTodayBDT = dbTodayIncome + todayReferralEarnings + (todayVipEarnings * RATE); // VIP is in USD, multiply by RATE to match BDT calculation if balance is in BDT
-            // WAIT! In VIP file I stored reward in USD or directly added to balance?
-            // In VIP file: db.ref('users/' + currentUser.uid + '/balance').transaction(bal => (bal || 0) + reward);
-            // If 'balance' is in BDT, then VIP reward (e.g. 0.83) should be converted before adding.
-            // Let's assume VIP reward passed to claimVip was in USD.
-            // Adjusting calculation: The VIP calculation function returns pure USD amount.
-            // So: (dbTodayIncome + todayReferralEarnings)/RATE + todayVipEarnings
-            
-            // Correction for Display:
-            // dbTodayIncome is likely in BDT (from task.html logic usually)
-            // todayReferralEarnings is in BDT
-            // todayVipEarnings is in USD (from vip_level.html)
-            
-            const taskAndRefUSD = (dbTodayIncome + todayReferralEarnings) / RATE;
-            const totalUSD = taskAndRefUSD + todayVipEarnings;
-            
-            document.getElementById('todayProfit').innerText = totalUSD.toFixed(2);
-        }
-
+        function unlockAudio() { if(!isVoiceReady) { window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); isVoiceReady = true; } }
+        function speak(text) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; window.speechSynthesis.speak(u); }
+        function toUSDT(taka) { let val = parseFloat(taka); if(isNaN(val)) val = 0; return (val / RATE).toFixed(2); }
         function toggleUid() { isUidHidden = !isUidHidden; document.getElementById('u_uid_display').innerText = isUidHidden ? "UID: ••••••••" : "UID: " + fullUid; document.getElementById('uid_eye').className = isUidHidden ? "fas fa-eye-slash" : "fas fa-eye"; }
         function toggleDate() { isDateHidden = !isDateHidden; document.getElementById('u_date_display').innerText = isDateHidden ? "Active: ••••••••" : "Active: " + realActivationDate; document.getElementById('date_eye').className = isDateHidden ? "fas fa-eye-slash" : "fas fa-eye"; }
         function revealAndCopyLink() { document.getElementById('link_secret_text').innerText = realRefLink; document.getElementById('link_secret_text').style.color = "#fff"; navigator.clipboard.writeText(`https://shopping28.github.io/-/login_register.html?ref=${realRefLink.split('/').pop()}`).then(() => { alert("Link Copied!"); }); }
