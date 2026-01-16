@@ -268,7 +268,7 @@
 
     <!-- PREMIUM PROFIT CARD -->
     <div class="profit-card">
-        <!-- Total Profit (LIFETIME: Current + Withdrawn + Team) -->
+        <!-- Total Profit (LIFETIME: Current + ALL Withdrawals + Team) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-gold"><i class="fas fa-coins"></i></div>
@@ -278,7 +278,7 @@
                 </div>
             </div>
         </div>
-        <!-- Current Balance (Strictly Real Wallet Balance) -->
+        <!-- Current Balance (Real Wallet Balance) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-green"><i class="fas fa-wallet"></i></div>
@@ -369,7 +369,7 @@
 
         let knownUsers = new Set();
         let userCurrentBalance = 0;     // Real Wallet (From DB)
-        let userTotalWithdrawn = 0;     // From DB
+        let userTotalWithdrawn = 0;     // From DB (Approved + Pending)
         let teamLifetimeEarnings = 0;   // Calculated from Tree
         
         function unlockAudio() {
@@ -447,14 +447,17 @@
             } else { window.location.href = 'login_register.html'; }
         });
 
-        // A. Fetch Withdrawals (To keep Total Profit stable even if you withdraw)
+        // A. Fetch Withdrawals (FIXED: Now includes 'pending' to keep Total Profit stable)
         function fetchWithdrawals(uid) {
             userTotalWithdrawn = 0;
             db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
                 if(snap.exists()) {
                     snap.forEach(child => {
                         const w = child.val();
-                        if(w.status === 'approved') {
+                        // IMPORTANT FIX: Count both approved AND pending withdrawals.
+                        // Because when you withdraw, balance drops immediately (pending).
+                        // If we don't count pending, Total Profit will drop temporarily.
+                        if(w.status === 'approved' || w.status === 'pending') {
                             let amt = parseFloat(w.amountBDT || w.amount || 0);
                             userTotalWithdrawn += amt;
                         }
@@ -516,10 +519,8 @@
 
         // C. FINAL UPDATE FUNCTION (LIFETIME SHOWCASE LOGIC)
         function updateTotalProfitUI() {
-            // Formula: Current Wallet + Total Withdrawn + Team Earnings
-            // This ensures Total Profit represents EVERYTHING earned ever.
-            // If you withdraw, Current decreases, Withdrawn increases -> Total stays same.
-            // Team earnings are added on top as per your request (to include referral income).
+            // Formula: Current Wallet + (All Withdrawals including Pending) + Team Earnings
+            // This ensures Total Profit NEVER decreases.
             
             const totalLifetimeBDT = userCurrentBalance + userTotalWithdrawn + teamLifetimeEarnings;
             document.getElementById('totalProfit').innerText = toUSDT(totalLifetimeBDT);
