@@ -88,7 +88,6 @@
             display: flex; align-items: center; gap: 8px; transition: 0.3s;
         }
 
-        /* LINK BOX */
         .link-wrapper {
             background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px 15px;
             display: flex; justify-content: space-between; align-items: center;
@@ -107,26 +106,46 @@
         .stat-num { font-size: 1.8rem; font-weight: 800; margin-top: 10px; color: #fff; }
         .stat-icon { position: absolute; right: 15px; top: 15px; font-size: 1.5rem; opacity: 0.1; color: #fff; }
 
-        /* PROFIT SECTION */
+        /* === NEW PREMIUM PROFIT CARD === */
         .profit-card {
-            background: var(--glass-bg); border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 20px; margin: 15px 20px;
-            display: flex; flex-direction: column; gap: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            margin: 25px 20px;
+            padding: 5px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .profit-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .profit-row:last-child { border-bottom: none; padding-bottom: 0; padding-top: 5px; }
         
-        .p-title { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .p-row-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px; border-radius: 20px; margin-bottom: 5px;
+            background: rgba(255,255,255,0.02);
+            transition: 0.3s;
+        }
+        .p-row-item:last-child { margin-bottom: 0; }
+        .p-row-item:hover { background: rgba(255,255,255,0.05); }
+
+        .p-left { display: flex; align-items: center; gap: 15px; }
+        .p-icon-box {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.2rem;
+        }
         
-        .d-gold { background: var(--neon-gold); box-shadow: 0 0 8px var(--neon-gold); }
-        .d-green { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
-        .d-blue { background: var(--neon-blue); box-shadow: 0 0 8px var(--neon-blue); }
+        /* Specific Colors */
+        .bg-gold { background: rgba(255, 215, 0, 0.1); color: #ffd700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
+        .bg-green { background: rgba(0, 255, 136, 0.1); color: #00ff88; box-shadow: 0 0 15px rgba(0, 255, 136, 0.1); }
+        .bg-blue { background: rgba(0, 242, 255, 0.1); color: #00f2ff; box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); }
+
+        .p-label { font-size: 0.9rem; color: #ccc; font-weight: 500; margin-bottom: 2px; }
+        .p-val { font-size: 1.4rem; font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: 0.5px; }
         
-        .p-value { font-size: 1.2rem; font-weight: 700; font-family: monospace; }
-        .val-gold { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
-        .val-green { color: var(--neon-green); text-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
-        .val-blue { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
+        .txt-gold { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        .txt-green { color: #00ff88; text-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
+        .txt-blue { color: #00f2ff; text-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
+
 
         /* PROGRAMS */
         .section-title { margin: 25px 20px 10px; font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
@@ -228,23 +247,42 @@
         </div>
     </div>
 
-    <!-- PROFIT SECTION (CALCULATED) -->
+    <!-- PREMIUM PROFIT CARD -->
     <div class="profit-card">
-        <!-- 1. Total Profit = Current + Withdrawn -->
-        <div class="profit-row">
-            <div class="p-title"><div class="dot d-gold"></div> Total Profit</div>
-            <div class="p-value val-gold"><span id="totalProfit">0.00</span> USDT</div>
+        
+        <!-- Total Profit -->
+        <div class="p-row-item">
+            <div class="p-left">
+                <div class="p-icon-box bg-gold"><i class="fas fa-coins"></i></div>
+                <div>
+                    <div class="p-label">Total Profit</div>
+                    <div class="p-val txt-gold"><span id="totalProfit">0.00</span> USDT</div>
+                </div>
+            </div>
         </div>
-        <!-- 2. Current Balance -->
-        <div class="profit-row">
-            <div class="p-title"><div class="dot d-green"></div> Current Balance</div>
-            <div class="p-value val-green"><span id="currentBalance">0.00</span> USDT</div>
+
+        <!-- Current Balance -->
+        <div class="p-row-item">
+            <div class="p-left">
+                <div class="p-icon-box bg-green"><i class="fas fa-wallet"></i></div>
+                <div>
+                    <div class="p-label">Current Balance</div>
+                    <div class="p-val txt-green"><span id="currentBalance">0.00</span> USDT</div>
+                </div>
+            </div>
         </div>
-        <!-- 3. Today Profit -->
-        <div class="profit-row">
-            <div class="p-title"><div class="dot d-blue"></div> Today Profit</div>
-            <div class="p-value val-blue"><span id="todayProfit">0.00</span> USDT</div>
+
+        <!-- Today Profit -->
+        <div class="p-row-item">
+            <div class="p-left">
+                <div class="p-icon-box bg-blue"><i class="fas fa-chart-line"></i></div>
+                <div>
+                    <div class="p-label">Today's Profit</div>
+                    <div class="p-val txt-blue"><span id="todayProfit">0.00</span> USDT</div>
+                </div>
+            </div>
         </div>
+
     </div>
 
     <div class="section-title">Shopping28 Programs</div>
@@ -318,9 +356,11 @@
         }
 
         // CONVERT TAKA TO USDT (120 BDT = 1 USD)
+        // Checks if input is valid number
         function toUSDT(taka) {
-            if(!taka) return "0.00";
-            return (parseFloat(taka) / 120).toFixed(2);
+            let val = parseFloat(taka);
+            if(isNaN(val)) val = 0;
+            return (val / 120).toFixed(2);
         }
 
         function toggleUid() {
@@ -354,25 +394,26 @@
                         document.getElementById('u_uid_display').innerText = "UID: " + fullUid.substring(0, 8) + "•••";
                         document.getElementById('refLinkText').innerText = `shopping28.io/b/${data.ownCode}`;
 
-                        // Financials: Current & Today
+                        // Financials (Stored in BDT)
                         const currentBalance = parseFloat(data.balance || 0);
                         const todayIncome = parseFloat(data.today_income || data.todayEarning || 0);
                         
+                        // Convert to USDT for Display
                         document.getElementById('currentBalance').innerText = toUSDT(currentBalance);
                         document.getElementById('todayProfit').innerText = toUSDT(todayIncome);
 
-                        // === TOTAL PROFIT CALCULATION (Current + Withdrawn) ===
+                        // Calculate Total Profit (Balance + Withdrawals)
                         calculateTotalLifetimeProfit(user.uid, currentBalance);
 
-                        // === TEAM LOGIC ===
+                        // Team Logic
                         if(data.ownCode) {
-                            // Direct Active
+                            // Direct Active Count
                             db.ref('users').orderByChild('referredBy').equalTo(data.ownCode).on('value', (snap) => {
                                 let activeDirects = 0;
                                 snap.forEach(child => { if(child.val().status === 'active') activeDirects++; });
                                 document.getElementById('partnerCount').innerText = activeDirects;
                                 
-                                // Recursive Deep Active Team
+                                // Recursive Total Team
                                 calculateActiveTeam(data.ownCode);
                             });
                         }
@@ -386,19 +427,17 @@
             } else { window.location.href = 'login_register.html'; }
         });
 
-        // 1. Calculate Total Lifetime Profit
         function calculateTotalLifetimeProfit(uid, currentBal) {
             let totalWithdrawn = 0;
             db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
                 if(snap.exists()) {
                     snap.forEach(child => {
                         const w = child.val();
-                        // If approved, add to total withdrawn. 
-                        // Note: Check if amount is stored as BDT or USDT in DB. Assuming BDT based on 'balance'.
                         if(w.status === 'approved') {
-                            // Support both old 'amount' (BDT) and new structure if needed
-                            let amt = w.amountBDT || w.amount || 0;
-                            totalWithdrawn += parseFloat(amt);
+                            // Ensure we use the BDT amount (if stored as USDT, convert back)
+                            // Assuming withdrawal request stores 'amount' in BDT for deduction
+                            let amt = parseFloat(w.amountBDT || w.amount || 0);
+                            totalWithdrawn += amt;
                         }
                     });
                 }
@@ -407,23 +446,20 @@
             });
         }
 
-        // 2. Recursive Active Team Count
         function calculateActiveTeam(myCode) {
             let totalActive = 0;
-            // Level 1
+            // Simplified 3-Level Deep Check (For performance, can be expanded)
             db.ref('users').orderByChild('referredBy').equalTo(myCode).once('value', (snap1) => {
                 if(!snap1.exists()) { document.getElementById('teamCount').innerText = 0; return; }
                 snap1.forEach(child1 => {
                     const u1 = child1.val();
                     if(u1.status === 'active') totalActive++;
-                    // Level 2
                     if(u1.ownCode) {
                         db.ref('users').orderByChild('referredBy').equalTo(u1.ownCode).once('value', (snap2) => {
                             if(snap2.exists()) {
                                 snap2.forEach(child2 => {
                                     const u2 = child2.val();
                                     if(u2.status === 'active') totalActive++;
-                                    // Level 3
                                     if(u2.ownCode) {
                                         db.ref('users').orderByChild('referredBy').equalTo(u2.ownCode).once('value', (snap3) => {
                                             if(snap3.exists()) {
