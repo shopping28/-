@@ -219,7 +219,7 @@
         <div class="id-pill" id="headerCode">ID: ...</div>
     </div>
 
-    <!-- PROFILE CARD (Updated) -->
+    <!-- PROFILE CARD -->
     <div class="profile-card">
         <div class="profile-img-box" onclick="window.location.href='account.html'">
             <img id="u_img" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="User">
@@ -236,7 +236,7 @@
                 <i id="uid_eye" class="fas fa-eye-slash" style="margin-left:5px;"></i>
             </div>
 
-            <!-- Activation Date Toggle (UPDATED LOGIC) -->
+            <!-- Activation Date Toggle -->
             <div class="meta-badge date-active" onclick="toggleDate()">
                 <i class="fas fa-calendar-check"></i>
                 <span id="u_date_display">Active: ••••••••</span>
@@ -268,7 +268,7 @@
 
     <!-- PREMIUM PROFIT CARD -->
     <div class="profit-card">
-        <!-- Total Profit -->
+        <!-- Total Profit (Current + Lifetime Withdrawn) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-gold"><i class="fas fa-coins"></i></div>
@@ -278,7 +278,7 @@
                 </div>
             </div>
         </div>
-        <!-- Current Balance -->
+        <!-- Current Balance (Base + Team) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-green"><i class="fas fa-wallet"></i></div>
@@ -288,7 +288,7 @@
                 </div>
             </div>
         </div>
-        <!-- Today Profit -->
+        <!-- Today Profit (Daily Task) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-blue"><i class="fas fa-chart-line"></i></div>
@@ -363,13 +363,13 @@
         let isDateHidden = true;
         let isVoiceReady = false;
 
-        // TEAM & BALANCE VARS
+        // === FINANCIAL VARIABLES ===
         const RATE = 120; // 1 USD = 120 BDT
         const LEGACY_RATES_BDT = { 1: 130, 2: 20, 3: 10 };
         let knownUsers = new Set();
-        let totalReferralIncomeBDT = 0;
-        let userBaseBalance = 0; // Balance from tasks/DB
-        let userTotalWithdrawn = 0;
+        let totalReferralIncomeBDT = 0; // My Team Income
+        let userBaseBalance = 0;        // Task/Main Balance
+        let userTotalWithdrawn = 0;     // Withdrawal History
 
         function unlockAudio() {
             if(isVoiceReady) return;
@@ -383,7 +383,6 @@
             window.speechSynthesis.speak(u);
         }
 
-        // CONVERT TAKA TO USDT (120 BDT = 1 USD)
         function toUSDT(taka) {
             let val = parseFloat(taka);
             if(isNaN(val)) val = 0;
@@ -412,20 +411,21 @@
                         document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
                         if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
 
-                        // === DATE LOGIC ===
+                        // Date
                         const rawDate = data.activatedAt || data.joinDate; 
                         realActivationDate = formatDate(rawDate);
-
-                        // Link Logic
+                        
+                        // Link
                         realRefLink = `shopping28.io/b/${data.ownCode}`;
 
-                        // === FINANCIALS SETUP ===
+                        // === FINANCIAL SYNC ===
                         userBaseBalance = parseFloat(data.balance || 0);
                         const todayIncome = parseFloat(data.today_income || data.todayEarning || 0);
                         
+                        // Set Today's Profit (Directly from DB)
                         document.getElementById('todayProfit').innerText = toUSDT(todayIncome);
 
-                        // Trigger Calculation Sequence
+                        // Trigger Calculation
                         fetchWithdrawalsAndCalculate(user.uid, data.ownCode);
 
                         if(!localStorage.getItem('home_voice_played')) {
@@ -437,7 +437,7 @@
             } else { window.location.href = 'login_register.html'; }
         });
 
-        // 1. Fetch Withdrawals first
+        // 1. Get Withdrawals
         function fetchWithdrawalsAndCalculate(uid, myCode) {
             userTotalWithdrawn = 0;
             db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
@@ -450,20 +450,20 @@
                         }
                     });
                 }
-                // 2. Start Team Calculation after getting withdrawals
+                
+                // 2. Start Team Calculation
                 if(myCode) {
-                    // Reset Team Stats
                     knownUsers.clear();
-                    totalReferralIncomeBDT = 0;
+                    totalReferralIncomeBDT = 0; // Reset team income
                     document.getElementById('teamCount').innerText = "0";
                     startRecursion(myCode, 1);
                 } else {
-                    updateDashboardUI(); // No team code, just update with base
+                    updateDashboardUI();
                 }
             });
         }
 
-        // 3. Recursive Logic (Same as My Team Page)
+        // 3. Team Logic (from my_team.html)
         function startRecursion(parentCode, depth) {
             if(depth > 10) return;
 
@@ -479,13 +479,13 @@
                     let currentTeamCount = parseInt(document.getElementById('teamCount').innerText) || 0;
                     document.getElementById('teamCount').innerText = currentTeamCount + 1;
 
-                    // Direct Partner Count
+                    // Direct Partner
                     if(depth === 1) {
                          let pCount = parseInt(document.getElementById('partnerCount').innerText) || 0;
                          document.getElementById('partnerCount').innerText = pCount + 1;
                     }
 
-                    // Calculate Profit
+                    // Calculate Profit (Money)
                     let profitBDT = 0;
                     if(user.locked_commissions && Array.isArray(user.locked_commissions)) {
                         if(user.locked_commissions[depth - 1]) {
@@ -503,7 +503,7 @@
 
                     if(!isNaN(profitBDT)) {
                         totalReferralIncomeBDT += profitBDT;
-                        updateDashboardUI(); // Update UI on every new member found
+                        updateDashboardUI(); // Update UI
                     }
 
                     // Go Deeper
@@ -514,21 +514,19 @@
             });
         }
 
-        // 4. Update the Dashboard HTML
+        // 4. Update UI
         function updateDashboardUI() {
-            // My Team Income + Base Wallet Balance = Current Available Balance
-            // Note: Assuming 'data.balance' in DB does NOT already include the dynamic referral commission.
-            // If data.balance ALREADY has it, remove 'totalReferralIncomeBDT' from this line.
+            // Current Balance = Base (Tasks) + Team Income
             const totalCurrentBDT = userBaseBalance + totalReferralIncomeBDT;
             
-            // Total Profit = Current Balance + Total Withdrawn
+            // Total Profit = Current Balance + Withdrawn Amount
             const lifetimeProfitBDT = totalCurrentBDT + userTotalWithdrawn;
 
             document.getElementById('currentBalance').innerText = toUSDT(totalCurrentBDT);
             document.getElementById('totalProfit').innerText = toUSDT(lifetimeProfitBDT);
         }
 
-        // Toggle Functions
+        // Toggles
         function toggleUid() {
             const display = document.getElementById('u_uid_display');
             const icon = document.getElementById('uid_eye');
@@ -539,7 +537,6 @@
                 display.innerText = "UID: " + fullUid; icon.className = "fas fa-eye";
             }
         }
-
         function toggleDate() {
             const display = document.getElementById('u_date_display');
             const icon = document.getElementById('date_eye');
@@ -550,12 +547,10 @@
                 display.innerText = "Active: " + realActivationDate; icon.className = "fas fa-eye";
             }
         }
-
         function revealAndCopyLink() {
             const display = document.getElementById('link_secret_text');
             display.innerText = realRefLink;
             display.style.color = "#fff";
-            
             const fullUrl = `https://shopping28.github.io/-/login_register.html?ref=${realRefLink.split('/').pop()}`;
             navigator.clipboard.writeText(fullUrl).then(() => { alert("Link Revealed & Copied!"); });
         }
