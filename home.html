@@ -252,7 +252,7 @@
         </div>
     </div>
 
-    <!-- ACTIVE TEAM STATS -->
+    <!-- ACTIVE TEAM STATS (Count Only) -->
     <div class="stats-grid">
         <div class="stat-box" onclick="window.location.href='my_team.html'">
             <div class="stat-label">Active Partners <i class="fas fa-info-circle"></i></div>
@@ -278,7 +278,7 @@
                 </div>
             </div>
         </div>
-        <!-- Current Balance (Base + Team) -->
+        <!-- Current Balance (Strictly DB Balance) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-green"><i class="fas fa-wallet"></i></div>
@@ -365,11 +365,9 @@
 
         // === FINANCIAL VARIABLES ===
         const RATE = 120; // 1 USD = 120 BDT
-        const LEGACY_RATES_BDT = { 1: 130, 2: 20, 3: 10 };
         let knownUsers = new Set();
-        let totalReferralIncomeBDT = 0; // My Team Income
-        let userBaseBalance = 0;        // Task/Main Balance
-        let userTotalWithdrawn = 0;     // Withdrawal History
+        let userBaseBalance = 0;        
+        let userTotalWithdrawn = 0;     
 
         function unlockAudio() {
             if(isVoiceReady) return;
@@ -411,22 +409,29 @@
                         document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
                         if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
 
-                        // Date
+                        // Date & Link
                         const rawDate = data.activatedAt || data.joinDate; 
                         realActivationDate = formatDate(rawDate);
-                        
-                        // Link
                         realRefLink = `shopping28.io/b/${data.ownCode}`;
 
-                        // === FINANCIAL SYNC ===
+                        // === FINANCIALS (Strictly from DB) ===
+                        // ডাটাবেসে যা আছে তাই দেখাবে, নতুন করে টিম ইনকাম যোগ করবে না
                         userBaseBalance = parseFloat(data.balance || 0);
                         const todayIncome = parseFloat(data.today_income || data.todayEarning || 0);
                         
-                        // Set Today's Profit (Directly from DB)
+                        // Display Current Balance & Today Income
+                        document.getElementById('currentBalance').innerText = toUSDT(userBaseBalance);
                         document.getElementById('todayProfit').innerText = toUSDT(todayIncome);
 
-                        // Trigger Calculation
-                        fetchWithdrawalsAndCalculate(user.uid, data.ownCode);
+                        // Trigger Stats Calculation
+                        fetchWithdrawalsAndCalculateTotal(user.uid);
+                        
+                        // Team Counts only (No Money Calculation)
+                        if(data.ownCode) {
+                            knownUsers.clear();
+                            document.getElementById('teamCount').innerText = "0";
+                            countTeamMembers(data.ownCode, 1);
+                        }
 
                         if(!localStorage.getItem('home_voice_played')) {
                             speak("Welcome to Shopping 28");
@@ -437,8 +442,8 @@
             } else { window.location.href = 'login_register.html'; }
         });
 
-        // 1. Get Withdrawals
-        function fetchWithdrawalsAndCalculate(uid, myCode) {
+        // 1. Calculate Total Profit (Current DB Balance + Lifetime Withdrawals)
+        function fetchWithdrawalsAndCalculateTotal(uid) {
             userTotalWithdrawn = 0;
             db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
                 if(snap.exists()) {
@@ -450,21 +455,14 @@
                         }
                     });
                 }
-                
-                // 2. Start Team Calculation
-                if(myCode) {
-                    knownUsers.clear();
-                    totalReferralIncomeBDT = 0; // Reset team income
-                    document.getElementById('teamCount').innerText = "0";
-                    startRecursion(myCode, 1);
-                } else {
-                    updateDashboardUI();
-                }
+                // Update Total Profit UI
+                const lifetimeProfitBDT = userBaseBalance + userTotalWithdrawn;
+                document.getElementById('totalProfit').innerText = toUSDT(lifetimeProfitBDT);
             });
         }
 
-        // 3. Team Logic (from my_team.html)
-        function startRecursion(parentCode, depth) {
+        // 2. Count Team Members ONLY (Don't touch money)
+        function countTeamMembers(parentCode, depth) {
             if(depth > 10) return;
 
             db.ref('users').orderByChild('referredBy').equalTo(parentCode).on('child_added', snap => {
@@ -475,55 +473,22 @@
                 knownUsers.add(uid);
 
                 if(user.status === 'active') {
-                    // Count Member
+                    // Update Total Team Count
                     let currentTeamCount = parseInt(document.getElementById('teamCount').innerText) || 0;
                     document.getElementById('teamCount').innerText = currentTeamCount + 1;
 
-                    // Direct Partner
+                    // Update Direct Partner Count
                     if(depth === 1) {
                          let pCount = parseInt(document.getElementById('partnerCount').innerText) || 0;
                          document.getElementById('partnerCount').innerText = pCount + 1;
                     }
 
-                    // Calculate Profit (Money)
-                    let profitBDT = 0;
-                    if(user.locked_commissions && Array.isArray(user.locked_commissions)) {
-                        if(user.locked_commissions[depth - 1]) {
-                            profitBDT = parseFloat(user.locked_commissions[depth - 1].amount);
-                        }
-                    } else if (user.fixed_commissions) {
-                         if(depth === 1) profitBDT = user.fixed_commissions.level1;
-                         if(depth === 2) profitBDT = user.fixed_commissions.level2;
-                         if(depth === 3) profitBDT = user.fixed_commissions.level3;
-                    } else {
-                        if(LEGACY_RATES_BDT[depth]) {
-                            profitBDT = LEGACY_RATES_BDT[depth];
-                        }
-                    }
-
-                    if(!isNaN(profitBDT)) {
-                        totalReferralIncomeBDT += profitBDT;
-                        updateDashboardUI(); // Update UI
-                    }
-
-                    // Go Deeper
+                    // Go Deeper for counting
                     if(user.ownCode) {
-                        startRecursion(user.ownCode, depth + 1);
+                        countTeamMembers(user.ownCode, depth + 1);
                     }
                 }
             });
-        }
-
-        // 4. Update UI
-        function updateDashboardUI() {
-            // Current Balance = Base (Tasks) + Team Income
-            const totalCurrentBDT = userBaseBalance + totalReferralIncomeBDT;
-            
-            // Total Profit = Current Balance + Withdrawn Amount
-            const lifetimeProfitBDT = totalCurrentBDT + userTotalWithdrawn;
-
-            document.getElementById('currentBalance').innerText = toUSDT(totalCurrentBDT);
-            document.getElementById('totalProfit').innerText = toUSDT(lifetimeProfitBDT);
         }
 
         // Toggles
