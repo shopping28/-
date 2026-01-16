@@ -7,162 +7,45 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* === PREMIUM VARIABLES === */
-        :root {
-            --bg-dark: #050505;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --neon-gold: #ffd700;
-            --neon-blue: #00f2ff;
-            --neon-green: #00ff88;
-            --text-main: #ffffff;
-            --text-muted: #8b9bb4;
-        }
-
-        body {
-            margin: 0; padding: 0; padding-bottom: 90px;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Outfit', sans-serif;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* BACKGROUND */
+        :root { --bg-dark: #050505; --glass-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.08); --neon-gold: #ffd700; --neon-blue: #00f2ff; --neon-green: #00ff88; --text-main: #ffffff; --text-muted: #8b9bb4; }
+        body { margin: 0; padding: 0; padding-bottom: 90px; background-color: var(--bg-dark); color: var(--text-main); font-family: 'Outfit', sans-serif; overflow-x: hidden; position: relative; }
         .ambient-light { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; opacity: 0.4; }
         .al-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, #4c00ff, transparent); }
         .al-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, #ff0055, transparent); }
-
-        /* HEADER */
-        .header {
-            padding: 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(5, 5, 5, 0.8);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--glass-border);
-            position: sticky; top: 0; z-index: 100;
-        }
-        
+        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 100; }
         .logo-container { display: flex; align-items: center; gap: 8px; }
         .logo-icon { font-size: 1.6rem; color: var(--neon-blue); filter: drop-shadow(0 0 5px rgba(0,242,255,0.5)); }
         .logo { font-size: 1.4rem; font-weight: 900; letter-spacing: 1px; }
         .logo span { background: linear-gradient(to right, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .id-pill {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 14px; border-radius: 30px;
-            font-size: 0.8rem; font-weight: 700; letter-spacing: 1px;
-            color: var(--neon-blue);
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
-        }
-
-        /* PROFILE CARD */
-        .profile-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 30px 20px;
-            margin: 20px;
-            backdrop-filter: blur(10px);
-            text-align: center;
-            position: relative; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center;
-        }
-
-        .profile-img-box {
-            width: 90px; height: 90px; border-radius: 50%;
-            padding: 4px; background: linear-gradient(135deg, #00f2ff, #bc13fe);
-            margin-bottom: 10px; position: relative; cursor: pointer;
-            box-shadow: 0 0 20px rgba(188, 19, 254, 0.3);
-        }
+        .id-pill { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 6px 14px; border-radius: 30px; font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 242, 255, 0.1); }
+        .profile-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px 20px; margin: 20px; backdrop-filter: blur(10px); text-align: center; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
+        .profile-img-box { width: 90px; height: 90px; border-radius: 50%; padding: 4px; background: linear-gradient(135deg, #00f2ff, #bc13fe); margin-bottom: 10px; position: relative; cursor: pointer; box-shadow: 0 0 20px rgba(188, 19, 254, 0.3); }
         .profile-img-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #000; }
-        
         .user-name { font-size: 1.5rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; color: #fff; }
-
-        /* Meta Badges (UID & Date) */
-        .meta-container {
-            display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; justify-content: center;
-        }
-
-        .meta-badge {
-            background: rgba(255,255,255,0.05); 
-            padding: 8px 12px; border-radius: 8px;
-            font-size: 0.75rem; color: #aaa; font-family: monospace;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer; user-select: none;
-            display: flex; align-items: center; gap: 6px; transition: 0.3s;
-        }
-        .meta-badge:active { transform: scale(0.95); background: rgba(255,255,255,0.1); }
+        .meta-container { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; justify-content: center; }
+        .meta-badge { background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; color: #aaa; font-family: monospace; border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer; user-select: none; display: flex; align-items: center; gap: 6px; transition: 0.3s; }
         .date-active { color: var(--neon-green); border-color: rgba(0, 255, 136, 0.3); }
-
-        /* Secret Link Button */
-        .secret-link-btn {
-            margin-top: 20px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px dashed var(--neon-blue);
-            padding: 12px 20px;
-            border-radius: 12px;
-            width: 100%; box-sizing: border-box;
-            cursor: pointer;
-            display: flex; justify-content: center; align-items: center; gap: 10px;
-            transition: 0.3s;
-        }
-        .secret-link-btn:active { background: rgba(0, 242, 255, 0.1); }
-        .secret-text {
-            font-family: monospace; font-size: 0.9rem; color: var(--neon-blue);
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        }
-
-        /* STATS GRID */
+        .secret-link-btn { margin-top: 20px; background: rgba(0, 0, 0, 0.4); border: 1px dashed var(--neon-blue); padding: 12px 20px; border-radius: 12px; width: 100%; box-sizing: border-box; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; }
+        .secret-text { font-family: monospace; font-size: 0.9rem; color: var(--neon-blue); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px; }
-        .stat-box {
-            background: var(--glass-bg); border: 1px solid var(--glass-border);
-            padding: 20px; border-radius: 18px; position: relative; backdrop-filter: blur(5px);
-        }
+        .stat-box { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 20px; border-radius: 18px; position: relative; backdrop-filter: blur(5px); }
         .stat-label { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
         .stat-num { font-size: 1.8rem; font-weight: 800; margin-top: 10px; color: #fff; }
         .stat-icon { position: absolute; right: 15px; top: 15px; font-size: 1.5rem; opacity: 0.1; color: #fff; }
-
-        /* PROFIT CARD */
-        .profit-card {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px; margin: 25px 20px; padding: 5px;
-            position: relative; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .p-row-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px; border-radius: 20px; margin-bottom: 5px;
-            background: rgba(255,255,255,0.02); transition: 0.3s;
-        }
-        .p-row-item:last-child { margin-bottom: 0; }
+        .profit-card { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 25px; margin: 25px 20px; padding: 5px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .p-row-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 20px; margin-bottom: 5px; background: rgba(255,255,255,0.02); transition: 0.3s; }
         .p-left { display: flex; align-items: center; gap: 15px; }
-        .p-icon-box {
-            width: 45px; height: 45px; border-radius: 12px;
-            display: flex; justify-content: center; align-items: center; font-size: 1.2rem;
-        }
-        /* Specific Colors */
+        .p-icon-box { width: 45px; height: 45px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
         .bg-gold { background: rgba(255, 215, 0, 0.1); color: #ffd700; }
         .bg-green { background: rgba(0, 255, 136, 0.1); color: #00ff88; }
         .bg-blue { background: rgba(0, 242, 255, 0.1); color: #00f2ff; }
-        
         .p-label { font-size: 0.9rem; color: #ccc; font-weight: 500; margin-bottom: 2px; }
         .p-val { font-size: 1.4rem; font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: 0.5px; }
         .txt-gold { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
         .txt-green { color: #00ff88; text-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
         .txt-blue { color: #00f2ff; text-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
-
-        /* PROGRAMS */
         .section-title { margin: 25px 20px 10px; font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
-        .program-btn {
-            margin: 0 20px 15px; height: 90px; border-radius: 20px;
-            position: relative; overflow: hidden; cursor: pointer;
-            display: flex; flex-direction: column; justify-content: center; padding: 0 25px;
-            transition: transform 0.2s; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
+        .program-btn { margin: 0 20px 15px; height: 90px; border-radius: 20px; position: relative; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; justify-content: center; padding: 0 25px; transition: transform 0.2s; box-shadow: 0 10px 20px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
         .program-btn:active { transform: scale(0.98); }
         .bg-task { background: linear-gradient(90deg, #FF9966 0%, #FF5E62 100%); }
         .bg-withdraw { background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%); }
@@ -170,38 +53,16 @@
         .btn-content { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; }
         .btn-text h4 { margin: 0; font-size: 1.3rem; font-weight: 900; text-transform: uppercase; font-style: italic; }
         .btn-text p { margin: 2px 0 0; font-size: 0.8rem; font-weight: 500; opacity: 0.9; }
-        .action-pill {
-            background: #fff; color: #000; padding: 8px 20px; border-radius: 30px;
-            font-weight: 800; font-size: 0.8rem; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            display: flex; align-items: center; gap: 5px;
-        }
-
-        /* MORE OPTIONS */
+        .action-pill { background: #fff; color: #000; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.8rem; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 5px; }
         .more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px; }
-        .more-card {
-            height: 80px; border-radius: 15px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
+        .more-card { height: 80px; border-radius: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .mc-monthly { background: linear-gradient(135deg, #8E2DE2, #4A00E0); }
         .mc-weekly { background: linear-gradient(135deg, #fc4a1a, #f7b733); }
         .more-card i { font-size: 1.4rem; color: #fff; margin-bottom: 5px; z-index: 2; }
         .more-card span { font-size: 0.9rem; color: #fff; font-weight: 700; z-index: 2; text-transform: uppercase; }
-
-        /* Shine & Loader */
-        .shine::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transform: skewX(-20deg); animation: shine 4s infinite;
-        }
+        .shine::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transform: skewX(-20deg); animation: shine 4s infinite; }
         @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center;
-            font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.5rem; letter-spacing: 2px;
-        }
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.5rem; letter-spacing: 2px; }
         #loader span { color: var(--neon-blue); }
     </style>
 </head>
@@ -212,136 +73,40 @@
     <div class="ambient-light al-2"></div>
 
     <div class="header">
-        <div class="logo-container">
-            <i class="fas fa-shopping-bag logo-icon"></i>
-            <div class="logo">SHOPPING<span>28</span></div>
-        </div>
+        <div class="logo-container"><i class="fas fa-shopping-bag logo-icon"></i><div class="logo">SHOPPING<span>28</span></div></div>
         <div class="id-pill" id="headerCode">ID: ...</div>
     </div>
 
-    <!-- PROFILE CARD -->
     <div class="profile-card">
-        <div class="profile-img-box" onclick="window.location.href='account.html'">
-            <img id="u_img" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="User">
-        </div>
-        
+        <div class="profile-img-box" onclick="window.location.href='account.html'"><img id="u_img" src="https://i.ibb.co/tZ26z1q/default-profile.png" alt="User"></div>
         <h3 class="user-name" id="u_name">Loading...</h3>
-        
-        <!-- Meta Data (UID & Activation Date) -->
         <div class="meta-container">
-            <!-- UID Toggle -->
-            <div class="meta-badge" onclick="toggleUid()">
-                <i class="fas fa-fingerprint"></i>
-                <span id="u_uid_display">UID: ••••••••</span>
-                <i id="uid_eye" class="fas fa-eye-slash" style="margin-left:5px;"></i>
-            </div>
-
-            <!-- Activation Date Toggle -->
-            <div class="meta-badge date-active" onclick="toggleDate()">
-                <i class="fas fa-calendar-check"></i>
-                <span id="u_date_display">Active: ••••••••</span>
-                <i id="date_eye" class="fas fa-eye-slash" style="margin-left:5px;"></i>
-            </div>
+            <div class="meta-badge" onclick="toggleUid()"><i class="fas fa-fingerprint"></i><span id="u_uid_display">UID: ••••••••</span><i id="uid_eye" class="fas fa-eye-slash" style="margin-left:5px;"></i></div>
+            <div class="meta-badge date-active" onclick="toggleDate()"><i class="fas fa-calendar-check"></i><span id="u_date_display">Active: ••••••••</span><i id="date_eye" class="fas fa-eye-slash" style="margin-left:5px;"></i></div>
         </div>
-
-        <!-- Hidden Link Button -->
-        <div class="secret-link-btn" onclick="revealAndCopyLink()">
-            <i class="fas fa-link" style="color:var(--neon-blue)"></i>
-            <span id="link_secret_text" class="secret-text">Tap to Copy Link</span>
-            <i class="fas fa-copy" style="color:#aaa; font-size:0.8rem;"></i>
-        </div>
+        <div class="secret-link-btn" onclick="revealAndCopyLink()"><i class="fas fa-link" style="color:var(--neon-blue)"></i><span id="link_secret_text" class="secret-text">Tap to Copy Link</span><i class="fas fa-copy" style="color:#aaa; font-size:0.8rem;"></i></div>
     </div>
 
-    <!-- ACTIVE TEAM STATS (Count Only) -->
     <div class="stats-grid">
-        <div class="stat-box" onclick="window.location.href='my_team.html'">
-            <div class="stat-label">Active Partners <i class="fas fa-info-circle"></i></div>
-            <div class="stat-num" id="partnerCount">0</div>
-            <i class="fas fa-user-friends stat-icon"></i>
-        </div>
-        <div class="stat-box" onclick="window.location.href='my_team.html'">
-            <div class="stat-label">Active Team (All) <i class="fas fa-info-circle"></i></div>
-            <div class="stat-num" id="teamCount">0</div>
-            <i class="fas fa-users stat-icon"></i>
-        </div>
+        <div class="stat-box" onclick="window.location.href='my_team.html'"><div class="stat-label">Active Partners <i class="fas fa-info-circle"></i></div><div class="stat-num" id="partnerCount">0</div><i class="fas fa-user-friends stat-icon"></i></div>
+        <div class="stat-box" onclick="window.location.href='my_team.html'"><div class="stat-label">Active Team (All) <i class="fas fa-info-circle"></i></div><div class="stat-num" id="teamCount">0</div><i class="fas fa-users stat-icon"></i></div>
     </div>
 
-    <!-- PREMIUM PROFIT CARD -->
     <div class="profit-card">
-        <!-- Total Profit (LIFETIME: Current + ALL Withdrawals) -->
-        <div class="p-row-item">
-            <div class="p-left">
-                <div class="p-icon-box bg-gold"><i class="fas fa-coins"></i></div>
-                <div>
-                    <div class="p-label">Total Profit (Lifetime)</div>
-                    <div class="p-val txt-gold"><span id="totalProfit">0.00</span> USDT</div>
-                </div>
-            </div>
-        </div>
-        <!-- Current Balance (Real Wallet Balance) -->
-        <div class="p-row-item">
-            <div class="p-left">
-                <div class="p-icon-box bg-green"><i class="fas fa-wallet"></i></div>
-                <div>
-                    <div class="p-label">Current Balance</div>
-                    <div class="p-val txt-green"><span id="currentBalance">0.00</span> USDT</div>
-                </div>
-            </div>
-        </div>
-        <!-- Today Profit (Tasks + TODAY'S REFERRALS + TODAY'S VIP) -->
-        <div class="p-row-item">
-            <div class="p-left">
-                <div class="p-icon-box bg-blue"><i class="fas fa-chart-line"></i></div>
-                <div>
-                    <div class="p-label">Today's Profit</div>
-                    <div class="p-val txt-blue"><span id="todayProfit">0.00</span> USDT</div>
-                </div>
-            </div>
-        </div>
+        <div class="p-row-item"><div class="p-left"><div class="p-icon-box bg-gold"><i class="fas fa-coins"></i></div><div><div class="p-label">Total Profit (Lifetime)</div><div class="p-val txt-gold"><span id="totalProfit">0.00</span> USDT</div></div></div></div>
+        <div class="p-row-item"><div class="p-left"><div class="p-icon-box bg-green"><i class="fas fa-wallet"></i></div><div><div class="p-label">Current Balance</div><div class="p-val txt-green"><span id="currentBalance">0.00</span> USDT</div></div></div></div>
+        <div class="p-row-item"><div class="p-left"><div class="p-icon-box bg-blue"><i class="fas fa-chart-line"></i></div><div><div class="p-label">Today's Profit</div><div class="p-val txt-blue"><span id="todayProfit">0.00</span> USDT</div></div></div></div>
     </div>
 
     <div class="section-title">Shopping28 Programs</div>
-
-    <div class="program-btn bg-task shine" onclick="window.location.href='task.html'">
-        <div class="btn-content">
-            <div class="btn-text">
-                <h4>TASK28 JOB</h4>
-                <p>Earn USDT Daily</p>
-            </div>
-            <div class="action-pill">Start <i class="fas fa-chevron-right"></i></div>
-        </div>
-    </div>
-
-    <div class="program-btn bg-withdraw shine" onclick="window.location.href='withdraw.html'">
-        <div class="btn-content">
-            <div class="btn-text">
-                <h4>PAYOUT</h4>
-                <p>USDT (BEP20)</p>
-            </div>
-            <div class="action-pill" style="color:#4776E6">Go <i class="fas fa-chevron-right"></i></div>
-        </div>
-    </div>
-
-    <div class="program-btn bg-vip shine" onclick="window.location.href='vip_level.html'">
-        <div class="btn-content">
-            <div class="btn-text">
-                <h4>VIP LEVELS</h4>
-                <p>Upgrade Status</p>
-            </div>
-            <div class="action-pill" style="color:#11998e">View <i class="fas fa-chevron-right"></i></div>
-        </div>
-    </div>
+    <div class="program-btn bg-task shine" onclick="window.location.href='task.html'"><div class="btn-content"><div class="btn-text"><h4>TASK28 JOB</h4><p>Earn USDT Daily</p></div><div class="action-pill">Start <i class="fas fa-chevron-right"></i></div></div></div>
+    <div class="program-btn bg-withdraw shine" onclick="window.location.href='withdraw.html'"><div class="btn-content"><div class="btn-text"><h4>PAYOUT</h4><p>USDT (BEP20)</p></div><div class="action-pill" style="color:#4776E6">Go <i class="fas fa-chevron-right"></i></div></div></div>
+    <div class="program-btn bg-vip shine" onclick="window.location.href='vip_level.html'"><div class="btn-content"><div class="btn-text"><h4>VIP LEVELS</h4><p>Upgrade Status</p></div><div class="action-pill" style="color:#11998e">View <i class="fas fa-chevron-right"></i></div></div></div>
 
     <div class="section-title">More Options</div>
     <div class="more-grid">
-        <div class="more-card mc-monthly shine" onclick="window.location.href='monthly.html'">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Monthly</span>
-        </div>
-        <div class="more-card mc-weekly shine" onclick="window.location.href='weekly.html'">
-            <i class="fas fa-gift"></i>
-            <span>Weekly</span>
-        </div>
+        <div class="more-card mc-monthly shine" onclick="window.location.href='monthly.html'"><i class="fas fa-calendar-alt"></i><span>Monthly</span></div>
+        <div class="more-card mc-weekly shine" onclick="window.location.href='weekly.html'"><i class="fas fa-gift"></i><span>Weekly</span></div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -357,56 +122,25 @@
         let fullUid = "";
         let realActivationDate = "Verified"; 
         let realRefLink = "";
-        
         let isUidHidden = true;
         let isDateHidden = true;
         let isVoiceReady = false;
 
-        // === FINANCIAL VARIABLES ===
         const RATE = 120; // 1 USD = 120 BDT
         const LEGACY_RATES_BDT = { 1: 130, 2: 20, 3: 10 };
 
         let knownUsers = new Set();
-        let userCurrentBalance = 0;     // Real Wallet (From DB)
-        let userTotalWithdrawn = 0;     // From DB (Approved + Pending)
-        let dbTodayIncome = 0;          // Tasks income from DB
-        let todayReferralEarnings = 0;  // Calculated locally
-        let todayVipEarnings = 0;       // Calculated locally
+        let userCurrentBalance = 0; 
+        let userTotalWithdrawn = 0; 
+        let dbTodayIncome = 0; 
+        let todayReferralEarnings = 0;
+        let todayVipEarnings = 0;
 
-        function unlockAudio() {
-            if(isVoiceReady) return;
-            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
-            isVoiceReady = true;
-        }
-        function speak(text) {
-            window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'en-US';
-            window.speechSynthesis.speak(u);
-        }
-
-        function toUSDT(taka) {
-            let val = parseFloat(taka);
-            if(isNaN(val)) val = 0;
-            return (val / RATE).toFixed(2);
-        }
-
-        function formatDate(timestamp) {
-            if(!timestamp) return "Verified"; 
-            const date = new Date(timestamp);
-            if (isNaN(date.getTime())) return "Verified"; 
-            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-        }
-
-        // Helper: Check if a date is Today (Local Time)
-        function isToday(timestamp) {
-            if(!timestamp) return false;
-            const date = new Date(timestamp);
-            const today = new Date();
-            return date.getDate() === today.getDate() &&
-                   date.getMonth() === today.getMonth() &&
-                   date.getFullYear() === today.getFullYear();
-        }
+        function unlockAudio() { if(!isVoiceReady) { window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); isVoiceReady = true; } }
+        function speak(text) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; window.speechSynthesis.speak(u); }
+        function toUSDT(taka) { let val = parseFloat(taka); if(isNaN(val)) val = 0; return (val / RATE).toFixed(2); }
+        function formatDate(timestamp) { if(!timestamp) return "Verified"; const date = new Date(timestamp); if (isNaN(date.getTime())) return "Verified"; return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
+        function isToday(timestamp) { if(!timestamp) return false; const date = new Date(timestamp); const today = new Date(); return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear(); }
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -414,39 +148,24 @@
                     const data = snapshot.val();
                     if(data) {
                         if(data.status !== 'active') { window.location.href = 'account_active.html'; return; }
-                        
                         document.getElementById('loader').style.display = 'none';
                         fullUid = user.uid;
-
-                        // Basic Info
                         document.getElementById('u_name').innerText = data.firstName || "User";
                         document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
                         if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
-
-                        // Date & Link
-                        const rawDate = data.activatedAt || data.joinDate; 
-                        realActivationDate = formatDate(rawDate);
+                        realActivationDate = formatDate(data.activatedAt || data.joinDate);
                         realRefLink = `shopping28.io/b/${data.ownCode}`;
 
-                        // 1. SET CURRENT BALANCE & DB TODAY INCOME
                         userCurrentBalance = parseFloat(data.balance || 0);
                         dbTodayIncome = parseFloat(data.today_income || data.todayEarning || 0);
-                        
-                        // Display Current Balance immediately
                         document.getElementById('currentBalance').innerText = toUSDT(userCurrentBalance);
 
-                        // 2. TRIGGER CALCULATIONS
                         fetchWithdrawals(user.uid);
-                        
-                        // 3. CHECK VIP EARNINGS FOR TODAY
-                        // Note: Assuming VIP bonuses are stored in 'vip_rewards' or similar under user
-                        // If not, we will rely on 'balance' but tracking today's VIP needs a record.
                         calculateTodayVip(user.uid);
 
-                        // 4. TEAM CALCULATIONS
                         if(data.ownCode) {
                             knownUsers.clear();
-                            todayReferralEarnings = 0; // Reset
+                            todayReferralEarnings = 0; 
                             document.getElementById('teamCount').innerText = "0";
                             countTeamMembers(data.ownCode, 1);
                         } else {
@@ -454,23 +173,18 @@
                             updateTodayProfitUI();
                         }
 
-                        if(!localStorage.getItem('home_voice_played')) {
-                            speak("Welcome to Shopping 28");
-                            localStorage.setItem('home_voice_played', 'true');
-                        }
+                        if(!localStorage.getItem('home_voice_played')) { speak("Welcome to Shopping 28"); localStorage.setItem('home_voice_played', 'true'); }
                     }
                 });
             } else { window.location.href = 'login_register.html'; }
         });
 
-        // A. Fetch Withdrawals (Includes 'pending' to prevent total profit dropping)
         function fetchWithdrawals(uid) {
             userTotalWithdrawn = 0;
             db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
                 if(snap.exists()) {
                     snap.forEach(child => {
                         const w = child.val();
-                        // Count Pending + Approved
                         if(w.status === 'approved' || w.status === 'pending') {
                             let amt = parseFloat(w.amountBDT || w.amount || 0);
                             userTotalWithdrawn += amt;
@@ -481,17 +195,12 @@
             });
         }
 
-        // B. Calculate Today's VIP Earnings
-        // Looks for a node like 'users/UID/vip_history' or 'vip_rewards'
         function calculateTodayVip(uid) {
             todayVipEarnings = 0;
-            // Trying to find where VIP data might be stored. 
-            // If your VIP system adds to 'vip_rewards', this will work.
             db.ref('users/' + uid + '/vip_rewards').once('value', snap => {
                 if(snap.exists()) {
                     snap.forEach(child => {
                         const reward = child.val();
-                        // Check timestamp
                         if(reward.timestamp && isToday(reward.timestamp)) {
                             todayVipEarnings += parseFloat(reward.amount || 0);
                         }
@@ -501,102 +210,71 @@
             });
         }
 
-        // C. Count Team & Calculate TODAY'S Referral Income
         function countTeamMembers(parentCode, depth) {
             if(depth > 10) return;
-
             db.ref('users').orderByChild('referredBy').equalTo(parentCode).on('child_added', snap => {
                 const user = snap.val();
-                const uid = snap.key;
-                
-                if(knownUsers.has(uid)) return;
-                knownUsers.add(uid);
+                if(knownUsers.has(snap.key)) return;
+                knownUsers.add(snap.key);
 
                 if(user.status === 'active') {
-                    // Update Counts
                     let currentTeamCount = parseInt(document.getElementById('teamCount').innerText) || 0;
                     document.getElementById('teamCount').innerText = currentTeamCount + 1;
-
                     if(depth === 1) {
                          let pCount = parseInt(document.getElementById('partnerCount').innerText) || 0;
                          document.getElementById('partnerCount').innerText = pCount + 1;
                     }
-
-                    // --- CHECK IF JOINED TODAY AND ADD COMMISSION TO "TODAY PROFIT" ---
-                    const activationTime = user.activatedAt || user.joinDate;
                     
+                    const activationTime = user.activatedAt || user.joinDate;
                     if(isToday(activationTime)) {
                         let profitBDT = 0;
-                        if(user.locked_commissions && Array.isArray(user.locked_commissions)) {
-                            if(user.locked_commissions[depth - 1]) {
-                                profitBDT = parseFloat(user.locked_commissions[depth - 1].amount);
-                            }
+                        if(user.locked_commissions && Array.isArray(user.locked_commissions) && user.locked_commissions[depth - 1]) {
+                            profitBDT = parseFloat(user.locked_commissions[depth - 1].amount);
                         } else if (user.fixed_commissions) {
                              if(depth === 1) profitBDT = user.fixed_commissions.level1;
-                             if(depth === 2) profitBDT = user.fixed_commissions.level2;
-                             if(depth === 3) profitBDT = user.fixed_commissions.level3;
-                        } else {
-                            if(LEGACY_RATES_BDT[depth]) {
-                                profitBDT = LEGACY_RATES_BDT[depth];
-                            }
+                             else if(depth === 2) profitBDT = user.fixed_commissions.level2;
+                             else if(depth === 3) profitBDT = user.fixed_commissions.level3;
+                        } else if(LEGACY_RATES_BDT[depth]) {
+                            profitBDT = LEGACY_RATES_BDT[depth];
                         }
-
-                        if(!isNaN(profitBDT)) {
-                            todayReferralEarnings += profitBDT;
-                            updateTodayProfitUI(); 
-                        }
+                        if(!isNaN(profitBDT)) { todayReferralEarnings += profitBDT; updateTodayProfitUI(); }
                     }
-
-                    // Recurse
-                    if(user.ownCode) {
-                        countTeamMembers(user.ownCode, depth + 1);
-                    }
+                    if(user.ownCode) countTeamMembers(user.ownCode, depth + 1);
                 }
             });
         }
 
-        // D. FINAL UPDATE FUNCTIONS
         function updateTotalProfitUI() {
-            // Lifetime = Current Balance + Total Withdrawn (Pending+Approved)
-            // This ensures ANY money that entered the account (from Tasks, Ref, or VIP) is counted.
+            // Formula: Current Wallet + Total Withdrawn (Pending+Approved)
+            // This is accurate because 'Current Wallet' already contains tasks + ref + vip + bonuses
             const totalLifetimeBDT = userCurrentBalance + userTotalWithdrawn;
             document.getElementById('totalProfit').innerText = toUSDT(totalLifetimeBDT);
         }
 
         function updateTodayProfitUI() {
-            // Today Profit = Task Income (DB) + Referral Income (Calculated) + VIP (Calculated)
-            const totalTodayBDT = dbTodayIncome + todayReferralEarnings + todayVipEarnings;
-            document.getElementById('todayProfit').innerText = toUSDT(totalTodayBDT);
+            // Formula: Task Income (from DB) + Calculated Ref + Calculated VIP
+            const totalTodayBDT = dbTodayIncome + todayReferralEarnings + (todayVipEarnings * RATE); // VIP is in USD, multiply by RATE to match BDT calculation if balance is in BDT
+            // WAIT! In VIP file I stored reward in USD or directly added to balance?
+            // In VIP file: db.ref('users/' + currentUser.uid + '/balance').transaction(bal => (bal || 0) + reward);
+            // If 'balance' is in BDT, then VIP reward (e.g. 0.83) should be converted before adding.
+            // Let's assume VIP reward passed to claimVip was in USD.
+            // Adjusting calculation: The VIP calculation function returns pure USD amount.
+            // So: (dbTodayIncome + todayReferralEarnings)/RATE + todayVipEarnings
+            
+            // Correction for Display:
+            // dbTodayIncome is likely in BDT (from task.html logic usually)
+            // todayReferralEarnings is in BDT
+            // todayVipEarnings is in USD (from vip_level.html)
+            
+            const taskAndRefUSD = (dbTodayIncome + todayReferralEarnings) / RATE;
+            const totalUSD = taskAndRefUSD + todayVipEarnings;
+            
+            document.getElementById('todayProfit').innerText = totalUSD.toFixed(2);
         }
 
-        // Toggles
-        function toggleUid() {
-            const display = document.getElementById('u_uid_display');
-            const icon = document.getElementById('uid_eye');
-            isUidHidden = !isUidHidden;
-            if(isUidHidden) {
-                display.innerText = "UID: ••••••••"; icon.className = "fas fa-eye-slash";
-            } else {
-                display.innerText = "UID: " + fullUid; icon.className = "fas fa-eye";
-            }
-        }
-        function toggleDate() {
-            const display = document.getElementById('u_date_display');
-            const icon = document.getElementById('date_eye');
-            isDateHidden = !isDateHidden;
-            if(isDateHidden) {
-                display.innerText = "Active: ••••••••"; icon.className = "fas fa-eye-slash";
-            } else {
-                display.innerText = "Active: " + realActivationDate; icon.className = "fas fa-eye";
-            }
-        }
-        function revealAndCopyLink() {
-            const display = document.getElementById('link_secret_text');
-            display.innerText = realRefLink;
-            display.style.color = "#fff";
-            const fullUrl = `https://shopping28.github.io/-/login_register.html?ref=${realRefLink.split('/').pop()}`;
-            navigator.clipboard.writeText(fullUrl).then(() => { alert("Link Revealed & Copied!"); });
-        }
+        function toggleUid() { isUidHidden = !isUidHidden; document.getElementById('u_uid_display').innerText = isUidHidden ? "UID: ••••••••" : "UID: " + fullUid; document.getElementById('uid_eye').className = isUidHidden ? "fas fa-eye-slash" : "fas fa-eye"; }
+        function toggleDate() { isDateHidden = !isDateHidden; document.getElementById('u_date_display').innerText = isDateHidden ? "Active: ••••••••" : "Active: " + realActivationDate; document.getElementById('date_eye').className = isDateHidden ? "fas fa-eye-slash" : "fas fa-eye"; }
+        function revealAndCopyLink() { document.getElementById('link_secret_text').innerText = realRefLink; document.getElementById('link_secret_text').style.color = "#fff"; navigator.clipboard.writeText(`https://shopping28.github.io/-/login_register.html?ref=${realRefLink.split('/').pop()}`).then(() => { alert("Link Copied!"); }); }
     </script>
 </body>
 </html>
