@@ -268,17 +268,17 @@
 
     <!-- PREMIUM PROFIT CARD -->
     <div class="profit-card">
-        <!-- Total Profit (Current + Lifetime Withdrawn + TEAM INCOME) -->
+        <!-- Total Profit (LIFETIME: Current + Withdrawn + Team) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-gold"><i class="fas fa-coins"></i></div>
                 <div>
-                    <div class="p-label">Total Profit</div>
+                    <div class="p-label">Total Profit (Lifetime)</div>
                     <div class="p-val txt-gold"><span id="totalProfit">0.00</span> USDT</div>
                 </div>
             </div>
         </div>
-        <!-- Current Balance (Strictly DB Balance) -->
+        <!-- Current Balance (Strictly Real Wallet Balance) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-green"><i class="fas fa-wallet"></i></div>
@@ -288,7 +288,7 @@
                 </div>
             </div>
         </div>
-        <!-- Today Profit (Daily Task) -->
+        <!-- Today Profit (Daily Task Only) -->
         <div class="p-row-item">
             <div class="p-left">
                 <div class="p-icon-box bg-blue"><i class="fas fa-chart-line"></i></div>
@@ -421,14 +421,15 @@
                         userCurrentBalance = parseFloat(data.balance || 0);
                         const todayIncome = parseFloat(data.today_income || data.todayEarning || 0);
                         
+                        // Display: Current Balance (Real) & Today
                         document.getElementById('currentBalance').innerText = toUSDT(userCurrentBalance);
                         document.getElementById('todayProfit').innerText = toUSDT(todayIncome);
 
-                        // 2. TRIGGER CALCULATIONS FOR TOTAL PROFIT
+                        // 2. TRIGGER CALCULATIONS FOR TOTAL PROFIT (LIFETIME SHOWCASE)
                         fetchWithdrawals(user.uid);
                         
+                        // Team Calculations (For Lifetime Profit only)
                         if(data.ownCode) {
-                            // Reset Team Calc
                             knownUsers.clear();
                             teamLifetimeEarnings = 0;
                             document.getElementById('teamCount').innerText = "0";
@@ -446,7 +447,7 @@
             } else { window.location.href = 'login_register.html'; }
         });
 
-        // A. Fetch Withdrawals
+        // A. Fetch Withdrawals (To keep Total Profit stable even if you withdraw)
         function fetchWithdrawals(uid) {
             userTotalWithdrawn = 0;
             db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
@@ -513,12 +514,12 @@
             });
         }
 
-        // C. FINAL UPDATE FUNCTION
+        // C. FINAL UPDATE FUNCTION (LIFETIME SHOWCASE LOGIC)
         function updateTotalProfitUI() {
             // Formula: Current Wallet + Total Withdrawn + Team Earnings
-            // This ensures Total Profit shows EVERYTHING earned.
-            // Even if you withdraw, Current goes down, Withdrawn goes up, so Total stays same.
-            // Team earnings are added on top as requested.
+            // This ensures Total Profit represents EVERYTHING earned ever.
+            // If you withdraw, Current decreases, Withdrawn increases -> Total stays same.
+            // Team earnings are added on top as per your request (to include referral income).
             
             const totalLifetimeBDT = userCurrentBalance + userTotalWithdrawn + teamLifetimeEarnings;
             document.getElementById('totalProfit').innerText = toUSDT(totalLifetimeBDT);
