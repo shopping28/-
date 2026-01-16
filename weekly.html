@@ -189,7 +189,7 @@
 
         <div class="timer-display">
             <span class="timer-lbl">Time Remaining</span>
-            <div class="timer-val" id="timerDisplay">00d 00h 00m 00s</div>
+            <div class="timer-val" id="timerDisplay">Wait for Start...</div>
         </div>
 
         <button id="claimBtn" onclick="claimReward()" style="display:none; width:100%; margin-top:15px; background:var(--neon-green); color:#000; padding:14px; border-radius:12px; font-weight:800; border:none; cursor:pointer; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);">
@@ -251,13 +251,14 @@
         let selectedPackage = null;
         let timerInterval = null;
 
+        // === FIXED: ALL LEVELS COST 1 CREDIT ===
         const LEVELS = [
-            { level: 1, target: 5, reward: 2.5, cost: 2 },
-            { level: 2, target: 10, reward: 5.0, cost: 4 },
-            { level: 3, target: 15, reward: 7.5, cost: 6 },
-            { level: 4, target: 20, reward: 10.0, cost: 8 },
-            { level: 5, target: 25, reward: 12.5, cost: 10 },
-            { level: 6, target: 30, reward: 15.0, cost: 12 }
+            { level: 1, target: 5, reward: 2.5, cost: 1 },
+            { level: 2, target: 10, reward: 5.0, cost: 1 },
+            { level: 3, target: 15, reward: 7.5, cost: 1 },
+            { level: 4, target: 20, reward: 10.0, cost: 1 },
+            { level: 5, target: 25, reward: 12.5, cost: 1 },
+            { level: 6, target: 30, reward: 15.0, cost: 1 }
         ];
 
         auth.onAuthStateChanged(user => {
@@ -305,7 +306,6 @@
                     document.getElementById('pendingArea').style.display = 'block';
                     document.getElementById('pendingLevel').innerText = "Level " + pendingRequest.level;
                 }
-                // Refresh UI to disable buttons
                 if(currentUser) db.ref('users/' + currentUser.uid).once('value', s => renderLevels(s.val()));
             });
         }
@@ -322,7 +322,8 @@
                 
                 let btnLabel = `Apply <i class="fas fa-arrow-right"></i>`;
                 let btnState = "";
-                let costText = `${lvl.cost} Credits`;
+                // Cost text is now dynamic (though hardcoded to 1 in array, good practice to read from var)
+                let costText = `${lvl.cost} Credit`;
 
                 if(isCompleted) { btnLabel = `Completed <i class="fas fa-check"></i>`; btnState = "disabled"; costText = ""; }
                 else if (isActive) { btnLabel = "Challenge Active"; btnState = "disabled"; }
@@ -345,7 +346,7 @@
 
         function applyForChallenge(level, targetCount, reward, cost) {
             if(myCredits < cost) { alert("Not enough credits!"); openBuyModal(); return; }
-            if(confirm(`Apply for Level ${level}? ${cost} Credits will be deducted.`)) {
+            if(confirm(`Apply for Level ${level}? ${cost} Credit will be deducted.`)) {
                 
                 const newCredits = myCredits - cost;
                 
@@ -382,7 +383,12 @@
             document.getElementById('activeLvlName').innerText = `Level ${t.level}`;
             document.getElementById('activeTarget').innerText = t.targetCount;
 
-            startTimer(t.endTime);
+            // Timer Fix: Check if endTime exists
+            if(t.endTime) {
+                startTimer(t.endTime);
+            } else {
+                document.getElementById('timerDisplay').innerText = "Calculating...";
+            }
 
             db.ref('users/' + currentUser.uid + '/ownCode').once('value', codeSnap => {
                 const myCode = codeSnap.val();
