@@ -7,12 +7,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg-dark: #020617; --card-bg: #0f172a; --primary: #3b82f6; --success: #10b981; --text: #f8fafc; }
+        :root { --bg-dark: #020617; --card-bg: #0f172a; --primary: #3b82f6; --success: #10b981; --text: #f8fafc; --neon-gold: #facc15; }
         body { background-color: var(--bg-dark); color: var(--text); font-family: 'Outfit', sans-serif; margin: 0; padding: 20px; overflow-x: hidden; }
         
         .header { display: flex; align-items: center; margin-bottom: 25px; }
         .back-btn { background: rgba(255,255,255,0.05); width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); margin-right: 15px; }
         
+        /* SUMMARY CARD (NEW) */
+        .summary-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 20px; border-radius: 20px;
+            display: flex; justify-content: space-around; align-items: center;
+            margin-bottom: 25px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        .sc-item h3 { font-size: 1.8rem; margin: 5px 0; color: #fff; font-weight: 800; }
+        .sc-item span { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .sc-divider { width: 1px; height: 50px; background: rgba(255,255,255,0.1); }
+        .txt-money { color: var(--neon-gold) !important; text-shadow: 0 0 10px rgba(250, 204, 21, 0.3); }
+
         /* INVITE CARD */
         .invite-card { background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4); margin-bottom: 30px; position: relative; overflow: hidden; }
         .invite-code { font-size: 2.5rem; font-weight: 800; margin: 10px 0; letter-spacing: 2px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
@@ -68,6 +82,19 @@
         <h3>My Team Stats</h3>
     </div>
 
+    <!-- SUMMARY CARD (TOTALS) -->
+    <div class="summary-card">
+        <div class="sc-item">
+            <span>Total Members</span>
+            <h3 id="grandTotalMembers">0</h3>
+        </div>
+        <div class="sc-divider"></div>
+        <div class="sc-item">
+            <span>Total Earnings</span>
+            <h3 id="grandTotalMoney" class="txt-money">$0.00</h3>
+        </div>
+    </div>
+
     <!-- REFERRAL CARD -->
     <div class="invite-card">
         <div style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">Your Referral Code</div>
@@ -97,7 +124,7 @@
         </div>
     </div>
 
-    <!-- NOTIFICATION AREA (Popups appear here) -->
+    <!-- NOTIFICATION AREA -->
     <div class="notif-container" id="notifArea"></div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -110,11 +137,15 @@
         const auth = firebase.auth();
 
         const RATE = 120; // 1 USD = 120 BDT
-        
-        // DEFAULT RATES (If not in DB)
         const LEGACY_RATES = { 1: 130, 2: 20, 3: 10 }; 
 
-        let processedUsers = new Set(); // To prevent duplicate notifications on reload
+        let processedUsers = new Set();
+        // Stats Objects
+        let stats = { 1: {money:0, count:0}, 2: {money:0, count:0}, 3: {money:0, count:0} };
+        
+        // Grand Totals
+        let grandTotalMembers = 0;
+        let grandTotalMoneyBDT = 0;
 
         auth.onAuthStateChanged(user => {
             if(user) {
@@ -129,22 +160,20 @@
         });
 
         function startTracking(myCode) {
-            // Level 1 Tracking
             trackLevel(myCode, 1);
         }
 
         function trackLevel(parentCode, level) {
-            if(level > 3) return; // Only up to level 3
+            if(level > 3) return;
 
             db.ref('users').orderByChild('referredBy').equalTo(parentCode).on('child_added', snap => {
                 const user = snap.val();
                 const uid = snap.key;
 
-                // Update Stats
                 if(user.status === 'active') {
                     updateLevelStats(level, user);
                     
-                    // Show Notification if NEW (within last 10 mins)
+                    // Notification Logic (Last 10 mins)
                     const joinTime = user.activatedAt || user.joinDate || 0;
                     const tenMinsAgo = Date.now() - (10 * 60 * 1000);
                     
@@ -154,41 +183,42 @@
                     }
                 }
 
-                // Go Deeper
                 if(user.ownCode) {
                     trackLevel(user.ownCode, level + 1);
                 }
             });
         }
 
-        let stats = { 1: {money:0, count:0}, 2: {money:0, count:0}, 3: {money:0, count:0} };
-
         function updateLevelStats(level, user) {
-            // Calculate Profit for this user
             let profitBDT = 0;
             
-            // Check Admin Dynamic Rates First
-            // (Assuming you might add dynamic later, for now using legacy or fixed)
             if(user.fixed_commissions) {
                 if(level === 1) profitBDT = user.fixed_commissions.level1;
                 if(level === 2) profitBDT = user.fixed_commissions.level2;
                 if(level === 3) profitBDT = user.fixed_commissions.level3;
             } else {
-                // Fallback
                 profitBDT = LEGACY_RATES[level] || 0;
             }
 
+            // Update Level specific
             stats[level].money += profitBDT;
             stats[level].count += 1;
 
-            // Update UI
+            // Update Grand Totals
+            grandTotalMoneyBDT += profitBDT;
+            grandTotalMembers += 1;
+
+            // Render Level Stats
             document.getElementById(`p${level}`).innerText = (stats[level].money / RATE).toFixed(2);
             document.getElementById(`c${level}`).innerText = stats[level].count;
+
+            // Render Grand Stats
+            document.getElementById('grandTotalMembers').innerText = grandTotalMembers;
+            document.getElementById('grandTotalMoney').innerText = "$" + (grandTotalMoneyBDT / RATE).toFixed(2);
         }
 
         function showNotification(level, name, id) {
             const container = document.getElementById('notifArea');
-            
             const div = document.createElement('div');
             div.className = 'notif-card';
             div.innerHTML = `
@@ -199,10 +229,7 @@
                 </div>
                 <div class="time-ago">Just now</div>
             `;
-
             container.appendChild(div);
-
-            // Remove after 10 seconds
             setTimeout(() => {
                 div.style.animation = "slideOut 0.5s forwards";
                 setTimeout(() => div.remove(), 500);
