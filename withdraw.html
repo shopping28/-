@@ -3,170 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payout | SHOPPING28</title>
+    <title>Withdraw Money | SHOPPING28</title>
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* === PREMIUM VARIABLES === */
+        /* === PREMIUM DARK THEME === */
         :root {
             --bg-dark: #050505;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --neon-blue: #00f2ff;
-            --neon-purple: #bc13fe;
-            --neon-green: #00ff88;
-            --neon-red: #ff4757;
-            --text-main: #ffffff;
-            --text-muted: #8b9bb4;
+            --card-bg: #101010;
+            --border: #222;
+            --primary: #00f2ff; /* Cyan Neon */
+            --accent: #bc13fe;  /* Purple Neon */
+            --success: #00ff88;
+            --danger: #ff4757;
+            --text: #ffffff;
+            --text-muted: #888;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
 
         body {
-            margin: 0; padding: 20px;
             background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Outfit', sans-serif;
+            color: var(--text);
+            padding: 20px;
             min-height: 100vh;
-            position: relative;
+            padding-bottom: 80px;
         }
-
-        /* BACKGROUND AMBIENCE */
-        .orb { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; opacity: 0.4; }
-        .orb-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, #4c00ff, transparent); }
-        .orb-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, #ff0055, transparent); }
 
         /* HEADER */
-        .header { display: flex; align-items: center; margin-bottom: 25px; }
-        .back-btn { 
-            color: var(--text-muted); text-decoration: none; font-size: 1.1rem; 
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 25px; border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+        .back-btn {
+            background: #1a1a1a; color: white; text-decoration: none;
+            padding: 8px 12px; border-radius: 8px; font-size: 0.9rem;
             display: flex; align-items: center; gap: 8px; transition: 0.3s;
         }
-        .back-btn:hover { color: var(--neon-blue); }
-        .page-title { margin-left: auto; font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
+        .back-btn:hover { background: #333; }
+        .page-title { font-weight: 700; color: var(--primary); letter-spacing: 1px; }
 
         /* BALANCE CARD */
         .balance-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 30px;
-            text-align: center; margin-bottom: 25px;
+            background: linear-gradient(135deg, #0f0c29, #302b63);
+            padding: 25px; border-radius: 16px; text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            margin-bottom: 25px;
             position: relative; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         .balance-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 60%);
+            animation: rotate 10s linear infinite;
         }
-        .bal-title { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-        .bal-amount { font-size: 2.5rem; font-weight: 800; margin: 10px 0; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.1); }
-        .usdt-badge { background: rgba(0, 242, 255, 0.1); color: var(--neon-blue); padding: 4px 10px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; }
-
-        /* FORM */
-        .payout-form { background: var(--glass-bg); padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 30px; }
-        .form-label { display: block; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px; margin-top: 15px; }
+        @keyframes rotate { 0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);} }
         
-        .input-group { position: relative; }
-        .custom-input {
-            width: 100%; padding: 15px; background: rgba(0,0,0,0.3);
-            border: 1px solid var(--glass-border); color: #fff;
-            border-radius: 12px; font-family: 'Outfit', sans-serif;
-            box-sizing: border-box; outline: none; transition: 0.3s;
+        .bal-label { font-size: 0.85rem; color: #ccc; text-transform: uppercase; letter-spacing: 1px; position: relative; }
+        .bal-amount { font-size: 2.5rem; font-weight: 800; margin: 10px 0; color: #fff; position: relative; }
+        .currency { font-size: 1rem; color: var(--primary); }
+        .bal-sub { font-size: 0.8rem; color: #aaa; position: relative; }
+
+        /* FORM SECTION */
+        .form-box {
+            background: var(--card-bg); padding: 20px; border-radius: 16px;
+            border: 1px solid var(--border); margin-bottom: 30px;
         }
-        .custom-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 242, 255, 0.1); }
-        .input-icon { position: absolute; right: 15px; top: 15px; color: var(--text-muted); }
+        
+        .input-group { margin-bottom: 20px; position: relative; }
+        .label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; }
+        
+        .input-field {
+            width: 100%; background: #000; border: 1px solid #333;
+            padding: 14px; border-radius: 10px; color: white;
+            font-size: 1rem; outline: none; transition: 0.3s;
+        }
+        .input-field:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 242, 255, 0.1); }
 
         .max-btn {
-            position: absolute; right: 10px; top: 10px;
-            background: rgba(255,255,255,0.1); border: none; color: var(--neon-blue);
-            padding: 5px 10px; border-radius: 5px; font-size: 0.75rem; cursor: pointer;
+            position: absolute; right: 10px; top: 38px;
+            background: #222; color: var(--primary); border: 1px solid #444;
+            padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;
         }
 
-        /* NETWORK PILL */
-        .network-pill {
-            display: inline-block; background: rgba(0, 255, 136, 0.1); 
-            border: 1px solid var(--neon-green); color: var(--neon-green);
-            padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 0.9rem;
-            width: 100%; box-sizing: border-box; text-align: center;
+        .network-box {
+            background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.2);
+            color: var(--success); padding: 12px; border-radius: 8px;
+            text-align: center; font-weight: 600; font-size: 0.9rem; margin-bottom: 10px;
         }
 
-        /* BUTTON */
-        .submit-btn {
-            width: 100%; padding: 16px; margin-top: 25px;
-            background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
-            border: none; border-radius: 15px;
-            color: white; font-weight: 800; font-size: 1.1rem; letter-spacing: 1px;
-            cursor: pointer; transition: 0.3s;
-            box-shadow: 0 5px 20px rgba(71, 118, 230, 0.3);
+        .withdraw-btn {
+            width: 100%; padding: 15px; border: none; border-radius: 10px;
+            background: linear-gradient(90deg, var(--primary), #00c6ff);
+            color: #000; font-weight: 800; font-size: 1.1rem; cursor: pointer;
+            transition: 0.3s; margin-top: 10px;
         }
-        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .submit-btn:active { transform: scale(0.98); }
+        .withdraw-btn:active { transform: scale(0.98); opacity: 0.9; }
+        .withdraw-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
 
-        /* HISTORY */
-        .history-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; border-left: 3px solid var(--neon-purple); padding-left: 10px; }
+        /* HISTORY SECTION */
+        .history-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: #fff; font-weight: 600; }
+        
         .history-item {
-            background: var(--glass-bg); padding: 15px; border-radius: 12px;
-            border: 1px solid var(--glass-border); margin-bottom: 10px;
+            background: #111; padding: 15px; border-radius: 12px;
+            border: 1px solid #222; margin-bottom: 10px;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .h-left h4 { margin: 0; font-size: 0.95rem; color: #fff; }
-        .h-left small { color: var(--text-muted); font-size: 0.75rem; }
+        .h-left h4 { font-size: 0.95rem; margin-bottom: 4px; color: #eee; }
+        .h-left span { font-size: 0.75rem; color: #666; }
         .h-right { text-align: right; }
-        .h-amount { font-weight: bold; font-size: 1rem; color: #fff; }
+        .h-amt { font-weight: bold; font-size: 1rem; color: #fff; }
         
-        .status { font-size: 0.7rem; padding: 3px 8px; border-radius: 5px; font-weight: bold; text-transform: uppercase; }
-        .st-pending { color: #f1c40f; background: rgba(241, 196, 15, 0.1); }
-        .st-approved { color: var(--neon-green); background: rgba(0, 255, 136, 0.1); }
-        .st-rejected { color: var(--neon-red); background: rgba(255, 71, 87, 0.1); }
+        .status { font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; display: inline-block; margin-top: 4px; }
+        .s-pending { background: rgba(241, 196, 15, 0.1); color: #f1c40f; }
+        .s-approved { background: rgba(0, 255, 136, 0.1); color: #00ff88; }
+        .s-rejected { background: rgba(255, 71, 87, 0.1); color: #ff4757; }
 
+        /* TOAST NOTIFICATION */
+        #toast-box { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .toast {
+            background: #222; color: #fff; padding: 12px 20px; border-radius: 8px;
+            margin-bottom: 10px; border-left: 4px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px;
+            animation: slideIn 0.3s ease-out;
+        }
+        .toast.error { border-left-color: var(--danger); }
+        @keyframes slideIn { from{transform:translateX(100%)} to{transform:translateX(0)} }
     </style>
 </head>
 <body>
 
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
+    <div id="toast-box"></div>
 
     <!-- Header -->
     <div class="header">
         <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i> Home</a>
-        <div class="page-title">PAYOUT</div>
+        <div class="page-title">WITHDRAW</div>
     </div>
 
-    <!-- Balance Card -->
+    <!-- Balance Display -->
     <div class="balance-card">
-        <div class="bal-title">Available Balance</div>
-        <div class="bal-amount"><span id="usdtBal">0.00</span> <span class="usdt-badge">USDT</span></div>
-        <div style="font-size:0.8rem; color:#666;">≈ <span id="bdtBal">0</span> BDT</div>
+        <div class="bal-label">Available Balance</div>
+        <div class="bal-amount"><span id="usdtBal">0.00</span> <span class="currency">USDT</span></div>
+        <div class="bal-sub">Equivalent to <span id="bdtBal" style="color:#fff; font-weight:bold;">0</span> BDT</div>
     </div>
 
-    <!-- Payout Form -->
-    <div class="payout-form">
-        
-        <label class="form-label">Network</label>
-        <div class="network-pill">USDT (BEP20)</div>
-
-        <label class="form-label">Wallet Address</label>
+    <!-- Request Form -->
+    <div class="form-box">
         <div class="input-group">
-            <input type="text" id="wWallet" class="custom-input" placeholder="Paste BEP20 Address">
-            <i class="fas fa-wallet input-icon"></i>
+            <label class="label">Payment Method</label>
+            <div class="network-box"><i class="fas fa-network-wired"></i> USDT (BEP20)</div>
         </div>
 
-        <label class="form-label">Amount (USDT)</label>
         <div class="input-group">
-            <input type="number" id="wAmount" class="custom-input" placeholder="Min 5 USDT">
-            <button class="max-btn" onclick="setMax()">MAX</button>
+            <label class="label">Wallet Address</label>
+            <input type="text" id="walletAddr" class="input-field" placeholder="Paste BEP20 Address here...">
         </div>
 
-        <div style="margin-top:10px; font-size:0.75rem; color:var(--text-muted);">
-            * Minimum Withdraw: <span style="color:var(--neon-green)">5.00 USDT</span> <br>
-            * Rate: 120 BDT = 1 USDT
+        <div class="input-group">
+            <label class="label">Amount (USDT)</label>
+            <input type="number" id="amountInput" class="input-field" placeholder="Min: 5.00">
+            <button class="max-btn" onclick="setMaxAmount()">MAX</button>
         </div>
 
-        <button class="submit-btn" id="wBtn" onclick="requestWithdraw()">CONFIRM PAYOUT</button>
+        <div style="font-size:0.75rem; color:#666; margin-bottom:15px; line-height:1.5;">
+            <i class="fas fa-info-circle"></i> Min Withdraw: <b style="color:var(--success)">5.00 USDT</b><br>
+            <i class="fas fa-exchange-alt"></i> Rate: <b>1 USDT = 120 BDT</b>
+        </div>
+
+        <button class="withdraw-btn" id="submitBtn" onclick="processWithdraw()">CONFIRM REQUEST</button>
     </div>
 
-    <!-- History -->
-    <div class="history-title">Recent Transactions</div>
-    <div id="histList">
-        <div style="text-align:center; color:#666; font-size:0.9rem; padding:20px;">Loading History...</div>
+    <!-- History List -->
+    <div class="history-header"><i class="fas fa-history"></i> Recent Transactions</div>
+    <div id="historyList">
+        <div style="text-align:center; padding:30px; color:#555;">
+            <i class="fas fa-circle-notch fa-spin"></i> Loading...
+        </div>
     </div>
 
     <!-- Firebase SDK -->
@@ -175,128 +191,155 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
+        // --- CONFIGURATION ---
+        const firebaseConfig = { 
+            apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", 
+            authDomain: "art-paid-work001.firebaseapp.com", 
+            databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", 
+            projectId: "art-paid-work001", 
+            storageBucket: "art-paid-work001.firebasestorage.app", 
+            messagingSenderId: "524647364992", 
+            appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" 
+        };
+        
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
 
+        // Variables
         let currentUser = null;
-        let currentBdtBal = 0;
-        let currentUsdtBal = 0;
-        const EXCHANGE_RATE = 120; // 120 BDT = 1 USDT
-        const MIN_USDT = 5; // Minimum Withdraw
+        let balanceBDT = 0;
+        let balanceUSDT = 0;
+        const RATE = 120; // 1 USDT = 120 BDT
+        const MIN_WITHDRAW = 5;
 
-        auth.onAuthStateChanged((user) => {
+        // --- TOAST NOTIFICATION ---
+        function showToast(msg, type = 'success') {
+            const box = document.getElementById('toast-box');
+            const div = document.createElement('div');
+            div.className = `toast ${type}`;
+            div.innerHTML = type === 'success' 
+                ? `<i class="fas fa-check-circle" style="color:#00ff88"></i> ${msg}` 
+                : `<i class="fas fa-times-circle" style="color:#ff4757"></i> ${msg}`;
+            box.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+
+        // --- AUTH & DATA LOAD ---
+        auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
-                loadData();
+                loadBalance();
                 loadHistory();
             } else {
                 window.location.href = 'login_register.html';
             }
         });
 
-        function loadData() {
-            db.ref('users/' + currentUser.uid + '/balance').on('value', (snap) => {
-                currentBdtBal = parseFloat(snap.val()) || 0;
-                currentUsdtBal = currentBdtBal / EXCHANGE_RATE;
+        function loadBalance() {
+            db.ref('users/' + currentUser.uid + '/balance').on('value', snap => {
+                balanceBDT = parseFloat(snap.val() || 0);
+                balanceUSDT = balanceBDT / RATE;
 
-                document.getElementById('bdtBal').innerText = currentBdtBal.toFixed(2);
-                document.getElementById('usdtBal').innerText = currentUsdtBal.toFixed(2);
+                document.getElementById('bdtBal').innerText = balanceBDT.toFixed(2);
+                document.getElementById('usdtBal').innerText = balanceUSDT.toFixed(2);
             });
         }
 
-        function setMax() {
-            // Leave a tiny bit for safety or just full amount
-            let maxVal = Math.floor(currentUsdtBal * 100) / 100; 
-            document.getElementById('wAmount').value = maxVal;
+        function setMaxAmount() {
+            let max = Math.floor(balanceUSDT * 100) / 100;
+            document.getElementById('amountInput').value = max > 0 ? max : 0;
         }
 
-        function requestWithdraw() {
-            const wallet = document.getElementById('wWallet').value.trim();
-            const amountUsdt = parseFloat(document.getElementById('wAmount').value);
-            const btn = document.getElementById('wBtn');
+        // --- WITHDRAW LOGIC ---
+        function processWithdraw() {
+            const wallet = document.getElementById('walletAddr').value.trim();
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            const btn = document.getElementById('submitBtn');
 
             // Validation
-            if (!wallet || wallet.length < 10) return alert("Please enter a valid BEP20 Wallet Address");
-            if (!amountUsdt || amountUsdt <= 0) return alert("Enter valid amount");
-            if (amountUsdt < MIN_USDT) return alert(`Minimum withdraw is ${MIN_USDT} USDT`);
-            if (amountUsdt > currentUsdtBal) return alert("Insufficient Balance!");
+            if (!wallet || wallet.length < 10) return showToast("Enter valid wallet address", "error");
+            if (!amount || amount <= 0) return showToast("Enter valid amount", "error");
+            if (amount < MIN_WITHDRAW) return showToast(`Min withdraw is ${MIN_WITHDRAW} USDT`, "error");
+            if (amount > balanceUSDT) return showToast("Insufficient Balance", "error");
 
-            if (!confirm(`Confirm Payout of ${amountUsdt} USDT?\nWallet: ${wallet}`)) return;
+            if(!confirm(`Are you sure you want to withdraw ${amount} USDT?`)) return;
 
             btn.disabled = true;
-            btn.innerText = "Processing...";
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
-            // Calculate BDT to deduct
-            const deductBdt = amountUsdt * EXCHANGE_RATE;
-            const newBdtBal = currentBdtBal - deductBdt;
+            const deductBDT = amount * RATE;
 
-            // Update Database
-            db.ref('users/' + currentUser.uid + '/balance').set(newBdtBal)
-            .then(() => {
-                const req = {
-                    uid: currentUser.uid,
-                    method: 'USDT (BEP20)',
-                    wallet: wallet,
-                    amountUSDT: amountUsdt,
-                    amountBDT: deductBdt,
-                    status: 'pending',
-                    timestamp: Date.now()
-                };
-                return db.ref('withdraw_requests').push(req);
-            })
-            .then(() => {
-                alert("Payout Request Successful!");
-                document.getElementById('wAmount').value = "";
-                document.getElementById('wWallet').value = "";
-                btn.disabled = false;
-                btn.innerText = "CONFIRM PAYOUT";
-            })
-            .catch(err => {
-                alert("Error: " + err.message);
-                // Rollback if needed (Simple version assumes success)
-                btn.disabled = false;
-                btn.innerText = "CONFIRM PAYOUT";
+            // Safe Transaction to Deduct Balance
+            db.ref('users/' + currentUser.uid + '/balance').transaction((current) => {
+                if (current >= deductBDT) {
+                    return current - deductBDT;
+                } else {
+                    return; // Abort
+                }
+            }, (error, committed) => {
+                if (error || !committed) {
+                    btn.disabled = false;
+                    btn.innerText = "CONFIRM REQUEST";
+                    showToast("Transaction Failed / Low Balance", "error");
+                } else {
+                    // Save Request
+                    const reqData = {
+                        uid: currentUser.uid,
+                        method: 'USDT (BEP20)',
+                        wallet: wallet,
+                        amountUSDT: amount,
+                        amountBDT: deductBDT,
+                        status: 'pending',
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    };
+
+                    db.ref('withdraw_requests').push(reqData).then(() => {
+                        showToast("Withdraw Request Successful!");
+                        document.getElementById('walletAddr').value = "";
+                        document.getElementById('amountInput').value = "";
+                        btn.disabled = false;
+                        btn.innerText = "CONFIRM REQUEST";
+                    });
+                }
             });
         }
 
+        // --- HISTORY LOGIC ---
         function loadHistory() {
-            db.ref('withdraw_requests').orderByChild('uid').equalTo(currentUser.uid).limitToLast(10).on('value', (snapshot) => {
-                const list = document.getElementById('histList');
+            db.ref('withdraw_requests').orderByChild('uid').equalTo(currentUser.uid).limitToLast(20).on('value', snap => {
+                const list = document.getElementById('historyList');
                 list.innerHTML = "";
-                
-                if(!snapshot.exists()) {
-                    list.innerHTML = "<div style='text-align:center; color:#666; font-size:0.9rem; padding:20px;'>No Transactions Yet</div>";
+
+                if (!snap.exists()) {
+                    list.innerHTML = "<p style='text-align:center; color:#555; padding:20px;'>No transactions yet.</p>";
                     return;
                 }
 
-                let arr = [];
-                snapshot.forEach(c => arr.push(c.val()));
+                const data = [];
+                snap.forEach(c => data.push(c.val()));
                 
-                arr.reverse().forEach(item => {
-                    let statusClass = 'st-pending';
-                    if(item.status === 'approved') statusClass = 'st-approved';
-                    if(item.status === 'rejected') statusClass = 'st-rejected';
+                // Show newest first
+                data.reverse().forEach(item => {
+                    let statusClass = 's-pending';
+                    if (item.status === 'approved') statusClass = 's-approved';
+                    if (item.status === 'rejected') statusClass = 's-rejected';
 
-                    // Formatting amount: Use amountUSDT if exists, else convert old BDT records
-                    let displayAmt = item.amountUSDT ? item.amountUSDT.toFixed(2) : (item.amount / EXCHANGE_RATE).toFixed(2);
-                    
-                    const date = new Date(item.timestamp).toLocaleDateString();
+                    let amountShow = item.amountUSDT ? item.amountUSDT.toFixed(2) : (item.amount/RATE).toFixed(2);
+                    let date = new Date(item.timestamp || Date.now()).toLocaleDateString();
 
                     const html = `
                         <div class="history-item">
                             <div class="h-left">
-                                <h4>Payout (USDT)</h4>
-                                <small>${date} • ${item.wallet.substring(0,8)}...</small>
+                                <h4>Withdraw USDT</h4>
+                                <span>${date} • ${item.wallet.substr(0,6)}...</span>
                             </div>
                             <div class="h-right">
-                                <div class="h-amount">${displayAmt} USDT</div>
+                                <div class="h-amt">$${amountShow}</div>
                                 <span class="status ${statusClass}">${item.status}</span>
                             </div>
-                        </div>
-                    `;
-                    list.insertAdjacentHTML('beforeend', html);
+                        </div>`;
+                    list.innerHTML += html;
                 });
             });
         }
