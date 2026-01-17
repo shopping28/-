@@ -3,135 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Team | Live Stats</title>
+    <title>My Team | Commission History</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg-dark: #020617; --card-bg: #0f172a; --primary: #3b82f6; --success: #10b981; --text: #f8fafc; --neon-gold: #facc15; }
-        body { background-color: var(--bg-dark); color: var(--text); font-family: 'Outfit', sans-serif; margin: 0; padding: 20px; overflow-x: hidden; }
+        :root { --bg-dark: #020617; --card-bg: #0f172a; --primary: #3b82f6; --text: #f8fafc; --neon-gold: #facc15; --neon-green: #10b981; }
+        body { background-color: var(--bg-dark); color: var(--text); font-family: 'Outfit', sans-serif; margin: 0; padding: 20px; padding-bottom: 80px; }
         
         .header { display: flex; align-items: center; margin-bottom: 25px; }
         .back-btn { background: rgba(255,255,255,0.05); width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); margin-right: 15px; }
         
-        /* SUMMARY CARD (NEW) */
-        .summary-card {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 20px; border-radius: 20px;
-            display: flex; justify-content: space-around; align-items: center;
-            margin-bottom: 25px; text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-        }
-        .sc-item h3 { font-size: 1.8rem; margin: 5px 0; color: #fff; font-weight: 800; }
-        .sc-item span { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-        .sc-divider { width: 1px; height: 50px; background: rgba(255,255,255,0.1); }
-        .txt-money { color: var(--neon-gold) !important; text-shadow: 0 0 10px rgba(250, 204, 21, 0.3); }
+        /* FINANCIAL CARDS */
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .stat-card { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; text-align: center; }
+        .stat-val { font-size: 1.3rem; font-weight: 800; color: #fff; margin-top: 5px; }
+        .stat-lbl { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .txt-gold { color: var(--neon-gold); } .txt-green { color: var(--neon-green); }
 
-        /* INVITE CARD */
-        .invite-card { background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4); margin-bottom: 30px; position: relative; overflow: hidden; }
-        .invite-code { font-size: 2.5rem; font-weight: 800; margin: 10px 0; letter-spacing: 2px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .copy-btn { background: #fff; color: #6366f1; padding: 8px 20px; border-radius: 30px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: transform 0.2s; }
-        .copy-btn:active { transform: scale(0.95); }
-
-        /* LEVEL BOXES (16:9 Aspect Ratio) */
-        .level-grid { display: flex; flex-direction: column; gap: 20px; }
-        .level-box {
-            background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px; position: relative; overflow: hidden;
-            aspect-ratio: 16/9; /* YouTube Thumbnail Size */
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s;
-        }
-        .level-box:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-5px); }
+        /* LEVEL ACCORDION */
+        .level-container { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .level-box { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; overflow: hidden; }
         
-        /* Level Colors */
-        .lvl-1 { background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.2), #0f172a); border-left: 5px solid #10b981; }
-        .lvl-2 { background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.2), #0f172a); border-left: 5px solid #3b82f6; }
-        .lvl-3 { background: radial-gradient(circle at top right, rgba(245, 158, 11, 0.2), #0f172a); border-left: 5px solid #f59e0b; }
-
-        .lb-title { font-size: 1.2rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
-        .lb-profit { font-size: 2.5rem; font-weight: 800; color: #fff; }
-        .lb-count { font-size: 0.9rem; color: #64748b; margin-top: 5px; }
-
-        /* NOTIFICATION AREA */
-        .notif-container {
-            position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 100;
-            display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+        .lvl-header { 
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
+            background: rgba(255,255,255,0.02); cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .notif-card {
-            background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px; border-radius: 12px; backdrop-filter: blur(10px);
-            display: flex; align-items: center; gap: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            animation: slideIn 0.5s ease-out forwards;
-            pointer-events: auto;
-        }
-        @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes slideOut { to { transform: translateX(100%); opacity: 0; } }
+        .lvl-title { font-weight: 700; color: #fff; }
+        .lvl-summ { font-size: 0.85rem; color: var(--neon-green); font-weight: 600; }
+        
+        .lvl-body { display: none; padding: 10px; background: #0b0f19; }
+        .lvl-body.open { display: block; }
 
-        .notif-icon { width: 40px; height: 40px; background: rgba(16, 185, 129, 0.2); color: #10b981; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
-        .notif-text h4 { margin: 0; font-size: 0.95rem; font-weight: 700; color: #fff; }
-        .notif-text p { margin: 2px 0 0; font-size: 0.8rem; color: #94a3b8; }
-        .time-ago { font-size: 0.7rem; color: #64748b; margin-left: auto; }
+        /* USER LIST ITEM */
+        .user-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem;
+        }
+        .user-item:last-child { border-bottom: none; }
+        .u-id { color: #94a3b8; font-family: monospace; }
+        .u-profit { color: var(--neon-gold); font-weight: bold; }
+        .u-date { font-size: 0.7rem; color: #555; display: block; }
+
+        .empty-msg { text-align: center; padding: 15px; color: #555; font-size: 0.85rem; font-style: italic; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-        <h3>My Team Stats</h3>
+        <h3>My Team & Profits</h3>
     </div>
 
-    <!-- SUMMARY CARD (TOTALS) -->
-    <div class="summary-card">
-        <div class="sc-item">
-            <span>Total Members</span>
-            <h3 id="grandTotalMembers">0</h3>
+    <!-- 1. FINANCIAL SUMMARY (Synced with Home) -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-lbl">Today's Profit</div>
+            <div class="stat-val txt-gold"><span id="todayProf">0.00</span> USDT</div>
         </div>
-        <div class="sc-divider"></div>
-        <div class="sc-item">
-            <span>Total Earnings</span>
-            <h3 id="grandTotalMoney" class="txt-money">$0.00</h3>
-        </div>
-    </div>
-
-    <!-- REFERRAL CARD -->
-    <div class="invite-card">
-        <div style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">Your Referral Code</div>
-        <div class="invite-code" id="myCode">...</div>
-        <button class="copy-btn" onclick="copyLink()">Copy Invite Link <i class="fas fa-copy"></i></button>
-    </div>
-
-    <!-- LEVEL BOXES (16:9) -->
-    <div class="level-grid" id="levelGrid">
-        <!-- Level 1 -->
-        <div class="level-box lvl-1">
-            <div class="lb-title">Level 1 Profit</div>
-            <div class="lb-profit">$<span id="p1">0.00</span></div>
-            <div class="lb-count"><span id="c1">0</span> Members</div>
-        </div>
-        <!-- Level 2 -->
-        <div class="level-box lvl-2">
-            <div class="lb-title">Level 2 Profit</div>
-            <div class="lb-profit">$<span id="p2">0.00</span></div>
-            <div class="lb-count"><span id="c2">0</span> Members</div>
-        </div>
-        <!-- Level 3 -->
-        <div class="level-box lvl-3">
-            <div class="lb-title">Level 3 Profit</div>
-            <div class="lb-profit">$<span id="p3">0.00</span></div>
-            <div class="lb-count"><span id="c3">0</span> Members</div>
+        <div class="stat-card">
+            <div class="stat-lbl">Current Balance</div>
+            <div class="stat-val txt-green"><span id="currBal">0.00</span> USDT</div>
         </div>
     </div>
+    <div class="stat-card">
+        <div class="stat-lbl">Total Profit (Lifetime)</div>
+        <div class="stat-val"><span id="lifeProf">0.00</span> USDT</div>
+    </div>
 
-    <!-- NOTIFICATION AREA -->
-    <div class="notif-container" id="notifArea"></div>
+    <!-- 2. DYNAMIC LEVEL LIST -->
+    <div id="levelsContainer" class="level-container">
+        <div style="text-align:center; color:#555; margin-top:20px;">Loading Team Data...</div>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-        // UPDATED FIREBASE CONFIGURATION
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyBEEkp40hJF81XaLVa9DNPWX-aDy_0oEUE",
             authDomain: "shopping28-84906.firebaseapp.com",
@@ -141,114 +89,168 @@
             messagingSenderId: "252107906792",
             appId: "1:252107906792:web:d39b0be25c88e07015b35d"
         };
-        
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
+        const RATE = 120; 
 
-        const RATE = 120; // 1 USD = 120 BDT
-        const LEGACY_RATES = { 1: 130, 2: 20, 3: 10 }; 
-
-        let processedUsers = new Set();
-        // Stats Objects
-        let stats = { 1: {money:0, count:0}, 2: {money:0, count:0}, 3: {money:0, count:0} };
-        
-        // Grand Totals
-        let grandTotalMembers = 0;
-        let grandTotalMoneyBDT = 0;
+        let currentUser = null;
 
         auth.onAuthStateChanged(user => {
             if(user) {
-                db.ref('users/' + user.uid + '/ownCode').once('value', snap => {
-                    const code = snap.val();
-                    document.getElementById('myCode').innerText = code || "...";
-                    if(code) startTracking(code);
-                });
+                currentUser = user;
+                loadFinancials(); // Load Top Cards
+                loadTeamData();   // Load Level Details
             } else {
                 window.location.href = 'login_register.html';
             }
         });
 
-        function startTracking(myCode) {
-            trackLevel(myCode, 1);
-        }
+        // 1. LOAD FINANCIALS (Matches Home Page Logic)
+        function loadFinancials() {
+            db.ref('users/' + currentUser.uid).on('value', snap => {
+                const u = snap.val();
+                if(!u) return;
 
-        function trackLevel(parentCode, level) {
-            if(level > 3) return;
+                // Current Balance (Wallet)
+                const balBDT = parseFloat(u.balance || 0);
+                document.getElementById('currBal').innerText = (balBDT / RATE).toFixed(2);
 
-            db.ref('users').orderByChild('referredBy').equalTo(parentCode).on('child_added', snap => {
-                const user = snap.val();
-                const uid = snap.key;
+                // Calculate Lifetime Profit (Balance + Withdrawals)
+                let totalWithdrawn = 0;
+                db.ref('withdraw_requests').orderByChild('uid').equalTo(currentUser.uid).once('value', wSnap => {
+                    wSnap.forEach(c => {
+                        const w = c.val();
+                        if (w.status === 'approved' || w.status === 'pending') {
+                            totalWithdrawn += parseFloat(w.amountBDT || w.amount || 0);
+                        }
+                    });
+                    const lifetimeBDT = balBDT + totalWithdrawn;
+                    document.getElementById('lifeProf').innerText = (lifetimeBDT / RATE).toFixed(2);
+                });
 
-                if(user.status === 'active') {
-                    updateLevelStats(level, user);
-                    
-                    // Notification Logic (Last 10 mins)
-                    const joinTime = user.activatedAt || user.joinDate || 0;
-                    const tenMinsAgo = Date.now() - (10 * 60 * 1000);
-                    
-                    if(joinTime > tenMinsAgo && !processedUsers.has(uid)) {
-                        showNotification(level, user.firstName || "New User", user.ownCode);
-                        processedUsers.add(uid);
-                    }
-                }
-
-                if(user.ownCode) {
-                    trackLevel(user.ownCode, level + 1);
-                }
+                // Calculate Today's Profit (From Commission History & Rewards)
+                // Note: We scan commission_history to be precise about sources
+                calculateToday(currentUser.uid);
             });
         }
 
-        function updateLevelStats(level, user) {
-            let profitBDT = 0;
-            
-            if(user.fixed_commissions) {
-                if(level === 1) profitBDT = user.fixed_commissions.level1;
-                if(level === 2) profitBDT = user.fixed_commissions.level2;
-                if(level === 3) profitBDT = user.fixed_commissions.level3;
-            } else {
-                profitBDT = LEGACY_RATES[level] || 0;
-            }
+        function calculateToday(uid) {
+            const todayStr = new Date().toDateString();
+            let todaySum = 0;
 
-            // Update Level specific
-            stats[level].money += profitBDT;
-            stats[level].count += 1;
-
-            // Update Grand Totals
-            grandTotalMoneyBDT += profitBDT;
-            grandTotalMembers += 1;
-
-            // Render Level Stats
-            document.getElementById(`p${level}`).innerText = (stats[level].money / RATE).toFixed(2);
-            document.getElementById(`c${level}`).innerText = stats[level].count;
-
-            // Render Grand Stats
-            document.getElementById('grandTotalMembers').innerText = grandTotalMembers;
-            document.getElementById('grandTotalMoney').innerText = "$" + (grandTotalMoneyBDT / RATE).toFixed(2);
+            // Check Commission History
+            db.ref(`users/${uid}/commission_history`).once('value', snap => {
+                snap.forEach(child => {
+                    const record = child.val();
+                    if (new Date(record.timestamp).toDateString() === todayStr) {
+                        todaySum += parseFloat(record.amount || 0);
+                    }
+                });
+                
+                // Check Reward History (if any)
+                db.ref(`users/${uid}/target_rewards`).once('value', rSnap => {
+                    rSnap.forEach(child => {
+                        const r = child.val();
+                        if (new Date(r.timestamp).toDateString() === todayStr) {
+                            todaySum += parseFloat(r.amountBDT || 0);
+                        }
+                    });
+                    // Display
+                    document.getElementById('todayProf').innerText = (todaySum / RATE).toFixed(2);
+                });
+            });
         }
 
-        function showNotification(level, name, id) {
-            const container = document.getElementById('notifArea');
-            const div = document.createElement('div');
-            div.className = 'notif-card';
-            div.innerHTML = `
-                <div class="notif-icon"><i class="fas fa-user-plus"></i></div>
-                <div class="notif-text">
-                    <h4>New Level ${level} Member!</h4>
-                    <p>${name} (ID: ${id}) just joined.</p>
-                </div>
-                <div class="time-ago">Just now</div>
-            `;
-            container.appendChild(div);
-            setTimeout(() => {
-                div.style.animation = "slideOut 0.5s forwards";
-                setTimeout(() => div.remove(), 500);
-            }, 10000);
+        // 2. LOAD TEAM DATA & LEVELS (Dynamic from History)
+        // This ensures if rate changes, old history remains correct (Locked Price)
+        function loadTeamData() {
+            // First get configured levels from settings to know names/structure
+            db.ref('settings/referral_levels').once('value', setSnap => {
+                const settingsLevels = setSnap.val() || [];
+                
+                // Fetch User's Commission History
+                db.ref(`users/${currentUser.uid}/commission_history`).on('value', histSnap => {
+                    const history = histSnap.val() || {};
+                    renderTeamLevels(settingsLevels, history);
+                });
+            });
         }
 
-        function copyLink() {
-            navigator.clipboard.writeText(`https://shopping28.github.io/-/login_register.html?ref=${document.getElementById('myCode').innerText}`);
-            alert("Invite Link Copied!");
+        function renderTeamLevels(settingsLevels, history) {
+            const container = document.getElementById('levelsContainer');
+            container.innerHTML = "";
+
+            // Group History by Level
+            // Structure: { 1: {total: 0, members: []}, 2: ... }
+            let levelData = {};
+
+            // Initialize based on settings (so we show Level 1, 2 etc even if empty)
+            settingsLevels.forEach(l => {
+                levelData[l.level] = { totalBDT: 0, members: [] };
+            });
+
+            // Process History Data
+            Object.values(history).forEach(record => {
+                const lvl = record.level;
+                if(!levelData[lvl]) levelData[lvl] = { totalBDT: 0, members: [] }; // Handle old levels if settings changed
+
+                levelData[lvl].totalBDT += parseFloat(record.amount || 0);
+                levelData[lvl].members.push({
+                    from: record.fromUser || "Unknown", // The User ID who joined
+                    amount: record.amount,              // The amount I received (Historical Locked)
+                    date: record.timestamp
+                });
+            });
+
+            // Render HTML
+            // Sort keys to ensure Level 1 is first
+            Object.keys(levelData).sort((a,b)=>a-b).forEach(lvlNum => {
+                const data = levelData[lvlNum];
+                const totalUSD = (data.totalBDT / RATE).toFixed(2);
+                const count = data.members.length;
+
+                // Create User List HTML
+                let userListHtml = "";
+                if(count === 0) {
+                    userListHtml = `<div class="empty-msg">No active members in Level ${lvlNum} yet.</div>`;
+                } else {
+                    // Sort members newest first
+                    data.members.sort((a,b) => b.date - a.date).forEach(m => {
+                        const mUSD = (m.amount / RATE).toFixed(2);
+                        userListHtml += `
+                            <div class="user-item">
+                                <div>
+                                    <span class="u-id">ID: ${m.from}</span>
+                                    <span class="u-date">${new Date(m.date).toLocaleDateString()}</span>
+                                </div>
+                                <div class="u-profit">+ $${mUSD}</div>
+                            </div>
+                        `;
+                    });
+                }
+
+                const html = `
+                    <div class="level-box">
+                        <div class="lvl-header" onclick="toggleLevel('lvl-${lvlNum}')">
+                            <div class="lvl-title">Level ${lvlNum}</div>
+                            <div class="lvl-summ">
+                                <i class="fas fa-users"></i> ${count} &nbsp;|&nbsp; 
+                                <i class="fas fa-dollar-sign"></i> ${totalUSD}
+                            </div>
+                        </div>
+                        <div id="lvl-${lvlNum}" class="lvl-body">
+                            ${userListHtml}
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function toggleLevel(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('open');
         }
     </script>
 </body>
