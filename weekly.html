@@ -89,7 +89,9 @@
         <button id="submitReviewBtn" onclick="submitForReview()" style="display:none; width:100%; margin-top:15px; background:var(--neon-green); color:#000; padding:14px; border-radius:12px; font-weight:800; border:none; cursor:pointer;">SUBMIT FOR REVIEW <i class="fas fa-paper-plane"></i></button>
     </div>
 
-    <div class="levels-grid" id="levelsContainer"></div>
+    <div class="levels-grid" id="levelsContainer">
+        <div style="text-align:center; color:#666; padding:20px;">Loading Challenges...</div>
+    </div>
 
     <!-- Modals -->
     <div class="modal-overlay" id="buyModal">
@@ -125,12 +127,8 @@
         const db = firebase.database(); const auth = firebase.auth();
         let currentUser=null, myCredits=0, adminWallet="", currentActiveTarget=null, pendingRequest=null, reviewRequest=null, selectedPackage=null, timerInterval=null;
 
-        const LEVELS = [
-            { level: 1, target: 5, reward: 2.5, cost: 1 }, { level: 2, target: 10, reward: 5.0, cost: 1 }, { level: 3, target: 15, reward: 7.5, cost: 1 },
-            { level: 4, target: 20, reward: 10.0, cost: 1 }, { level: 5, target: 25, reward: 12.5, cost: 1 }, { level: 6, target: 30, reward: 15.0, cost: 1 }
-        ];
-
-        auth.onAuthStateChanged(user => { if(user) { currentUser=user; loadUserData(); loadAdminData(); checkRequests(); } else { window.location.href = 'login_register.html'; } });
+        auth.onAuthStateChanged(user => { if(user) { currentUser=user; loadUserData(); loadAdminData(); checkRequests(); loadDynamicLevels(); } else { window.location.href = 'login_register.html'; } });
+        
         function loadAdminData() { db.ref('settings/credits/wallet').on('value', snap => adminWallet = snap.val() || "Loading..."); }
         
         function loadUserData() {
@@ -140,7 +138,7 @@
                 currentActiveTarget = u.active_target || null;
                 if(u.last_rejection && !u.rejection_seen) { document.getElementById('rejectedArea').style.display = 'block'; document.getElementById('rejectReason').innerText = u.last_rejection; document.getElementById('pendingArea').style.display = 'none'; }
                 else { document.getElementById('rejectedArea').style.display = 'none'; }
-                renderLevels(u); checkActiveProgress(u);
+                checkActiveProgress(u);
             });
         }
 
@@ -149,26 +147,60 @@
                 pendingRequest = null; document.getElementById('pendingArea').style.display = 'none';
                 snap.forEach(child => { const req = child.val(); if(req.status === 'pending' && req.type === 'weekly') pendingRequest = req; });
                 if(pendingRequest) { document.getElementById('pendingArea').style.display = 'block'; document.getElementById('pendingLevel').innerText = "Level " + pendingRequest.level; }
-                if(currentUser) db.ref('users/' + currentUser.uid).once('value', s => renderLevels(s.val()));
+                
+                // Re-render levels to update button states
+                loadDynamicLevels(); 
             });
             db.ref('reward_requests').orderByChild('uid').equalTo(currentUser.uid).on('value', snap => {
                 reviewRequest = null; document.getElementById('reviewArea').style.display = 'none';
                 snap.forEach(child => { const req = child.val(); if(req.status === 'pending' && req.type === 'weekly') reviewRequest = req; });
                 if(reviewRequest) { document.getElementById('reviewArea').style.display = 'block'; document.getElementById('reviewLevel').innerText = reviewRequest.level; document.getElementById('activeStatusArea').style.display = 'none'; }
+                
+                // Re-render levels
+                loadDynamicLevels();
             });
         }
 
-        function renderLevels(user) {
+        // --- NEW: FETCH LEVELS FROM DATABASE ---
+        function loadDynamicLevels() {
+            db.ref('settings/targets/weekly').on('value', snap => {
+                if(!snap.exists()) { document.getElementById('levelsContainer').innerHTML = "<div style='text-align:center;'>No active weekly challenges.</div>"; return; }
+                
+                // Convert object to array
+                let levels = [];
+                snap.forEach(child => { levels.push(child.val()); });
+                
+                // Sort by Level Number
+                levels.sort((a,b) => a.level - b.level);
+                
+                renderLevels(levels);
+            });
+        }
+
+        function renderLevels(levels) {
             const container = document.getElementById('levelsContainer'); container.innerHTML = "";
             let isBusy = (currentActiveTarget && currentActiveTarget.type === 'monthly') || pendingRequest || reviewRequest;
 
-            LEVELS.forEach(lvl => {
+            levels.forEach(lvl => {
                 let btnLabel = `Apply <i class="fas fa-arrow-right"></i>`, btnState = "", costText = `${lvl.cost} Credit`;
+                
                 if(reviewRequest && reviewRequest.level == lvl.level) { btnLabel = "Under Review"; btnState = "disabled"; }
                 else if(currentActiveTarget && currentActiveTarget.level == lvl.level && currentActiveTarget.type === 'weekly') { btnLabel = "Active"; btnState = "disabled"; costText = ""; }
                 else if(isBusy) { btnLabel = "Locked 🔒"; btnState = "disabled"; costText = ""; }
 
-                container.innerHTML += `<div class="level-card"><div class="lc-top"><span class="lvl-pill">LEVEL ${lvl.level}</span><span class="lvl-reward">$${lvl.reward}</span></div><div class="lc-target">Target: <span>${lvl.target} Refs</span></div><button class="apply-btn" ${btnState} onclick="applyForChallenge(${lvl.level}, ${lvl.target}, ${lvl.reward}, ${lvl.cost})"><span>${btnLabel}</span><small>${costText}</small></button></div>`;
+                container.innerHTML += `
+                    <div class="level-card">
+                        <div class="lc-top">
+                            <span class="lvl-pill">LEVEL ${lvl.level}</span>
+                            <span class="lvl-reward">$${lvl.reward}</span>
+                        </div>
+                        <div class="lc-target">Target: <span>${lvl.target} Refs</span></div>
+                        <div style="font-size:0.75rem; color:#aaa; margin-bottom:10px;">Duration: ${lvl.duration || 7} Days</div>
+                        <button class="apply-btn" ${btnState} onclick="applyForChallenge(${lvl.level}, ${lvl.target}, ${lvl.reward}, ${lvl.cost})">
+                            <span>${btnLabel}</span>
+                            <small>${costText}</small>
+                        </button>
+                    </div>`;
             });
         }
 
