@@ -46,7 +46,7 @@
             text-transform: uppercase;
         }
 
-        /* HERO CARD (Premium Gold Look) */
+        /* HERO CARD */
         .hero-card {
             background: linear-gradient(135deg, #1c1c1c 0%, #000000 100%);
             border: 1px solid rgba(191, 149, 63, 0.3);
@@ -100,13 +100,7 @@
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
         }
         .progress-fill { height: 100%; width: 0%; border-radius: 10px; transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1); position: relative; }
-        .progress-fill::after {
-            content: ''; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
-            background-size: 1rem 1rem; animation: moveStripes 1s linear infinite;
-        }
-        @keyframes moveStripes { from { background-position: 1rem 0; } to { background-position: 0 0; } }
-
+        
         .locked .progress-fill { background: #444; }
         .running .progress-fill { background: linear-gradient(90deg, #FDC830, #F37335); }
         .completed .progress-fill { background: var(--neon-green); box-shadow: 0 0 15px var(--neon-green); }
@@ -152,7 +146,7 @@
     <!-- Levels List -->
     <div class="level-container" id="levelContainer">
         <div style="text-align:center; padding:50px; color:#444;">
-            <i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Loading...
+            <i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Checking Levels...
         </div>
     </div>
 
@@ -161,7 +155,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // UPDATED FIREBASE CONFIGURATION
+        // FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyBEEkp40hJF81XaLVa9DNPWX-aDy_0oEUE",
             authDomain: "shopping28-84906.firebaseapp.com",
@@ -180,17 +174,7 @@
         let directActiveCount = 0; 
         const RATE = 120; // 1 USD = 120 BDT
 
-        // VIP LEVELS CONFIGURATION
-        const VIP_LEVELS = [
-            { id: 1, target: 5, reward: 0.83 },
-            { id: 2, target: 20, reward: 1.67 },
-            { id: 3, target: 35, reward: 3.33 },
-            { id: 4, target: 100, reward: 5.00 },
-            { id: 5, target: 350, reward: 10.00 },
-            { id: 6, target: 800, reward: 20.00 },
-            { id: 7, target: 2000, reward: 50.00 }
-        ];
-
+        // AUTHENTICATION CHECK
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
@@ -200,18 +184,16 @@
             }
         });
 
-        // 1. Calculate ONLY Direct Active Referrals
+        // 1. Calculate Active Direct Referrals
         function calculateDirectReferrals(uid) {
             db.ref('users/' + uid + '/ownCode').once('value', snap => {
                 const myCode = snap.val();
                 if(!myCode) return;
 
-                // Query: Select users where 'referredBy' equals 'myCode'
                 db.ref('users').orderByChild('referredBy').equalTo(myCode).on('value', teamSnap => {
                     let count = 0;
                     if(teamSnap.exists()) {
                         teamSnap.forEach(child => {
-                            // Check if status is active
                             if(child.val().status === 'active') {
                                 count++;
                             }
@@ -219,23 +201,57 @@
                     }
                     directActiveCount = count;
                     document.getElementById('myRef').innerText = directActiveCount;
-                    renderLevels();
+                    
+                    // After counting, Load Levels from Database
+                    loadVipLevelsFromDB();
                 });
             });
         }
 
-        // 2. Render Levels
-        function renderLevels() {
+        // 2. Load Levels from Firebase (NO HARDCODED DATA)
+        function loadVipLevelsFromDB() {
+            const container = document.getElementById('levelContainer');
+            
+            // Fetch Settings from Admin Panel input
+            db.ref('settings/vip_levels').on('value', snapshot => {
+                container.innerHTML = ""; // Clear existing
+
+                if (!snapshot.exists()) {
+                    container.innerHTML = `
+                        <div style="text-align:center; padding:30px; color:#555;">
+                            <h3>No VIP Levels Active</h3>
+                            <p>Please wait for admin to add levels.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Convert Object to Array & Sort by ID/Level
+                let levels = [];
+                snapshot.forEach(child => {
+                    levels.push(child.val());
+                });
+                levels.sort((a, b) => a.id - b.id); // Ensure Level 1, 2, 3 order
+
+                // Render
+                renderLevels(levels);
+            });
+        }
+
+        // 3. Render Levels Logic
+        function renderLevels(vipLevels) {
             db.ref('users/' + currentUser.uid + '/completed_levels/vip').once('value', snap => {
                 const completed = snap.val() || {};
                 const container = document.getElementById('levelContainer');
-                container.innerHTML = "";
-
-                VIP_LEVELS.forEach((lvl, index) => {
+                
+                vipLevels.forEach((lvl, index) => {
                     const progress = Math.min(directActiveCount, lvl.target);
                     const percent = (progress / lvl.target) * 100;
                     const isCompleted = completed[lvl.id];
                     const isEligible = directActiveCount >= lvl.target;
+                    
+                    // Display reward in USD ($)
+                    const displayReward = lvl.reward; 
 
                     let statusClass = "locked";
                     let actionHtml = `<div class="status-pill st-lock"><i class="fas fa-lock"></i> LOCKED</div>`;
@@ -245,7 +261,7 @@
                         actionHtml = `<div class="status-pill st-done"><i class="fas fa-check-circle"></i> REWARD RECEIVED</div>`;
                     } else if (isEligible) {
                         statusClass = "running";
-                        actionHtml = `<button class="btn-claim" onclick="claimVip(${lvl.id}, ${lvl.reward})">CLAIM $${lvl.reward} NOW</button>`;
+                        actionHtml = `<button class="btn-claim" onclick="claimVip(${lvl.id}, ${displayReward})">CLAIM $${displayReward} NOW</button>`;
                     } else if (directActiveCount > 0) {
                         statusClass = "running";
                         actionHtml = `<div class="status-pill st-run">IN PROGRESS</div>`;
@@ -255,7 +271,7 @@
                         <div class="vip-card ${statusClass} fade-up" style="animation-delay: ${index * 0.1}s">
                             <div class="card-header">
                                 <div class="lvl-badge">VIP ${lvl.id}</div>
-                                <div class="bonus-txt">+ $${lvl.reward}</div>
+                                <div class="bonus-txt">+ $${displayReward}</div>
                             </div>
                             
                             <div class="progress-track">
@@ -275,11 +291,11 @@
             });
         }
 
-        // 3. Claim Logic
-        function claimVip(levelId, reward) {
+        // 4. Claim Logic
+        function claimVip(levelId, rewardUSD) {
             const updates = {};
             const timestamp = Date.now();
-            const rewardBDT = reward * RATE; // Convert USD Reward to BDT for wallet consistency
+            const rewardBDT = rewardUSD * RATE; // Convert to BDT for Wallet
 
             // A. Add Balance (BDT)
             db.ref('users/' + currentUser.uid + '/balance').transaction(bal => (bal || 0) + rewardBDT);
@@ -291,14 +307,15 @@
             const historyKey = db.ref('users/' + currentUser.uid + '/vip_rewards').push().key;
             updates['users/' + currentUser.uid + '/vip_rewards/' + historyKey] = {
                 level: levelId,
-                amount: reward, // Store USD value in history for reference
+                amount: rewardUSD, 
                 amountBDT: rewardBDT,
                 timestamp: timestamp
             };
 
             db.ref().update(updates).then(() => {
-                alert(`Congratulations! $${reward} (approx ${rewardBDT} BDT) added to your balance.`);
-                renderLevels();
+                alert(`Congratulations! $${rewardUSD} (approx ${rewardBDT} BDT) added to your balance.`);
+                // Force reload of levels status (optional as listener handles it)
+                loadVipLevelsFromDB();
             });
         }
     </script>
