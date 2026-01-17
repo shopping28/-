@@ -16,6 +16,7 @@
             --neon-blue: #00f2ff;
             --neon-green: #00ff88;
             --neon-red: #ff4757;
+            --neon-purple: #bc13fe;
             --text-main: #ffffff;
             --text-muted: #8b9bb4;
         }
@@ -26,7 +27,6 @@
             color: var(--text-main);
             font-family: 'Outfit', sans-serif;
             overflow-x: hidden;
-            position: relative;
         }
 
         /* AMBIENT LIGHTS */
@@ -38,114 +38,76 @@
         .header {
             padding: 20px;
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(5, 5, 5, 0.8);
-            backdrop-filter: blur(15px);
+            background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(15px);
             border-bottom: 1px solid var(--glass-border);
             position: sticky; top: 0; z-index: 100;
         }
+        .back-btn { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
         .logo { font-size: 1.2rem; font-weight: 900; letter-spacing: 1px; }
         .logo span { background: linear-gradient(to right, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .back-btn {
-            color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;
-            display: flex; align-items: center; gap: 5px; transition: 0.3s;
-        }
-        .back-btn:hover { color: var(--neon-blue); }
 
-        /* PROFILE CARD */
+        /* PROFILE SECTION */
         .profile-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 30px 20px;
-            margin: 20px;
-            text-align: center;
-            position: relative; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 30px 20px; margin: 20px;
+            text-align: center; display: flex; flex-direction: column; align-items: center;
         }
-
         .pic-container { position: relative; width: 100px; height: 100px; margin-bottom: 15px; cursor: pointer; }
         .pic-box {
             width: 100%; height: 100%; border-radius: 50%;
             background: linear-gradient(135deg, #00f2ff, #bc13fe);
-            padding: 4px; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+            padding: 3px; display: flex; justify-content: center; align-items: center;
         }
         .pic-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid #000; }
-        .camera-icon {
-            position: absolute; bottom: 0; right: 0;
-            background: var(--neon-blue); color: #000;
-            width: 30px; height: 30px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            border: 2px solid #000; font-size: 0.9rem;
-        }
-
-        .name-area { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
-        .user-name { font-size: 1.5rem; font-weight: 800; margin: 0; }
-        .edit-icon { color: var(--neon-gold); cursor: pointer; font-size: 1rem; }
-
-        .uid-badge {
-            background: rgba(255,255,255,0.08); padding: 5px 12px; border-radius: 10px;
-            font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;
-            border: 1px solid rgba(255,255,255,0.1); font-family: monospace;
-        }
-
-        /* EDIT FORM */
-        #nameEditForm { display: none; margin-top: 15px; width: 100%; }
-        .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        .glass-input {
-            width: 100%; padding: 12px; background: rgba(0,0,0,0.3);
-            border: 1px solid var(--glass-border); color: #fff; border-radius: 10px; outline: none;
-        }
-        .glass-input:focus { border-color: var(--neon-blue); }
-        .save-btn {
-            width: 100%; padding: 10px; background: var(--neon-green); color: #000;
-            border: none; border-radius: 10px; font-weight: 800; cursor: pointer;
-        }
+        .user-name { font-size: 1.5rem; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 10px; }
+        .edit-icon { font-size: 0.9rem; color: var(--neon-gold); cursor: pointer; }
+        .uid-pill { background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 10px; font-size: 0.8rem; margin-top: 5px; color: #aaa; font-family: monospace; }
 
         /* STATS GRID */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px 25px; }
-        .stat-box {
-            background: var(--glass-bg); border: 1px solid var(--glass-border);
-            padding: 20px; border-radius: 18px; text-align: center;
-        }
-        .stat-num { font-size: 1.4rem; font-weight: 800; margin: 5px 0 0; }
-        .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .val-gold { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
-        .val-blue { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 0 20px 15px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 20px 20px; }
+        
+        .stat-box { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 15px 10px; border-radius: 15px; text-align: center; }
+        .stat-val { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 2px; }
+        .stat-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .c-green { color: var(--neon-green); }
+        .c-gold { color: var(--neon-gold); }
+        .c-blue { color: var(--neon-blue); }
+        .c-purp { color: var(--neon-purple); }
 
-        /* MENU LIST */
+        /* REFERRAL LINK */
+        .ref-box {
+            margin: 0 20px 25px; background: rgba(0,0,0,0.3); border: 1px dashed var(--neon-blue);
+            padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+        }
+        .ref-text { font-family: monospace; color: var(--neon-blue); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%; }
+
+        /* MENU ITEMS */
         .menu-container { margin: 0 20px; display: flex; flex-direction: column; gap: 10px; }
         .menu-item {
             background: var(--glass-bg); border: 1px solid var(--glass-border);
-            padding: 15px 20px; border-radius: 15px;
-            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center;
             cursor: pointer; transition: 0.2s;
         }
         .menu-item:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
         .menu-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 0.95rem; }
         .menu-left i { width: 25px; text-align: center; color: var(--neon-blue); font-size: 1.1rem; }
-        
-        /* DROPDOWN SECTIONS */
-        .hidden-section { 
-            display: none; background: rgba(0,0,0,0.4); 
-            padding: 20px; margin: 0 20px 10px; border-radius: 15px; 
-            border: 1px solid var(--glass-border);
-        }
-        .about-text p { margin: 5px 0; color: #ccc; font-size: 0.9rem; }
-        .update-btn {
-            width: 100%; padding: 12px; background: var(--neon-blue); color: #000;
-            border: none; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 10px;
-        }
 
-        /* LOGOUT */
-        .logout-btn {
-            margin: 30px 20px; width: calc(100% - 40px); padding: 15px;
-            background: rgba(255, 71, 87, 0.1); border: 1px solid var(--neon-red);
-            color: var(--neon-red); border-radius: 15px; font-weight: 800;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
+        /* DROPDOWN CONTENT */
+        .hidden-section { display: none; background: #0f0f13; padding: 20px; margin: 0 20px 10px; border-radius: 15px; border: 1px solid var(--glass-border); }
+        .content-text { font-size: 0.85rem; color: #ccc; line-height: 1.6; text-align: justify; max-height: 300px; overflow-y: auto; }
+        .content-text h4 { color: var(--neon-blue); margin: 15px 0 5px; }
+        .content-text p { margin-bottom: 10px; }
 
+        /* FORM & BUTTONS */
+        .glass-input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #fff; border-radius: 10px; margin-bottom: 10px; box-sizing: border-box; }
+        .update-btn { width: 100%; padding: 12px; background: var(--neon-blue); color: #000; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; }
+        .logout-btn { margin: 30px 20px; width: calc(100% - 40px); padding: 15px; background: rgba(255, 71, 87, 0.1); border: 1px solid var(--neon-red); color: var(--neon-red); border-radius: 15px; font-weight: 800; cursor: pointer; }
+
+        /* Edit Name Form */
+        #nameEditForm { display: none; width: 100%; margin-top: 10px; }
+        .flex-row { display: flex; gap: 5px; }
     </style>
 </head>
 <body>
@@ -153,108 +115,138 @@
     <div class="ambient-light al-1"></div>
     <div class="ambient-light al-2"></div>
 
-    <!-- HEADER -->
+    <!-- Header -->
     <div class="header">
         <a href="home.html" class="back-btn"><i class="fas fa-chevron-left"></i> Home</a>
         <div class="logo">SHOPPING<span>28</span></div>
     </div>
 
-    <!-- PROFILE CARD -->
+    <!-- Profile -->
     <div class="profile-card">
         <div class="pic-container" onclick="document.getElementById('fileInput').click()">
-            <div class="pic-box" id="profilePicBox">
-                <i class="fas fa-user" style="font-size: 2.5rem; color: #555;"></i>
-            </div>
-            <div class="camera-icon"><i class="fas fa-camera"></i></div>
+            <div class="pic-box" id="profilePicBox"><img src="https://i.ibb.co/tZ26z1q/default-profile.png" id="u_img"></div>
+            <div style="position:absolute; bottom:0; right:0; background:#000; color:#fff; border-radius:50%; padding:5px; font-size:0.7rem;"><i class="fas fa-camera"></i></div>
         </div>
         <input type="file" id="fileInput" hidden accept="image/*" onchange="uploadProfilePic(this)">
 
-        <div class="name-area">
-            <h2 class="user-name" id="p_name">Loading...</h2>
-            <i class="fas fa-pen edit-icon" onclick="toggleNameEdit()"></i>
-        </div>
-        
-        <div class="uid-badge" id="p_uid">UID: ...</div>
-        <div class="uid-badge" style="color:var(--neon-green); border-color:var(--neon-green);">
-            Code: <span id="p_code">...</span>
-        </div>
+        <div class="user-name"><span id="p_name">Loading...</span> <i class="fas fa-pen edit-icon" onclick="toggleNameEdit()"></i></div>
+        <div class="uid-pill" id="p_uid">UID: ...</div>
 
-        <!-- Name Edit Form -->
+        <!-- Name Edit -->
         <div id="nameEditForm">
-            <div class="form-row">
+            <div class="flex-row">
                 <input type="text" id="newFName" class="glass-input" placeholder="First Name">
                 <input type="text" id="newLName" class="glass-input" placeholder="Last Name">
             </div>
-            <button class="save-btn" onclick="saveNameChange()">Update Name</button>
+            <button class="update-btn" onclick="saveNameChange()">Update</button>
         </div>
     </div>
 
-    <!-- STATS (USDT) -->
-    <div class="stats-grid">
+    <!-- Financial Stats -->
+    <div class="grid-3">
         <div class="stat-box">
-            <i class="fas fa-wallet" style="color:#ffd700; font-size:1.5rem;"></i>
-            <div class="stat-num val-gold"><span id="p_balance">0.00</span> USDT</div>
-            <div class="stat-lbl">Total Profit</div>
+            <div class="stat-val c-green" id="curr_bal">0.00</div>
+            <div class="stat-lbl">Current Balance</div>
         </div>
         <div class="stat-box">
-            <i class="fas fa-users" style="color:#00f2ff; font-size:1.5rem;"></i>
-            <div class="stat-num val-blue" id="p_team">0</div>
-            <div class="stat-lbl">Total Team</div>
+            <div class="stat-val c-gold" id="life_prof">0.00</div>
+            <div class="stat-lbl">Lifetime Profit</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-val c-blue" id="today_prof">0.00</div>
+            <div class="stat-lbl">Today's Profit</div>
         </div>
     </div>
 
-    <!-- MENU LIST -->
+    <!-- Team Stats -->
+    <div class="grid-2">
+        <div class="stat-box" onclick="window.location.href='my_team.html'">
+            <div class="stat-val c-purp" id="team_count">0</div>
+            <div class="stat-lbl">My Team (All)</div>
+        </div>
+        <div class="stat-box" onclick="window.location.href='my_team.html'">
+            <div class="stat-val c-purp" id="partner_count">0</div>
+            <div class="stat-lbl">My Partners</div>
+        </div>
+    </div>
+
+    <!-- Referral Link -->
+    <div class="ref-box" onclick="copyRefLink()">
+        <span id="ref_link_text" class="ref-text">shopping28.io/...</span>
+        <i class="fas fa-copy" style="color:#aaa;"></i>
+    </div>
+
+    <!-- Menu -->
     <div class="menu-container">
         
-        <!-- About -->
+        <!-- About Us -->
         <div class="menu-item" onclick="toggleSection('aboutSection')">
-            <div class="menu-left"><i class="fas fa-info-circle"></i> About & Rules</div>
+            <div class="menu-left"><i class="fas fa-info-circle"></i> About Shopping28</div>
             <i class="fas fa-chevron-down" style="color:#666; font-size:0.8rem;"></i>
         </div>
-        <div id="aboutSection" class="hidden-section about-text">
-            <center style="margin-bottom:15px;">
-                <i class="fas fa-shopping-bag" style="font-size:2rem; color:var(--neon-blue); margin-bottom:10px;"></i>
-                <h3 style="margin:0;">SHOPPING28</h3>
-                <small style="color:#888;">Premium Network</small>
-            </center>
-            <p><strong>CEO:</strong> Munna Art</p>
-            <p><strong>Developer:</strong> The Rafsan</p>
-            <hr style="border-color:rgba(255,255,255,0.1);">
-            <p style="color:var(--neon-green)">Lvl 1 Income: 130 BDT</p>
-            <p style="color:var(--neon-blue)">Lvl 2 Income: 20 BDT</p>
-            <p style="color:var(--neon-gold)">Lvl 3 Income: 10 BDT</p>
+        <div id="aboutSection" class="hidden-section content-text">
+            <p><strong>Shopping28</strong> is a modern online earning platform created to provide real and sustainable income opportunities through smart partnership and task-based earning systems.</p>
+            <p>Our platform offers structured monthly and weekly target earning plans, VIP level bonus rewards, and a powerful partner referral earning system. The main earning method of Shopping28 is inviting and joining partners, where users can build a strong network and earn consistently through team performance.</p>
+            <p>Shopping28 ensures fast and reliable withdrawals. All eligible earnings are processed within 24 hours, giving users full confidence and trust. We support secure and global transactions using USDT (BEP20).</p>
+            <p>Users can also redeem bonus rewards and gain access to Task28, where they can complete tasks for free and earn easy dollars without any investment.</p>
+            <p>Looking toward the future, Shopping28 is working on launching its own digital coin, which will create even more earning opportunities and long-term value for our community.</p>
+            <p style="color:var(--neon-green); font-weight:bold;">Shopping28 is not just an earning platform — it is a growing digital ecosystem focused on transparency, innovation, and sustainable income.</p>
         </div>
 
-        <!-- Telegram -->
-        <div class="menu-item" onclick="window.open('https://t.me/art_community_offical', '_blank')">
-            <div class="menu-left"><i class="fab fa-telegram-plane"></i> Join Telegram</div>
-            <i class="fas fa-external-link-alt" style="color:#666; font-size:0.8rem;"></i>
+        <!-- Terms & Conditions -->
+        <div class="menu-item" onclick="toggleSection('termsSection')">
+            <div class="menu-left"><i class="fas fa-file-contract"></i> Terms & Conditions</div>
+            <i class="fas fa-chevron-down" style="color:#666; font-size:0.8rem;"></i>
+        </div>
+        <div id="termsSection" class="hidden-section content-text">
+            <p>Welcome to Shopping28. By accessing or using our platform, you agree to comply with and be bound by the following Terms & Conditions.</p>
+            
+            <h4>1. Platform Usage</h4>
+            <p>Shopping28 provides income opportunities through partner referrals, weekly/monthly targets, VIP bonuses, and tasks. Users must use the platform honestly.</p>
+
+            <h4>2. Withdrawal Policy</h4>
+            <p>All eligible withdrawal requests are processed within 24 hours. If failed due to technical reasons, funds return to the user balance.</p>
+
+            <h4>3. Anti-Scam Policy</h4>
+            <p>Fraud, fake accounts, or manipulation is prohibited. We reserve the right to block accounts engaging in scam activities without notice.</p>
+
+            <h4>4. Target & VIP Rules</h4>
+            <p>Targets and VIP earnings must be completed genuinely. Fake submissions will result in earnings cancellation.</p>
+
+            <h4>5. Bonus & Task Earnings</h4>
+            <p>Bonus rewards and free tasks via Task28 are available. Misuse may lead to restrictions.</p>
+
+            <h4>6. Account Responsibility</h4>
+            <p>Users are responsible for their credentials. We are not liable for losses due to shared login info.</p>
+
+            <h4>7. Payment Method</h4>
+            <p>Payments are via USDT (BEP20). Ensure wallet addresses are correct; we are not liable for user errors.</p>
+
+            <h4>8. Changes & Decisions</h4>
+            <p>We reserve the right to modify terms. All decisions regarding earnings and accounts are final.</p>
         </div>
 
-        <!-- Password -->
+        <!-- Change Password -->
         <div class="menu-item" onclick="toggleSection('passSection')">
             <div class="menu-left"><i class="fas fa-key"></i> Change Password</div>
             <i class="fas fa-chevron-down" style="color:#666; font-size:0.8rem;"></i>
         </div>
         <div id="passSection" class="hidden-section">
-            <input type="password" id="oldPass" class="glass-input" placeholder="Current Password" style="margin-bottom:10px;">
-            <input type="password" id="newPass" class="glass-input" placeholder="New Password (min 6)">
-            <button class="update-btn" onclick="changePassword()">Change Password</button>
+            <input type="password" id="oldPass" class="glass-input" placeholder="Current Password">
+            <input type="password" id="newPass" class="glass-input" placeholder="New Password (min 6 chars)">
+            <button class="update-btn" onclick="changePassword()">Update Password</button>
         </div>
 
     </div>
 
-    <button class="logout-btn" onclick="logout()">
-        <i class="fas fa-sign-out-alt"></i> LOGOUT
-    </button>
+    <button class="logout-btn" onclick="logout()">LOGOUT <i class="fas fa-sign-out-alt"></i></button>
 
-    <!-- FIREBASE SDK -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // UPDATED FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyBEEkp40hJF81XaLVa9DNPWX-aDy_0oEUE",
             authDomain: "shopping28-84906.firebaseapp.com",
@@ -268,14 +260,10 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
+        const RATE = 120; // 1 USD = 120 BDT
 
         let currentUser = null;
-
-        // CONVERT TAKA TO USDT (120 BDT = 1 USD)
-        function toUSDT(taka) {
-            if(!taka) return "0.00";
-            return (parseFloat(taka) / 120).toFixed(2);
-        }
+        let realRefLink = "";
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -290,49 +278,103 @@
             db.ref('users/' + uid).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
-                    // Profile
+                    // Profile Info
                     document.getElementById('p_name').innerText = data.firstName + " " + (data.lastName || "");
-                    document.getElementById('p_code').innerText = data.ownCode || "N/A";
                     document.getElementById('p_uid').innerText = "UID: " + uid.substring(0,8) + "...";
-                    if(data.profilePic) document.getElementById('profilePicBox').innerHTML = `<img src="${data.profilePic}">`;
-
-                    // Pre-fill Edit Form
+                    if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
                     document.getElementById('newFName').value = data.firstName;
                     document.getElementById('newLName').value = data.lastName || "";
 
-                    // Stats (Converted to USDT)
-                    const profit = data.total_income || data.totalEarning || 0;
-                    document.getElementById('p_balance').innerText = toUSDT(profit);
+                    // Referral Link
+                    realRefLink = `https://shopping28.github.io/-/login_register.html?ref=${data.ownCode}`;
+                    document.getElementById('ref_link_text').innerText = realRefLink;
 
-                    // Team Count (Try DB count first, else fallback)
-                    let tCount = data.teamCount || data.team_member || 0;
-                    // If DB count is 0, check referrals
-                    if(tCount == 0 && data.ownCode) {
-                        db.ref('users').orderByChild('referredBy').equalTo(data.ownCode).on('value', snap => {
-                            document.getElementById('p_team').innerText = snap.numChildren();
+                    // 1. Current Balance
+                    const balBDT = parseFloat(data.balance || 0);
+                    document.getElementById('curr_bal').innerText = (balBDT/RATE).toFixed(2);
+
+                    // 2. Lifetime Profit (Balance + Withdrawals)
+                    let totalWithdrawn = 0;
+                    db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', wSnap => {
+                        wSnap.forEach(c => {
+                            const w = c.val();
+                            if(w.status === 'approved' || w.status === 'pending') {
+                                totalWithdrawn += parseFloat(w.amountBDT || w.amount || 0);
+                            }
                         });
-                    } else {
-                        document.getElementById('p_team').innerText = tCount;
-                    }
+                        document.getElementById('life_prof').innerText = ((balBDT + totalWithdrawn)/RATE).toFixed(2);
+                    });
+
+                    // 3. Today's Profit
+                    calculateToday(uid);
+
+                    // 4. Team Counts (Partner & Team)
+                    if(data.ownCode) countTeam(data.ownCode);
                 }
             });
         }
 
-        // --- ACTIONS ---
+        function calculateToday(uid) {
+            const todayStr = new Date().toDateString();
+            let todaySum = 0;
+            // Commissions
+            db.ref(`users/${uid}/commission_history`).once('value', snap => {
+                snap.forEach(c => {
+                    if(new Date(c.val().timestamp).toDateString() === todayStr) todaySum += parseFloat(c.val().amount);
+                });
+                // Rewards
+                db.ref(`users/${uid}/target_rewards`).once('value', rSnap => {
+                    rSnap.forEach(c => {
+                        if(new Date(c.val().timestamp).toDateString() === todayStr) todaySum += parseFloat(c.val().amountBDT);
+                    });
+                    document.getElementById('today_prof').innerText = (todaySum/RATE).toFixed(2);
+                });
+            });
+        }
 
-        function toggleNameEdit() {
-            const form = document.getElementById('nameEditForm');
-            form.style.display = (form.style.display === 'block') ? 'none' : 'block';
+        function countTeam(myCode) {
+            let partners = 0;
+            let team = 0;
+            let processed = new Set();
+
+            function traverse(uplineCode, isDirect) {
+                db.ref('users').orderByChild('referredBy').equalTo(uplineCode).once('value', snap => {
+                    if (!snap.exists()) return;
+                    snap.forEach(child => {
+                        if (!processed.has(child.key) && child.val().status === 'active') {
+                            processed.add(child.key);
+                            team++;
+                            if (isDirect) partners++;
+                            
+                            document.getElementById('team_count').innerText = team;
+                            document.getElementById('partner_count').innerText = partners;
+
+                            if(child.val().ownCode) traverse(child.val().ownCode, false);
+                        }
+                    });
+                });
+            }
+            traverse(myCode, true);
+        }
+
+        // --- UI ACTIONS ---
+        function toggleSection(id) {
+            const el = document.getElementById(id);
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+        }
+        function toggleNameEdit() { toggleSection('nameEditForm'); }
+        
+        function copyRefLink() {
+            navigator.clipboard.writeText(realRefLink);
+            alert("Referral Link Copied!");
         }
 
         function saveNameChange() {
             const f = document.getElementById('newFName').value.trim();
             const l = document.getElementById('newLName').value.trim();
             if(!f) return alert("First name required");
-            
             db.ref('users/' + currentUser.uid).update({ firstName: f, lastName: l }).then(() => {
-                alert("Name Updated!");
-                toggleNameEdit();
+                alert("Name Updated!"); toggleNameEdit();
             });
         }
 
@@ -341,48 +383,40 @@
             if(!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
+                // Resize logic to save DB space
                 const img = new Image();
                 img.src = e.target.result;
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    const maxWidth = 300; // Resize to max 300px
+                    const maxWidth = 200; 
                     const scaleSize = maxWidth / img.width;
                     canvas.width = maxWidth;
                     canvas.height = img.height * scaleSize;
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    const base64String = canvas.toDataURL('image/jpeg', 0.8);
-                    
-                    db.ref('users/' + currentUser.uid).update({ profilePic: base64String }).then(() => alert("Profile Picture Updated!"));
+                    db.ref('users/' + currentUser.uid).update({ profilePic: canvas.toDataURL('image/jpeg', 0.7) })
+                      .then(() => alert("Profile Picture Updated!"));
                 }
             }
             reader.readAsDataURL(file);
         }
 
-        function toggleSection(id) {
-            const el = document.getElementById(id);
-            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-        }
-
         function changePassword() {
             const oldPass = document.getElementById('oldPass').value;
             const newPass = document.getElementById('newPass').value;
-            if(newPass.length < 6) return alert("Password too short (min 6)");
-
+            if(newPass.length < 6) return alert("Password too short");
+            
             const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, oldPass);
             currentUser.reauthenticateWithCredential(credential).then(() => {
                 currentUser.updatePassword(newPass).then(() => {
                     db.ref('users/' + currentUser.uid).update({ password: newPass });
-                    alert("Password Changed Successfully!");
-                    toggleSection('passSection');
+                    alert("Password Changed!"); toggleSection('passSection');
                 }).catch(e => alert(e.message));
             }).catch(() => alert("Incorrect Old Password"));
         }
 
         function logout() {
-            if(confirm("Are you sure you want to logout?")) {
-                auth.signOut().then(() => window.location.href = 'login_register.html');
-            }
+            if(confirm("Logout?")) auth.signOut().then(() => window.location.href = 'login_register.html');
         }
     </script>
 </body>
