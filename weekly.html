@@ -7,70 +7,74 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg-dark: #020617; --card-bg: #0f172a; --primary: #4f46e5; --neon-blue: #00f2ff; --neon-green: #10b981; --neon-gold: #facc15; --text-main: #f8fafc; }
+        :root { --bg-dark: #020617; --card-bg: #0f172a; --primary: #4f46e5; --neon-green: #10b981; --text-main: #f8fafc; }
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Outfit', sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; }
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
         .back-btn { background: rgba(255,255,255,0.05); width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); }
         
-        /* BALANCE CARDS (SYNC WITH HOME) */
-        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: var(--card-bg); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .stat-val { font-size: 1.2rem; font-weight: 800; color: #fff; }
-        .stat-lbl { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; }
-        .txt-green { color: var(--neon-green); } .txt-gold { color: var(--neon-gold); }
-
         /* CREDIT CARD */
-        .credit-card { background: linear-gradient(135deg, #4f46e5, #9333ea); padding: 20px; border-radius: 20px; text-align: center; margin-bottom: 25px; }
-        .cr-val { font-size: 2.5rem; font-weight: 800; margin: 5px 0 15px; }
+        .credit-card { background: linear-gradient(135deg, #4f46e5, #9333ea); padding: 25px; border-radius: 24px; text-align: center; margin-bottom: 30px; }
+        .cr-val { font-size: 3rem; font-weight: 800; margin: 5px 0 15px; }
         .btn-group { display: flex; gap: 10px; }
-        .cr-btn { flex: 1; padding: 10px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; }
+        .cr-btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
         .btn-buy { background: #fff; color: #4f46e5; }
         .btn-redeem { background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
 
-        /* STATUS BOXES */
-        .status-box { padding: 20px; border-radius: 20px; margin-bottom: 25px; display: none; border: 1px solid rgba(255,255,255,0.05); }
-        .active-box { background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.15), rgba(2, 6, 23, 0.8)); border-color: var(--neon-green); }
-        .pending-box { background: radial-gradient(circle at top right, rgba(250, 204, 21, 0.15), rgba(2, 6, 23, 0.8)); border-color: var(--neon-gold); }
-        
         /* LEVELS */
-        .levels-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .level-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 18px; }
-        .lvl-reward { color: var(--neon-green); font-size: 1.3rem; font-weight: 800; }
+        .level-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 18px; margin-bottom: 15px; }
         .apply-btn { width: 100%; padding: 12px; border: none; border-radius: 12px; background: linear-gradient(90deg, #3b82f6, #2563eb); color: #fff; font-weight: 700; cursor: pointer; margin-top: 10px; }
-        .apply-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+
+        /* === PREMIUM MODAL DESIGN (Screenshot Match) === */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
+        .modal-box { 
+            background: #151c2c; /* Dark Blue/Black */
+            width: 100%; max-width: 380px; 
+            padding: 30px 20px; border-radius: 24px; 
+            text-align: center; border: 1px solid #2a3441;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .modal-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 25px; color: #fff; }
         
-        /* Modals */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
-        .modal-box { background: #1e293b; width: 100%; max-width: 400px; padding: 25px; border-radius: 24px; text-align: center; }
-        .inp { width: 100%; padding: 14px; background: #020617; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 12px; margin: 8px 0; box-sizing: border-box; }
-        .modal-act { background: #fff; color: #000; width: 100%; padding: 14px; border-radius: 12px; font-weight: 800; border: none; margin-top: 15px; cursor: pointer; }
+        /* Inputs & Displays */
+        .info-box { background: #000; border: 1px solid #1f2937; padding: 15px; border-radius: 10px; margin-bottom: 15px; color: #fff; font-weight: 600; font-size: 1rem; }
+        .wallet-copy { background: #000; border: 1px solid #333; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-family: monospace; color: #fff; word-break: break-all; font-size: 0.85rem; cursor: pointer; }
+        
+        .inp { 
+            width: 100%; padding: 16px; 
+            background: #0b101a; border: 1px solid #2a3441; 
+            color: #fff; border-radius: 12px; 
+            margin-bottom: 12px; box-sizing: border-box; 
+            font-size: 1rem; outline: none;
+        }
+        .inp:focus { border-color: #4f46e5; }
+
+        .modal-act { 
+            background: #ffffff; color: #000; 
+            width: 100%; padding: 16px; 
+            border-radius: 30px; font-weight: 800; 
+            border: none; margin-top: 10px; cursor: pointer; 
+            font-size: 1rem; transition: 0.2s;
+        }
+        .modal-act:active { transform: scale(0.98); opacity: 0.9; }
+        
+        .close-txt { margin-top: 15px; color: #94a3b8; cursor: pointer; font-size: 0.9rem; }
+        
+        /* Package List Styling */
+        .pkg-item { background: #0b101a; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #2a3441; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; }
+        .pkg-item:hover { border-color: #fff; }
     </style>
 </head>
 <body>
+
     <div class="header">
-        <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-        <div style="font-weight:700;">Weekly Challenge</div>
+        <a href="home.html" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">Weekly Challenge</div>
         <div style="width:40px;"></div>
     </div>
 
-    <!-- FINANCIAL STATS (SYNCED WITH HOME) -->
-    <div class="stats-row">
-        <div class="stat-card">
-            <div class="stat-lbl">Current Balance</div>
-            <div class="stat-val txt-green"><span id="currBal">0.00</span> USDT</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-lbl">Today's Profit</div>
-            <div class="stat-val txt-gold"><span id="todayProf">0.00</span> USDT</div>
-        </div>
-    </div>
-    <div class="stat-card" style="margin-bottom:20px;">
-        <div class="stat-lbl">Total Profit (Lifetime)</div>
-        <div class="stat-val"><span id="totalProf">0.00</span> USDT</div>
-    </div>
-
+    <!-- Balance Card -->
     <div class="credit-card">
-        <div style="font-size:0.8rem; opacity:0.8;">Available Credits</div>
+        <div style="font-size:0.9rem; opacity:0.8;">Your Balance</div>
         <div class="cr-val" id="userCredits">0</div>
         <div class="btn-group">
             <button class="cr-btn btn-buy" onclick="openBuyModal()">Buy Credits</button>
@@ -78,28 +82,40 @@
         </div>
     </div>
 
-    <div id="pendingArea" class="status-box pending-box">
-        <h4 style="margin:0; color:var(--neon-gold)">Pending Approval</h4>
-        <p style="font-size:0.9rem; opacity:0.8;">Admin is reviewing your application.</p>
+    <div id="levelsContainer">Loading...</div>
+
+    <!-- BUY CREDITS MODAL -->
+    <div class="modal-overlay" id="buyModal">
+        <div class="modal-box">
+            <div class="modal-title">Buy Credits</div>
+            
+            <!-- Step 1: Package List -->
+            <div id="pkgList" style="text-align:left;">Loading...</div>
+            
+            <!-- Step 2: Payment -->
+            <div id="paymentSection" style="display:none;">
+                <div class="info-box" id="pkgInfoDisplay">5 Credits - $0.75</div>
+                <div class="wallet-copy" onclick="copyAddr()" id="adminAddrDisplay">0x...</div>
+                
+                <input type="text" id="senderAddr" class="inp" placeholder="Sender Address">
+                <input type="text" id="trxId" class="inp" placeholder="TrxID">
+                
+                <button class="modal-act" onclick="submitOrder()">Submit</button>
+            </div>
+            
+            <div class="close-txt" onclick="closeModals()">Close</div>
+        </div>
     </div>
 
-    <div id="activeStatusArea" class="status-box active-box">
-        <div style="display:flex; justify-content:space-between;">
-            <h4 style="margin:0; color:var(--neon-green)">Active Challenge</h4>
-            <div style="font-weight:700;"><span id="activeProgress">0</span> / <span id="activeTarget">0</span></div>
+    <!-- REDEEM MODAL -->
+    <div class="modal-overlay" id="redeemModal">
+        <div class="modal-box">
+            <div class="modal-title">Redeem</div>
+            <input type="text" id="redeemCodeInput" class="inp" placeholder="Enter Code (e.g. USDT59)">
+            <button class="modal-act" onclick="submitRedeem()">Redeem</button>
+            <div class="close-txt" onclick="closeModals()">Close</div>
         </div>
-        <div style="background:rgba(255,255,255,0.1); height:8px; border-radius:10px; margin:15px 0;">
-            <div id="progressBar" style="height:100%; background:var(--neon-green); width:0%; border-radius:10px;"></div>
-        </div>
-        <div id="timerDisplay" style="text-align:center; font-weight:800; font-family:monospace; font-size:1.1rem;">Wait...</div>
-        <button id="submitReviewBtn" onclick="submitForReview()" style="display:none; width:100%; margin-top:15px; background:var(--neon-gold); color:black; padding:12px; border-radius:10px; font-weight:800; border:none; cursor:pointer;">CLAIM REWARD <i class="fas fa-gift"></i></button>
     </div>
-
-    <div class="levels-grid" id="levelsContainer">Loading...</div>
-
-    <!-- Modals (Simple structure for brevity) -->
-    <div class="modal-overlay" id="buyModal"><div class="modal-box"><h3>Buy Credits</h3><div id="pkgList">Loading...</div><div id="paymentSection" style="display:none;"><div onclick="copyAddr()" id="adminAddrDisplay" style="background:#000; padding:10px; margin:10px 0; word-break:break-all; font-size:0.8rem;">...</div><input id="senderAddr" class="inp" placeholder="Sender"><input id="trxId" class="inp" placeholder="TrxID"><button class="modal-act" onclick="submitOrder()">Submit</button></div><button onclick="closeModals()" style="background:none; border:none; color:#aaa; margin-top:10px;">Close</button></div></div>
-    <div class="modal-overlay" id="redeemModal"><div class="modal-box"><h3>Redeem</h3><input id="redeemCodeInput" class="inp" placeholder="Code"><button class="modal-act" onclick="submitRedeem()">Redeem</button><button onclick="closeModals()" style="background:none; border:none; color:#aaa; margin-top:10px;">Close</button></div></div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -108,150 +124,90 @@
         const firebaseConfig = { apiKey: "AIzaSyBEEkp40hJF81XaLVa9DNPWX-aDy_0oEUE", authDomain: "shopping28-84906.firebaseapp.com", databaseURL: "https://shopping28-84906-default-rtdb.firebaseio.com", projectId: "shopping28-84906", storageBucket: "shopping28-84906.firebasestorage.app", messagingSenderId: "252107906792", appId: "1:252107906792:web:d39b0be25c88e07015b35d" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database(); const auth = firebase.auth();
-        const RATE = 120; let currentUser=null, myCredits=0, currentActiveTarget=null, pendingRequest=null, adminWallet="", selectedPackage=null, timerInterval=null;
+        let currentUser=null, myCredits=0, adminWallet="", selectedPackage=null;
 
-        auth.onAuthStateChanged(user => { 
-            if(user) { currentUser=user; loadUserData(); loadFinancials(); loadLevels(); loadAdminData(); } 
-            else { window.location.href = 'login_register.html'; } 
-        });
+        auth.onAuthStateChanged(user => { if(user){ currentUser=user; loadUserData(); loadLevels(); loadAdminData(); } else window.location.href='login_register.html'; });
 
-        // 1. SYNC FINANCIALS (HOME LOGIC)
-        function loadFinancials() {
-            db.ref('users/' + currentUser.uid).on('value', snap => {
-                const u = snap.val();
-                if(!u) return;
-
-                // Current Balance
-                const balBDT = parseFloat(u.balance || 0);
-                document.getElementById('currBal').innerText = (balBDT/RATE).toFixed(2);
-
-                // Calculate Total & Today (Simplified sync)
-                let totalWithdrawn = 0;
-                db.ref('withdraw_requests').orderByChild('uid').equalTo(currentUser.uid).once('value', wSnap => {
-                    wSnap.forEach(c => { 
-                        if(c.val().status === 'approved' || c.val().status === 'pending') totalWithdrawn += (c.val().amountBDT || 0); 
-                    });
-                    document.getElementById('totalProf').innerText = ((balBDT + totalWithdrawn)/RATE).toFixed(2);
-                });
-
-                // Today's Profit (from Reward History)
-                let todayBDT = 0;
-                db.ref('users/'+currentUser.uid+'/target_rewards').once('value', rSnap => {
-                    rSnap.forEach(c => {
-                        const r = c.val();
-                        if(new Date(r.timestamp).toDateString() === new Date().toDateString()) todayBDT += (r.amountBDT || 0);
-                    });
-                    document.getElementById('todayProf').innerText = (todayBDT/RATE).toFixed(2);
-                });
-            });
-        }
-
-        function loadUserData() {
-            db.ref('users/'+currentUser.uid).on('value', snap => {
-                const u = snap.val(); myCredits = u.credits || 0;
-                document.getElementById('userCredits').innerText = myCredits;
-                currentActiveTarget = u.active_target || null;
-                
-                // Check pending app requests
-                db.ref('target_requests').orderByChild('uid').equalTo(currentUser.uid).on('value', rSnap => {
-                    pendingRequest = null;
-                    rSnap.forEach(c => { if(c.val().status === 'pending' && c.val().type === 'weekly') pendingRequest = true; });
-                    document.getElementById('pendingArea').style.display = pendingRequest ? 'block' : 'none';
-                    checkActiveProgress(u);
-                });
-            });
-        }
+        function loadUserData(){ db.ref('users/'+currentUser.uid+'/credits').on('value',s=> document.getElementById('userCredits').innerText = s.val()||0); }
+        function loadAdminData(){ db.ref('settings/credits/wallet').on('value',s=> adminWallet=s.val()); }
 
         function loadLevels() {
             db.ref('settings/targets/weekly').on('value', snap => {
-                const con = document.getElementById('levelsContainer'); con.innerHTML = "";
-                if(!snap.exists()) { con.innerHTML = "No challenges active."; return; }
-                const levels = []; snap.forEach(c => levels.push(c.val())); levels.sort((a,b)=>a.level-b.level);
-
-                levels.forEach(l => {
-                    let btnState = "", btnTxt = "Apply Now";
-                    if(currentActiveTarget && currentActiveTarget.type === 'weekly') { btnState = "disabled"; btnTxt = "Active"; }
-                    if(pendingRequest) { btnState = "disabled"; btnTxt = "Pending"; }
-                    
-                    con.innerHTML += `
-                    <div class="level-card">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <span style="background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:20px; font-size:0.8rem;">Level ${l.level}</span>
-                            <span class="lvl-reward">$${l.reward}</span>
-                        </div>
-                        <div>Target: ${l.target} Refs</div>
-                        <div style="font-size:0.8rem; color:#aaa;">Duration: ${l.duration || 7} Days</div>
-                        <button class="apply-btn" ${btnState} onclick="apply(${l.level},${l.target},${l.reward},${l.cost})">${btnTxt} (${l.cost} Credits)</button>
-                    </div>`;
+                const c = document.getElementById('levelsContainer'); c.innerHTML="";
+                if(!snap.exists()) return c.innerHTML="No levels.";
+                let lvls=[]; snap.forEach(x=>lvls.push(x.val())); lvls.sort((a,b)=>a.level-b.level);
+                lvls.forEach(l => {
+                    c.innerHTML += `<div class="level-card"><h3>Level ${l.level}</h3><p>Target: ${l.target} Refs | Reward: $${l.reward}</p><button class="apply-btn" onclick="apply(${l.level},${l.cost})">Apply (${l.cost} Credits)</button></div>`;
                 });
             });
         }
 
-        function apply(lvl, target, reward, cost) {
-            if(myCredits < cost) return alert("Low Credits! Buy more.");
-            if(confirm(`Apply for Level ${lvl}? ${cost} Credits`)) {
-                db.ref().update({
-                    ['users/'+currentUser.uid+'/credits']: myCredits - cost,
-                    ['target_requests/'+currentUser.uid+'_weekly']: { uid: currentUser.uid, type: 'weekly', level: lvl, target: target, reward: reward, cost: cost, status: 'pending', timestamp: Date.now() }
-                }).then(()=>alert("Applied! Wait for approval."));
-            }
-        }
-
-        function checkActiveProgress(u) {
-            const area = document.getElementById('activeStatusArea');
-            if(!u.active_target || u.active_target.type !== 'weekly') { area.style.display = 'none'; return; }
-            area.style.display = 'block';
-
-            const t = u.active_target;
-            if(t.endTime) startTimer(t.endTime);
-
-            // Calc Progress
-            db.ref('users/'+currentUser.uid+'/ownCode').once('value', s => {
-                db.ref('users').orderByChild('referredBy').equalTo(s.val()).once('value', team => {
-                    let active = 0; team.forEach(m => { if(m.val().status === 'active') active++; });
-                    let prog = active - t.startCount; if(prog < 0) prog = 0;
-                    document.getElementById('activeProgress').innerText = prog;
-                    document.getElementById('activeTarget').innerText = t.targetCount;
-                    document.getElementById('progressBar').style.width = Math.min((prog/t.targetCount)*100, 100) + "%";
-                    
-                    if(prog >= t.targetCount) {
-                        document.getElementById('submitReviewBtn').style.display = 'block';
-                        document.getElementById('timerDisplay').innerText = "TARGET COMPLETE!";
-                    }
-                });
-            });
-        }
-
-        function submitForReview() {
-            if(!confirm("Claim Reward? Admin will review.")) return;
-            const t = currentActiveTarget;
-            db.ref('reward_requests').push({
-                uid: currentUser.uid, type: 'weekly', level: t.level, reward: t.reward, status: 'pending', timestamp: Date.now()
-            }).then(() => alert("Claim Submitted! Check Financials after approval."));
-        }
-
-        function startTimer(end) {
-            clearInterval(timerInterval);
-            const el = document.getElementById('timerDisplay');
-            timerInterval = setInterval(() => {
-                const now = Date.now(), diff = end - now;
-                if(diff <= 0) { el.innerText = "EXPIRED"; el.style.color="red"; return; }
-                const d=Math.floor(diff/(1000*60*60*24)), h=Math.floor((diff%(1000*60*60*24))/(1000*60*60)), m=Math.floor((diff%(1000*60*60))/(1000*60));
-                el.innerText = `${d}d ${h}h ${m}m`;
-            }, 1000);
-        }
-
-        // --- Payment/Redeem Functions (Simplified) ---
-        function loadAdminData() { db.ref('settings/credits/wallet').on('value', s => adminWallet = s.val()); }
-        function openBuyModal(){ document.getElementById('buyModal').style.display='flex'; loadPackages(); }
+        // --- NEW MODAL LOGIC ---
+        function openBuyModal(){ document.getElementById('buyModal').style.display='flex'; document.getElementById('pkgList').style.display='block'; document.getElementById('paymentSection').style.display='none'; loadPackages(); }
         function openRedeemModal(){ document.getElementById('redeemModal').style.display='flex'; }
-        function closeModals(){ document.getElementById('buyModal').style.display='none'; document.getElementById('redeemModal').style.display='none'; document.getElementById('paymentSection').style.display='none'; }
-        function loadPackages(){ const l=document.getElementById('pkgList'); l.innerHTML=""; db.ref('settings/credit_packages').once('value',s=>{ s.forEach(c=>{ const p=c.val(); l.innerHTML+=`<div style="background:#000; padding:10px; margin:5px 0; cursor:pointer;" onclick="selectPkg(${p.credits},${p.finalPrice})">${p.credits} Credits - $${p.finalPrice}</div>`; }); }); }
-        function selectPkg(c,p){ selectedPackage={credits:c,price:p}; document.getElementById('paymentSection').style.display='block'; document.getElementById('adminAddrDisplay').innerText=adminWallet; }
-        function submitOrder(){ db.ref('credit_orders').push({uid:currentUser.uid, ...selectedPackage, sender:document.getElementById('senderAddr').value, trx:document.getElementById('trxId').value, status:'pending'}).then(()=>{alert("Sent!"); closeModals();}); }
-        function copyAddr(){ navigator.clipboard.writeText(adminWallet); alert("Copied"); }
-        function submitRedeem(){ const c=document.getElementById('redeemCodeInput').value; db.ref('redeem_codes/'+c).transaction(d=>{ if(d&&d.used<d.limit&&(!d.users||!d.users[currentUser.uid])){ d.used++; if(!d.users)d.users={}; d.users[currentUser.uid]=true; return d; } }, (e,c,s)=>{ if(c){ db.ref('users/'+currentUser.uid+'/credits').transaction(v=>(v||0)+s.val().amount); alert("Success"); closeModals(); } else alert("Invalid"); }); }
+        function closeModals(){ document.getElementById('buyModal').style.display='none'; document.getElementById('redeemModal').style.display='none'; }
 
+        function loadPackages(){
+            const l = document.getElementById('pkgList'); l.innerHTML = "Loading...";
+            db.ref('settings/credit_packages').once('value', snap => {
+                l.innerHTML = "";
+                snap.forEach(c => {
+                    const p = c.val();
+                    l.innerHTML += `<div class="pkg-item" onclick="selectPkg(${p.credits},${p.finalPrice})"><span>${p.credits} Credits</span><span>$${p.finalPrice}</span></div>`;
+                });
+            });
+        }
+
+        function selectPkg(c, p){ 
+            selectedPackage = {credits:c, price:p};
+            document.getElementById('pkgList').style.display='none';
+            document.getElementById('paymentSection').style.display='block';
+            document.getElementById('pkgInfoDisplay').innerText = `${c} Credits - $${p}`;
+            document.getElementById('adminAddrDisplay').innerText = adminWallet;
+        }
+
+        function submitOrder(){
+            const s = document.getElementById('senderAddr').value;
+            const t = document.getElementById('trxId').value;
+            if(!s || !t) return alert("Fill details");
+            db.ref('credit_orders').push({uid:currentUser.uid, ...selectedPackage, sender:s, trx:t, status:'pending'})
+            .then(()=>{ alert("Order Submitted!"); closeModals(); });
+        }
+
+        function copyAddr() { navigator.clipboard.writeText(adminWallet); alert("Copied!"); }
+
+        // --- FIXED REDEEM LOGIC ---
+        function submitRedeem() {
+            const code = document.getElementById('redeemCodeInput').value.trim();
+            if (!code) return alert("Enter Code");
+            
+            const btn = document.querySelector('#redeemModal .modal-act');
+            btn.innerText = "Checking..."; btn.disabled = true;
+
+            db.ref('redeem_codes/' + code).transaction(data => {
+                if (data) {
+                    if (data.users_redeemed && data.users_redeemed[currentUser.uid]) return; // Already used
+                    if (data.used_count >= data.limit) return; // Limit reached
+                    
+                    data.used_count++;
+                    if (!data.users_redeemed) data.users_redeemed = {};
+                    data.users_redeemed[currentUser.uid] = true;
+                }
+                return data;
+            }, (error, committed, snapshot) => {
+                btn.innerText = "Redeem"; btn.disabled = false;
+                if (error) {
+                    alert("Error: " + error.message);
+                } else if (!committed) {
+                    alert("Code Invalid, Expired, or Already Used!");
+                } else {
+                    const amt = snapshot.val().amount;
+                    db.ref('users/'+currentUser.uid+'/credits').transaction(c => (c||0)+amt);
+                    alert(`Success! ${amt} Credits Added.`);
+                    closeModals();
+                }
+            });
+        }
     </script>
 </body>
 </html>
