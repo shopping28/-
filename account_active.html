@@ -30,66 +30,24 @@
         
         .logout-btn { background: none; border: 1px solid #ff4757; color: #ff4757; padding: 5px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
 
-        /* =========================================
-           PREMIUM OVERLAY CSS (Fixed Design)
-           ========================================= */
+        /* OVERLAY CSS */
         #overlay {
-            display: none; /* Controlled by JS */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 12, 41, 0.95); /* Dark Blur Background */
-            backdrop-filter: blur(8px);
-            z-index: 9999;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 12, 41, 0.95); backdrop-filter: blur(8px);
+            z-index: 9999; flex-direction: column; justify-content: center; align-items: center; padding: 20px;
         }
-
-        /* Glass Card for Overlay */
         .status-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px 30px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 350px;
-            width: 100%;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            animation: popIn 0.4s ease-out;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 30px; border-radius: 20px; text-align: center; max-width: 350px; width: 100%;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; align-items: center; gap: 15px;
         }
-
-        @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* Premium Loader Spinner */
         .premium-loader {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
+            width: 70px; height: 70px; border-radius: 50%;
             background: conic-gradient(#0000 10%, #f39c12);
             -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 8px),#000 0);
-            animation: rotate 1s infinite linear;
-            margin-bottom: 5px;
-            box-shadow: 0 0 15px rgba(243, 156, 18, 0.3);
+            animation: rotate 1s infinite linear; margin-bottom: 5px;
         }
         @keyframes rotate {to{transform: rotate(1turn)}}
-
-        /* Simple Loader for Initial Load */
-        .simple-loader {
-            width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid #00f260; border-radius: 50%; animation: rotate 1s linear infinite; margin: 0 auto 10px auto;
-        }
-
-        /* Typography */
         .status-title { font-size: 1.4rem; font-weight: 700; color: white; margin: 0; }
         .status-badge {
             background: rgba(243, 156, 18, 0.15); color: #f39c12; padding: 5px 15px;
@@ -97,46 +55,39 @@
             border: 1px solid rgba(243, 156, 18, 0.3);
         }
         .status-desc { color: #aaa; font-size: 0.9rem; line-height: 1.5; margin: 0; }
-
-        /* Overlay Logout Button */
         .logout-btn-overlay {
             background: transparent; border: 1px solid #e74c3c; color: #e74c3c;
             padding: 10px 30px; border-radius: 50px; font-weight: 600; cursor: pointer;
             transition: 0.3s; font-size: 0.9rem; margin-top: 10px;
         }
-        .logout-btn-overlay:hover { background: #e74c3c; color: white; box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3); }
-
     </style>
 </head>
 <body>
     <div class="container">
         
-        <!-- Initial Loading Screen -->
-        <div id="loadingInit" style="text-align:center;">
-            <div class="simple-loader"></div>
+        <!-- Loading -->
+        <div id="loadingInit" style="text-align:center; padding: 20px;">
             <p>Loading Wallet Info...</p>
         </div>
 
-        <!-- Main Form Content -->
+        <!-- Main Form -->
         <div id="mainContent" style="display:none;">
             <div class="header">
                 <h2>Activate Account</h2>
                 <p style="font-size: 0.85rem; color: #aaa;">Deposit via USDT (BEP20)</p>
             </div>
 
-            <!-- Admin Payment Info -->
             <div class="pay-box">
                 <small>Activation Fee</small>
-                <div class="amount" id="dispFee">Loading...</div>
+                <div class="amount" id="dispFee">$...</div>
                 
                 <small>Send USDT to Address:</small>
                 <div class="wallet-box">
-                    <span class="wallet-address" id="adminWallet">...</span>
+                    <span class="wallet-address" id="adminWallet">Loading...</span>
                     <button class="copy-btn" onclick="copyAddress()"><i class="fas fa-copy"></i> Copy</button>
                 </div>
             </div>
 
-            <!-- User Input Form -->
             <form onsubmit="event.preventDefault(); submitRequest();">
                 <label>Your Sender Wallet Address</label>
                 <input type="text" id="senderWallet" placeholder="e.g. 0x123..." required>
@@ -150,35 +101,21 @@
             <button onclick="logout()" class="logout-btn">Cancel & Logout</button>
         </div>
         
-        <!-- PREMIUM OVERLAY (Status Screen) -->
+        <!-- OVERLAY (Status) -->
         <div id="overlay">
-            
-            <!-- PENDING STATE -->
             <div id="pendingState" class="status-card">
                 <div class="premium-loader"></div>
-                
                 <h2 class="status-title">Verifying Payment</h2>
                 <div class="status-badge">PENDING</div>
-                
-                <p class="status-desc">
-                    Admin is checking your USDT transaction.<br>
-                    Please wait, do not close the app.
-                </p>
-                
-                <button onclick="logout()" class="logout-btn-overlay">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
+                <p class="status-desc">Admin is checking your USDT transaction.<br>Please wait.</p>
+                <button onclick="logout()" class="logout-btn-overlay"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
 
-            <!-- SUCCESS STATE (Hidden by default) -->
             <div id="successState" class="status-card" style="display:none; border-color: rgba(0, 242, 96, 0.3);">
-                <i class="fas fa-check-circle" style="font-size:4.5rem; color:#00f260; margin-bottom:15px; text-shadow: 0 0 20px rgba(0,242,96,0.4);"></i>
-                
+                <i class="fas fa-check-circle" style="font-size:4.5rem; color:#00f260; margin-bottom:15px;"></i>
                 <h2 class="status-title" style="color:#00f260;">Activation Successful!</h2>
-                <p class="status-desc">Your account is now active.</p>
-                <p class="status-desc" style="font-size:0.8rem; margin-top:5px;">Redirecting to Dashboard...</p>
+                <p class="status-desc">Redirecting to Dashboard...</p>
             </div>
-
         </div>
     </div>
 
@@ -186,7 +123,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-        // UPDATED FIREBASE CONFIGURATION
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyBEEkp40hJF81XaLVa9DNPWX-aDy_0oEUE",
             authDomain: "shopping28-84906.firebaseapp.com",
@@ -205,30 +142,28 @@
         let feeAmount = 0;
         let activeAdminWallet = "";
 
-        // 1. Get Payment Settings
+        // 1. FETCH PAYMENT SETTINGS (Fixed Logic)
         db.ref('settings/payment').on('value', (snap) => {
             const data = snap.val();
             if(data) { 
                 feeAmount = data.fee;
-                if(data.wallets && Array.isArray(data.wallets) && data.wallets.length > 0) {
-                    activeAdminWallet = data.wallets[0]; // Or Random
-                }
+                // FIX: Directly reading 'wallet' string, not array
+                activeAdminWallet = data.wallet || "Not Set"; 
+                
                 document.getElementById('dispFee').innerText = "$" + feeAmount; 
-                document.getElementById('adminWallet').innerText = activeAdminWallet || "Not Set"; 
+                document.getElementById('adminWallet').innerText = activeAdminWallet; 
             }
         });
 
-        // 2. Auth State Check
+        // 2. AUTH STATE
         auth.onAuthStateChanged((user) => {
             if (user) { 
                 currentUser = user;
-                // Listen to Status Changes in Realtime
                 db.ref('users/' + user.uid + '/status').on('value', (snap) => {
                     const status = snap.val();
                     if (status === 'active') {
                         showSuccess();
                     } else {
-                        // User Not Active -> Check if Pending Request exists
                         checkPendingRequest(user.uid);
                     }
                 });
@@ -237,7 +172,6 @@
             }
         });
 
-        // 3. Check for Pending Request
         function checkPendingRequest(uid) {
             db.ref('activation_requests').orderByChild('uid').equalTo(uid).limitToLast(1).once('value', s => {
                 let isPending = false;
@@ -245,15 +179,13 @@
                     if(c.val().status === 'pending') isPending = true;
                 });
 
-                document.getElementById('loadingInit').style.display = 'none'; // Hide Initial Loader
+                document.getElementById('loadingInit').style.display = 'none';
                 
                 if(isPending) {
-                    // Show Pending Overlay
                     document.getElementById('mainContent').style.display = 'none';
-                    document.getElementById('overlay').style.display = 'flex'; // Uses Flex to center
+                    document.getElementById('overlay').style.display = 'flex';
                     document.getElementById('pendingState').style.display = 'flex';
                 } else {
-                    // Show Payment Form
                     document.getElementById('mainContent').style.display = 'block';
                     document.getElementById('overlay').style.display = 'none';
                 }
@@ -265,9 +197,8 @@
             alert("Wallet Address Copied!"); 
         }
 
-        // 4. Submit Function
         function submitRequest() {
-            if(!activeAdminWallet) return alert("Admin wallet is loading, please wait...");
+            if(!activeAdminWallet || activeAdminWallet === "Not Set") return alert("Admin wallet not set yet. Contact support.");
             
             const sender = document.getElementById('senderWallet').value.trim();
             const trx = document.getElementById('trxId').value.trim();
@@ -277,7 +208,6 @@
 
             btn.disabled = true; btn.innerText = "Submitting...";
 
-            // Push to Firebase
             db.ref('activation_requests').push({
                 uid: currentUser.uid,
                 method: "USDT BEP20",
@@ -288,7 +218,6 @@
                 status: 'pending',
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             }).then(() => {
-                // Instantly Show Pending Screen
                 document.getElementById('mainContent').style.display = 'none';
                 document.getElementById('overlay').style.display = 'flex';
                 document.getElementById('pendingState').style.display = 'flex';
@@ -303,8 +232,7 @@
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('overlay').style.display = 'flex'; 
             document.getElementById('pendingState').style.display = 'none'; 
-            
-            document.getElementById('successState').style.display = 'flex'; // Use Flex for centering
+            document.getElementById('successState').style.display = 'flex';
             
             setTimeout(() => window.location.href = 'home.html', 2500);
         }
