@@ -3,55 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Access Account</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Join Elite Network</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { margin: 0; min-height: 100vh; background: linear-gradient(to bottom, #0f0c29, #302b63); font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; padding: 20px; color: white; }
-        .card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; opacity: 0.5; transition: 0.3s; font-weight: 600; }
-        .tab.active { opacity: 1; color: #00f260; border-bottom: 2px solid #00f260; }
-        input { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; box-sizing: border-box; outline: none; }
-        input:focus { border-color: #00f260; background: rgba(0,0,0,0.5); }
-        button { width: 100%; padding: 15px; background: linear-gradient(45deg, #00f260, #0575E6); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1rem; }
-        button:disabled { background: #555; cursor: not-allowed; }
-        .form-box { display: none; } .form-box.active { display: block; }
-        .error { color: #ff4757; font-size: 0.85rem; text-align: center; margin-bottom: 10px; min-height: 20px; }
+        /* === GLOBAL VARIABLES & RESET === */
+        :root {
+            --bg-color: #0b0b0b;
+            --card-bg: #121212;
+            --input-bg: #1c1c1c;
+            --border-color: #2a2a2a;
+            --primary-gold: #d4af37; /* Luxury Gold */
+            --primary-gold-hover: #b5922f;
+            --text-white: #ffffff;
+            --text-grey: #888888;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-white);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 20px;
+        }
+
+        /* === MAIN CARD === */
+        .container {
+            background-color: var(--card-bg);
+            width: 100%; max-width: 420px;
+            border-radius: 24px;
+            border: 1px solid #333;
+            padding: 40px 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        /* === LOGO SECTION === */
+        .logo-area { text-align: center; margin-bottom: 30px; }
+        .logo-icon {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #1c1c1c, #000);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem; color: var(--primary-gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+        .logo-text { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; color: #fff; }
+        .logo-text span { color: var(--primary-gold); }
+        .logo-sub { font-size: 0.75rem; color: var(--text-grey); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
+
+        /* === FORM ELEMENTS === */
+        .form-box { display: none; animation: fadeIn 0.4s ease; }
+        .form-box.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .input-group { margin-bottom: 20px; }
+        .input-label { display: block; font-size: 0.85rem; color: #ccc; margin-bottom: 8px; font-weight: 500; }
+        
+        .input-wrapper {
+            position: relative;
+            background-color: var(--input-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex; align-items: center;
+            transition: 0.3s;
+        }
+        .input-wrapper:focus-within { border-color: var(--primary-gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.1); }
+
+        .input-icon { padding: 0 15px; color: var(--text-grey); font-size: 1rem; }
+        
+        input {
+            width: 100%; background: transparent; border: none; color: #fff;
+            padding: 16px 15px 16px 0; font-size: 0.95rem; outline: none;
+        }
+        input::placeholder { color: #555; }
+
+        /* === BUTTONS === */
+        .btn-gold {
+            width: 100%; padding: 16px;
+            background: linear-gradient(180deg, #f1c40f, #d4af37);
+            color: #000; font-weight: 700; font-size: 1rem;
+            border: none; border-radius: 12px;
+            cursor: pointer; margin-top: 10px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+            transition: 0.3s;
+        }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4); }
+        .btn-gold:disabled { background: #333; color: #777; cursor: not-allowed; box-shadow: none; }
+
+        /* === FOOTER LINKS === */
+        .switch-text { text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--text-grey); }
+        .switch-link { color: var(--primary-gold); font-weight: 700; cursor: pointer; text-decoration: none; margin-left: 5px; }
+        .switch-link:hover { text-decoration: underline; }
+
+        .error { color: #ff4757; text-align: center; font-size: 0.85rem; margin-bottom: 15px; min-height: 20px; }
+
+        /* === FLEX ROW FOR NAMES === */
+        .flex-row { display: flex; gap: 10px; }
+        .flex-row .input-group { flex: 1; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('login', this)" id="tab_login">Login</div>
-            <div class="tab" onclick="switchTab('register', this)" id="tab_register">Register</div>
+
+    <div class="container">
+        <!-- Logo Header -->
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fas fa-gem"></i></div>
+            <div class="logo-text">SHOPPING <span>28</span></div>
+            <div class="logo-sub">Join The Elite Network</div>
         </div>
+
         <p id="msg" class="error"></p>
 
-        <!-- LOGIN FORM -->
-        <div id="login" class="form-box active">
-            <h2 style="text-align:center;">Welcome Back</h2>
-            <input type="number" id="l_phone" placeholder="Phone Number">
-            <input type="password" id="l_pass" placeholder="Password">
-            <button id="loginBtn">LOGIN</button>
+        <!-- REGISTER FORM (Default) -->
+        <div id="register" class="form-box active">
+            <div class="flex-row">
+                <div class="input-group">
+                    <label class="input-label">First Name</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="r_fname" placeholder="John">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Last Name</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="r_lname" placeholder="Doe">
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Phone Number</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-phone-alt input-icon"></i>
+                    <input type="number" id="r_phone" placeholder="Enter phone number">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="r_pass" placeholder="Create password">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Confirm Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-check-circle input-icon"></i>
+                    <input type="password" id="r_cpass" placeholder="Repeat password">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Referral Code (Required)</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-link input-icon"></i>
+                    <input type="text" id="r_ref" placeholder="Enter code">
+                </div>
+            </div>
+
+            <button id="regBtn" class="btn-gold">CREATE ACCOUNT</button>
+
+            <div class="switch-text">
+                Already a member? <span class="switch-link" onclick="switchTab('login')">Login Here</span>
+            </div>
         </div>
 
-        <!-- REGISTER FORM -->
-        <div id="register" class="form-box">
-            <h2 style="text-align:center;">Create Account</h2>
-            <div style="display:flex; gap:10px;"><input type="text" id="r_fname" placeholder="First Name"><input type="text" id="r_lname" placeholder="Last Name"></div>
-            <input type="number" id="r_phone" placeholder="Phone Number">
-            <input type="password" id="r_pass" placeholder="Password">
-            <input type="password" id="r_cpass" placeholder="Confirm Password">
-            <input type="text" id="r_ref" placeholder="Referral Code (Required)">
-            <button id="regBtn">REGISTER & PROCEED</button>
+        <!-- LOGIN FORM -->
+        <div id="login" class="form-box">
+            <h2 style="text-align:center; margin-bottom:20px; color:white;">Welcome Back</h2>
+            
+            <div class="input-group">
+                <label class="input-label">Phone Number</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-phone-alt input-icon"></i>
+                    <input type="number" id="l_phone" placeholder="Enter your phone">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="l_pass" placeholder="Enter your password">
+                </div>
+            </div>
+
+            <button id="loginBtn" class="btn-gold">LOGIN ACCESS</button>
+
+            <div class="switch-text">
+                New user? <span class="switch-link" onclick="switchTab('register')">Create Account</span>
+            </div>
         </div>
+
     </div>
 
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
     <script>
-        // UPDATED FIREBASE CONFIGURATION
+        // FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyBEEkp40hJF81XaLVa9DNPWX-aDy_0oEUE",
             authDomain: "shopping28-84906.firebaseapp.com",
@@ -66,12 +228,12 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        function switchTab(id, el) {
+        function switchTab(id) {
             document.querySelectorAll('.form-box').forEach(d => d.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active'); el.classList.add('active');
+            document.getElementById(id).classList.add('active');
             document.getElementById('msg').innerText = "";
         }
+        
         function showMsg(text) { document.getElementById('msg').innerText = text; }
 
         window.onload = function() {
@@ -80,7 +242,7 @@
             if (refCode) {
                 document.getElementById('r_ref').value = refCode;
                 document.getElementById('r_ref').readOnly = true;
-                switchTab('register', document.getElementById('tab_register'));
+                switchTab('register');
             }
         }
 
@@ -94,6 +256,7 @@
             const refCode = document.getElementById('r_ref').value.trim();
             const btn = document.getElementById('regBtn');
 
+            // REFERRAL CODE IS REQUIRED HERE
             if(!fname || !lname || !phone || !pass || !refCode) return showMsg("All fields are required!");
             if(pass.length < 6) return showMsg("Password must be 6+ chars");
             if(pass !== cpass) return showMsg("Passwords do not match!");
@@ -105,8 +268,12 @@
                 createAccount(fname, lname, phone, pass, refCode, btn);
             } else {
                 db.ref('users').orderByChild('ownCode').equalTo(refCode).once('value', s => {
-                    if(s.exists()) createAccount(fname, lname, phone, pass, refCode, btn);
-                    else { showMsg("Invalid Referral Code!"); btn.disabled = false; btn.innerText = "REGISTER & PROCEED"; }
+                    if(s.exists()) {
+                        createAccount(fname, lname, phone, pass, refCode, btn);
+                    } else { 
+                        showMsg("Invalid Referral Code!"); 
+                        btn.disabled = false; btn.innerText = "CREATE ACCOUNT"; 
+                    }
                 });
             }
         });
@@ -125,7 +292,7 @@
                     });
                 })
                 .catch((e) => {
-                    btn.disabled = false; btn.innerText = "REGISTER & PROCEED";
+                    btn.disabled = false; btn.innerText = "CREATE ACCOUNT";
                     showMsg(e.code === 'auth/email-already-in-use' ? "Phone already exists!" : e.message);
                 });
         }
@@ -137,7 +304,7 @@
             if(!phone || !pass) return showMsg("Enter Phone & Password");
             
             const btn = document.getElementById('loginBtn');
-            btn.disabled = true; btn.innerText = "Logging in...";
+            btn.disabled = true; btn.innerText = "Authenticating...";
 
             auth.signInWithEmailAndPassword(phone + "@shoppingfree.com", pass)
             .then(() => {
@@ -145,7 +312,7 @@
                 window.location.href = 'account_active.html'; 
             })
             .catch(() => {
-                btn.disabled = false; btn.innerText = "LOGIN";
+                btn.disabled = false; btn.innerText = "LOGIN ACCESS";
                 showMsg("Invalid Credentials");
             });
         });
