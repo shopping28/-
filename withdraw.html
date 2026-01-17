@@ -107,14 +107,19 @@
             display: flex; justify-content: space-between; align-items: center;
             background: var(--glass-bg); border: 1px solid var(--glass-border);
             padding: 15px 20px; border-radius: 16px; margin-bottom: 12px;
+            animation: fadeIn 0.5s ease;
         }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         .h-method { font-weight: 600; font-size: 0.95rem; color: #fff; margin-bottom: 4px; }
         .h-time { font-size: 0.75rem; color: var(--text-muted); }
         .h-amount { font-weight: 700; font-size: 1rem; color: #fff; text-align: right; }
         .h-status { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: right; margin-top: 4px; }
 
+        /* Status Colors */
         .st-pending { color: #f1c40f; }
         .st-approved { color: #00f260; }
+        .st-rejected { color: #ff4757; }
     </style>
 </head>
 <body>
@@ -174,7 +179,7 @@
             <i class="fas fa-history" style="color:var(--text-muted); opacity:0.5"></i>
         </div>
         <div id="hist">
-            <div style="text-align:center; color:#555; padding:20px;">Loading...</div>
+            <div style="text-align:center; color:#555; padding:20px;">Loading History...</div>
         </div>
     </div>
 
@@ -184,7 +189,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // UPDATED FIREBASE CONFIGURATION
+        // FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyBEEkp40hJF81XaLVa9DNPWX-aDy_0oEUE",
             authDomain: "shopping28-84906.firebaseapp.com",
@@ -208,7 +213,7 @@
                 user = u; 
                 loadBal(); 
                 loadMethods(); 
-                loadLimit(); // Load Admin Limit
+                loadLimit(); 
                 loadHist(); 
             }
             else { window.location.href = 'login_register.html'; }
@@ -292,47 +297,37 @@
             });
         }
 
-        // 5. Load History (Filtered & Limited to 5)
+        // 5. Load History (Last 10 Items Logic)
         function loadHist() {
-            // Load more than 5 initially to ensure we have enough after filtering
-            db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).limitToLast(20).on('value', s => {
+            // limitToLast(10) দিয়ে আমরা শেষ ১০টি রেকর্ড নিচ্ছি
+            db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).limitToLast(10).on('value', s => {
                 const div = document.getElementById('hist'); div.innerHTML = "";
                 
                 if(!s.exists()) { 
-                    div.innerHTML = "<div style='text-align:center; color:#555; padding:20px;'>No recent transactions</div>"; 
+                    div.innerHTML = "<div style='text-align:center; color:#555; padding:20px;'>No transaction history</div>"; 
                     return; 
                 }
                 
                 let rawData = [];
                 s.forEach(c => rawData.push(c.val()));
                 
-                // FILTER: Remove Rejected
-                const activeData = rawData.filter(item => item.status !== 'rejected');
-                
-                // REVERSE: Newest first
-                activeData.reverse();
+                // অ্যারে রিভার্স করছি যাতে নতুন রিকোয়েস্ট সবার উপরে থাকে
+                rawData.reverse();
 
-                // LIMIT: Show only top 5
-                const displayData = activeData.slice(0, 5);
-
-                if(displayData.length === 0) {
-                     div.innerHTML = "<div style='text-align:center; color:#555; padding:20px;'>No active transactions</div>";
-                     return;
-                }
-
-                displayData.forEach(d => {
-                    let a = d.amountUSDT ? d.amountUSDT.toFixed(2) : (d.amount/RATE).toFixed(2);
+                rawData.forEach(d => {
+                    let a = d.amountUSDT ? d.amountUSDT.toFixed(2) : (d.amountBDT/RATE).toFixed(2);
                     let date = d.timestamp ? new Date(d.timestamp).toLocaleDateString() : 'Recent';
+                    let stClass = d.status === 'approved' ? 'st-approved' : (d.status === 'pending' ? 'st-pending' : 'st-rejected');
 
                     div.innerHTML += `
                         <div class="hist-item">
-                            <div class="h-left">
+                            <div>
                                 <div class="h-method">${d.method}</div>
                                 <div class="h-time">${date}</div>
                             </div>
-                            <div class="h-right">
+                            <div style="text-align:right;">
                                 <div class="h-amount">$${a}</div>
-                                <div class="h-status st-${d.status}">${d.status}</div>
+                                <div class="h-status ${stClass}">${d.status}</div>
                             </div>
                         </div>`;
                 });
