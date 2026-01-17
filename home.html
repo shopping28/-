@@ -28,7 +28,7 @@
         .secret-link-btn { margin-top: 20px; background: rgba(0, 0, 0, 0.4); border: 1px dashed var(--neon-blue); padding: 12px 20px; border-radius: 12px; width: 100%; box-sizing: border-box; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; }
         .secret-text { font-family: monospace; font-size: 0.9rem; color: var(--neon-blue); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px; }
-        .stat-box { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 20px; border-radius: 18px; position: relative; backdrop-filter: blur(5px); }
+        .stat-box { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 20px; border-radius: 18px; position: relative; backdrop-filter: blur(5px); cursor: pointer; }
         .stat-label { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
         .stat-num { font-size: 1.8rem; font-weight: 800; margin-top: 10px; color: #fff; }
         .stat-icon { position: absolute; right: 15px; top: 15px; font-size: 1.5rem; opacity: 0.1; color: #fff; }
@@ -88,7 +88,7 @@
     </div>
 
     <div class="stats-grid">
-        <div class="stat-box" onclick="window.location.href='my_team.html'"><div class="stat-label">Active Partners <i class="fas fa-info-circle"></i></div><div class="stat-num" id="partnerCount">0</div><i class="fas fa-user-friends stat-icon"></i></div>
+        <div class="stat-box" onclick="window.location.href='my_team.html'"><div class="stat-label">Active Partners (Direct) <i class="fas fa-info-circle"></i></div><div class="stat-num" id="partnerCount">0</div><i class="fas fa-user-friends stat-icon"></i></div>
         <div class="stat-box" onclick="window.location.href='my_team.html'"><div class="stat-label">Active Team (All) <i class="fas fa-info-circle"></i></div><div class="stat-num" id="teamCount">0</div><i class="fas fa-users stat-icon"></i></div>
     </div>
 
@@ -114,7 +114,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // UPDATED FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyBEEkp40hJF81XaLVa9DNPWX-aDy_0oEUE",
             authDomain: "shopping28-84906.firebaseapp.com",
@@ -128,28 +127,9 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
         const db = firebase.database();
-        
-        let fullUid = "";
-        let realActivationDate = "Verified"; 
-        let realRefLink = "";
-        let isUidHidden = true;
-        let isDateHidden = true;
-        let isVoiceReady = false;
-
         const RATE = 120; // 1 USD = 120 BDT
-
-        // Financial Variables
-        let userCurrentBalance = 0; 
-        let userTotalWithdrawn = 0; 
-        let dbTodayIncome = 0; 
-
-        // Helper: Check if today
-        function isToday(timestamp) { 
-            if(!timestamp) return false; 
-            const date = new Date(timestamp); 
-            const today = new Date(); 
-            return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear(); 
-        }
+        
+        let fullUid = "", realActivationDate = "Verified", realRefLink = "", isUidHidden = true, isDateHidden = true, isVoiceReady = false;
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -157,29 +137,34 @@
                     const data = snapshot.val();
                     if(data) {
                         if(data.status !== 'active') { window.location.href = 'account_active.html'; return; }
-                        
                         document.getElementById('loader').style.display = 'none';
                         fullUid = user.uid;
                         document.getElementById('u_name').innerText = data.firstName || "User";
                         document.getElementById('headerCode').innerText = "ID: " + (data.ownCode || "...");
                         if(data.profilePic) document.getElementById('u_img').src = data.profilePic;
-                        
                         realActivationDate = data.activatedAt ? new Date(data.activatedAt).toLocaleDateString('en-GB') : "Verified";
                         realRefLink = `shopping28.io/b/${data.ownCode}`;
 
-                        // === CORE LOGIC FIX: Trust the Database ===
-                        // User Current Balance (Real Wallet)
-                        userCurrentBalance = parseFloat(data.balance || 0);
+                        // Financials
+                        const balBDT = parseFloat(data.balance || 0);
+                        document.getElementById('currentBalance').innerText = (balBDT/RATE).toFixed(2);
                         
-                        // Today's Profit (We calculate from rewards history + task income)
-                        dbTodayIncome = parseFloat(data.today_income || data.todayEarning || 0);
-                        
-                        document.getElementById('currentBalance').innerText = toUSDT(userCurrentBalance);
-                        
-                        // Calculate Total Profit (Lifetime) & Today's Profit properly
-                        calculateFinancials(user.uid);
+                        // Calculate Lifetime (Balance + Withdrawn)
+                        let totalWithdrawn = 0;
+                        db.ref('withdraw_requests').orderByChild('uid').equalTo(user.uid).once('value', wSnap => {
+                            wSnap.forEach(c => { 
+                                const w = c.val();
+                                if(w.status === 'approved' || w.status === 'pending') {
+                                    totalWithdrawn += parseFloat(w.amountBDT || w.amount || 0);
+                                }
+                            });
+                            document.getElementById('totalProfit').innerText = ((balBDT + totalWithdrawn)/RATE).toFixed(2);
+                        });
 
-                        // Team Count
+                        // Calculate Today (Commission History + Rewards)
+                        calculateToday(user.uid);
+
+                        // Team Count (Recursive MLM)
                         if(data.ownCode) {
                             countTeam(data.ownCode);
                         }
@@ -190,82 +175,63 @@
             } else { window.location.href = 'login_register.html'; }
         });
 
-        function calculateFinancials(uid) {
-            // 1. Fetch Withdrawals (Pending + Approved)
-            userTotalWithdrawn = 0;
-            db.ref('withdraw_requests').orderByChild('uid').equalTo(uid).once('value', (snap) => {
-                if(snap.exists()) {
-                    snap.forEach(child => {
-                        const w = child.val();
-                        if(w.status === 'approved' || w.status === 'pending') {
-                            let amt = parseFloat(w.amountBDT || w.amount || 0);
-                            userTotalWithdrawn += amt;
-                        }
-                    });
-                }
-                
-                // === TOTAL PROFIT LOGIC ===
-                // Total = Current Balance + Money you took out
-                const totalLifetimeBDT = userCurrentBalance + userTotalWithdrawn;
-                document.getElementById('totalProfit').innerText = toUSDT(totalLifetimeBDT);
-            });
-
-            // 2. Fetch Today's Extra Rewards (VIP, Targets)
-            let extraToday = 0;
-            
-            // Check Target Rewards (Weekly/Monthly)
-            db.ref('users/'+uid+'/target_rewards').once('value', snap => {
+        function calculateToday(uid) {
+            const todayStr = new Date().toDateString();
+            let todaySum = 0;
+            // Commission
+            db.ref(`users/${uid}/commission_history`).once('value', snap => {
                 snap.forEach(c => {
                     const r = c.val();
-                    if(isToday(r.timestamp)) extraToday += parseFloat(r.amount); // amount in USD usually, need to check format
+                    if(new Date(r.timestamp).toDateString() === todayStr) todaySum += parseFloat(r.amount);
                 });
-                
-                // Check VIP Rewards
-                db.ref('users/'+uid+'/vip_rewards').once('value', vSnap => {
-                    vSnap.forEach(c => {
+                // Rewards
+                db.ref(`users/${uid}/target_rewards`).once('value', rSnap => {
+                    rSnap.forEach(c => {
                         const r = c.val();
-                        if(isToday(r.timestamp)) extraToday += parseFloat(r.amount); // reward in USD
+                        if(new Date(r.timestamp).toDateString() === todayStr) todaySum += parseFloat(r.amountBDT);
                     });
-
-                    // Update Today UI (Task Income in BDT/RATE + Rewards in USD)
-                    // Assuming dbTodayIncome is in BDT
-                    const taskIncomeUSD = dbTodayIncome / RATE;
-                    const totalTodayUSD = taskIncomeUSD + extraToday; // extraToday is already USD
-                    document.getElementById('todayProfit').innerText = totalTodayUSD.toFixed(2);
+                    document.getElementById('todayProfit').innerText = (todaySum/RATE).toFixed(2);
                 });
             });
         }
 
         function countTeam(myCode) {
-            let activeDirects = 0;
-            let totalTeam = 0;
-            // Simplified recursive count
-            let known = new Set();
-            
-            function recurse(code, depth) {
-                if(depth > 10) return;
-                db.ref('users').orderByChild('referredBy').equalTo(code).on('child_added', s => {
-                    const u = s.val();
-                    if(!known.has(s.key)) {
-                        known.add(s.key);
-                        if(u.status === 'active') {
-                            totalTeam++;
-                            document.getElementById('teamCount').innerText = totalTeam;
-                            if(depth === 1) {
-                                activeDirects++;
-                                document.getElementById('partnerCount').innerText = activeDirects;
+            let directPartners = 0;
+            let totalTeamSize = 0;
+            let processedUsers = new Set(); 
+
+            // Function to traverse downline (MLM Style)
+            function traverseDownline(uplineCode, isDirect) {
+                db.ref('users').orderByChild('referredBy').equalTo(uplineCode).once('value', snap => {
+                    if (!snap.exists()) return;
+
+                    snap.forEach(child => {
+                        const user = child.val();
+                        if (!processedUsers.has(child.key) && user.status === 'active') {
+                            processedUsers.add(child.key);
+                            totalTeamSize++; 
+                            
+                            if (isDirect) {
+                                directPartners++;
+                            }
+
+                            // Update UI
+                            document.getElementById('partnerCount').innerText = directPartners;
+                            document.getElementById('teamCount').innerText = totalTeamSize;
+
+                            // Recursion
+                            if (user.ownCode) {
+                                traverseDownline(user.ownCode, false);
                             }
                         }
-                        if(u.ownCode) recurse(u.ownCode, depth+1);
-                    }
+                    });
                 });
             }
-            recurse(myCode, 1);
+            traverseDownline(myCode, true);
         }
 
         function unlockAudio() { if(!isVoiceReady) { window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); isVoiceReady = true; } }
         function speak(text) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; window.speechSynthesis.speak(u); }
-        function toUSDT(taka) { let val = parseFloat(taka); if(isNaN(val)) val = 0; return (val / RATE).toFixed(2); }
         function toggleUid() { isUidHidden = !isUidHidden; document.getElementById('u_uid_display').innerText = isUidHidden ? "UID: ••••••••" : "UID: " + fullUid; document.getElementById('uid_eye').className = isUidHidden ? "fas fa-eye-slash" : "fas fa-eye"; }
         function toggleDate() { isDateHidden = !isDateHidden; document.getElementById('u_date_display').innerText = isDateHidden ? "Active: ••••••••" : "Active: " + realActivationDate; document.getElementById('date_eye').className = isDateHidden ? "fas fa-eye-slash" : "fas fa-eye"; }
         function revealAndCopyLink() { document.getElementById('link_secret_text').innerText = realRefLink; document.getElementById('link_secret_text').style.color = "#fff"; navigator.clipboard.writeText(`https://shopping28.github.io/-/login_register.html?ref=${realRefLink.split('/').pop()}`).then(() => { alert("Link Copied!"); }); }
