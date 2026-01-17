@@ -161,13 +161,24 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyDzEo1rLM6xwz8O4iEYIOvFi4JZQG_TJ0g", authDomain: "art-paid-work001.firebaseapp.com", databaseURL: "https://art-paid-work001-default-rtdb.firebaseio.com", projectId: "art-paid-work001", storageBucket: "art-paid-work001.firebasestorage.app", messagingSenderId: "524647364992", appId: "1:524647364992:web:c91b2dc55ab9b30d3ba965" };
+        // UPDATED FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyBEEkp40hJF81XaLVa9DNPWX-aDy_0oEUE",
+            authDomain: "shopping28-84906.firebaseapp.com",
+            databaseURL: "https://shopping28-84906-default-rtdb.firebaseio.com",
+            projectId: "shopping28-84906",
+            storageBucket: "shopping28-84906.firebasestorage.app",
+            messagingSenderId: "252107906792",
+            appId: "1:252107906792:web:d39b0be25c88e07015b35d"
+        };
+        
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
 
         let currentUser = null;
-        let directActiveCount = 0; // Only Direct Referrals
+        let directActiveCount = 0; 
+        const RATE = 120; // 1 USD = 120 BDT
 
         // VIP LEVELS CONFIGURATION
         const VIP_LEVELS = [
@@ -268,9 +279,10 @@
         function claimVip(levelId, reward) {
             const updates = {};
             const timestamp = Date.now();
+            const rewardBDT = reward * RATE; // Convert USD Reward to BDT for wallet consistency
 
-            // A. Add Balance
-            db.ref('users/' + currentUser.uid + '/balance').transaction(bal => (bal || 0) + reward);
+            // A. Add Balance (BDT)
+            db.ref('users/' + currentUser.uid + '/balance').transaction(bal => (bal || 0) + rewardBDT);
 
             // B. Mark Completed
             updates['users/' + currentUser.uid + '/completed_levels/vip/' + levelId] = true;
@@ -279,12 +291,13 @@
             const historyKey = db.ref('users/' + currentUser.uid + '/vip_rewards').push().key;
             updates['users/' + currentUser.uid + '/vip_rewards/' + historyKey] = {
                 level: levelId,
-                amount: reward,
+                amount: reward, // Store USD value in history for reference
+                amountBDT: rewardBDT,
                 timestamp: timestamp
             };
 
             db.ref().update(updates).then(() => {
-                alert(`Congratulations! $${reward} added to your balance.`);
+                alert(`Congratulations! $${reward} (approx ${rewardBDT} BDT) added to your balance.`);
                 renderLevels();
             });
         }
