@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* (Premium Purple CSS) */
+        /* (Same Premium Purple CSS) */
         :root { --bg-dark: #020617; --card-bg: #0f172a; --primary: #9333ea; --secondary: #db2777; --neon-purple: #d946ef; --neon-gold: #facc15; --neon-red: #ef4444; --neon-blue: #00f2ff; --neon-green: #10b981; --text-main: #f8fafc; --text-muted: #94a3b8; }
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Outfit', sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; overflow-x: hidden; }
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
@@ -58,7 +58,7 @@
         </div>
     </div>
 
-    <!-- Statuses (Same Logic as Weekly, Different Colors) -->
+    <!-- Statuses -->
     <div id="rejectedArea" class="status-box rejected-box">
         <h4 style="margin:0; color:var(--neon-red)"><i class="fas fa-times-circle"></i> Rejected</h4>
         <p style="font-size:0.9rem; opacity:0.8; margin-top:5px;">Reason: <span id="rejectReason">...</span></p>
@@ -90,9 +90,11 @@
         <button id="submitReviewBtn" onclick="submitForReview()" style="display:none; width:100%; margin-top:15px; background:var(--neon-gold); color:#000; padding:14px; border-radius:12px; font-weight:800; border:none; cursor:pointer;">SUBMIT FOR REVIEW <i class="fas fa-paper-plane"></i></button>
     </div>
 
-    <div class="levels-grid" id="levelsContainer"></div>
+    <div class="levels-grid" id="levelsContainer">
+        <div style="text-align:center; color:#666; padding:20px;">Loading Challenges...</div>
+    </div>
 
-    <!-- Modals (Same logic) -->
+    <!-- Modals -->
     <div class="modal-overlay" id="buyModal">
         <div class="modal-box">
             <h3>Select Package</h3><div id="pkgList" class="pkg-list">Loading...</div>
@@ -126,12 +128,8 @@
         const db = firebase.database(); const auth = firebase.auth();
         let currentUser=null, myCredits=0, adminWallet="", currentActiveTarget=null, pendingRequest=null, reviewRequest=null, selectedPackage=null, timerInterval=null;
 
-        const LEVELS = [
-            { level: 1, target: 10, reward: 7, cost: 2 }, { level: 2, target: 20, reward: 14, cost: 2 }, { level: 3, target: 30, reward: 22, cost: 2 },
-            { level: 4, target: 40, reward: 33, cost: 2 }, { level: 5, target: 50, reward: 44, cost: 2 }, { level: 6, target: 60, reward: 55, cost: 2 }
-        ];
-
-        auth.onAuthStateChanged(user => { if(user) { currentUser=user; loadUserData(); loadAdminData(); checkRequests(); } else { window.location.href = 'login_register.html'; } });
+        auth.onAuthStateChanged(user => { if(user) { currentUser=user; loadUserData(); loadAdminData(); checkRequests(); loadDynamicLevels(); } else { window.location.href = 'login_register.html'; } });
+        
         function loadAdminData() { db.ref('settings/credits/wallet').on('value', snap => adminWallet = snap.val() || "Loading..."); }
         
         function loadUserData() {
@@ -141,104 +139,11 @@
                 currentActiveTarget = u.active_target || null;
                 if(u.last_rejection && !u.rejection_seen) { document.getElementById('rejectedArea').style.display = 'block'; document.getElementById('rejectReason').innerText = u.last_rejection; document.getElementById('pendingArea').style.display = 'none'; }
                 else { document.getElementById('rejectedArea').style.display = 'none'; }
-                renderLevels(u); checkActiveProgress(u);
+                checkActiveProgress(u);
             });
         }
 
         function checkRequests() {
             db.ref('target_requests').orderByChild('uid').equalTo(currentUser.uid).on('value', snap => {
                 pendingRequest = null; document.getElementById('pendingArea').style.display = 'none';
-                snap.forEach(child => { const req = child.val(); if(req.status === 'pending' && req.type === 'monthly') pendingRequest = req; });
-                if(pendingRequest) { document.getElementById('pendingArea').style.display = 'block'; document.getElementById('pendingLevel').innerText = "Monthly Level " + pendingRequest.level; }
-                if(currentUser) db.ref('users/' + currentUser.uid).once('value', s => renderLevels(s.val()));
-            });
-            db.ref('reward_requests').orderByChild('uid').equalTo(currentUser.uid).on('value', snap => {
-                reviewRequest = null; document.getElementById('reviewArea').style.display = 'none';
-                snap.forEach(child => { const req = child.val(); if(req.status === 'pending' && req.type === 'monthly') reviewRequest = req; });
-                if(reviewRequest) { document.getElementById('reviewArea').style.display = 'block'; document.getElementById('reviewLevel').innerText = reviewRequest.level; document.getElementById('activeStatusArea').style.display = 'none'; }
-            });
-        }
-
-        function renderLevels(user) {
-            const container = document.getElementById('levelsContainer'); container.innerHTML = "";
-            let isWeeklyBusy = false; 
-            if(currentActiveTarget && currentActiveTarget.type === 'weekly') isWeeklyBusy = true;
-            // Also check pending weekly... (Simplified)
-
-            LEVELS.forEach(lvl => {
-                let btnLabel = `Apply <i class="fas fa-arrow-right"></i>`, btnState = "", costText = `${lvl.cost} Credits`;
-                if(reviewRequest && reviewRequest.level == lvl.level) { btnLabel = "Under Review"; btnState = "disabled"; }
-                else if(currentActiveTarget && currentActiveTarget.level == lvl.level && currentActiveTarget.type === 'monthly') { btnLabel = "Active"; btnState = "disabled"; costText = ""; }
-                else if(pendingRequest && pendingRequest.level == lvl.level) { btnLabel = "Pending..."; btnState = "disabled"; costText = ""; }
-                else if(isWeeklyBusy) { btnLabel = "Weekly Active 🚫"; btnState = "disabled"; costText = "Locked"; }
-
-                container.innerHTML += `<div class="level-card"><div class="lc-top"><span class="lvl-pill">LEVEL ${lvl.level}</span><span class="lvl-reward">$${lvl.reward}</span></div><div class="lc-target">Target: <span>${lvl.target} Refs</span></div><button class="apply-btn" ${btnState} onclick="applyForChallenge(${lvl.level}, ${lvl.target}, ${lvl.reward}, ${lvl.cost})"><span>${btnLabel}</span><small>${costText}</small></button></div>`;
-            });
-        }
-
-        function applyForChallenge(level, targetCount, reward, cost) {
-            if(myCredits < cost) { alert("Not enough credits!"); openBuyModal(); return; }
-            if(confirm(`Apply for Monthly Level ${level}? ${cost} Credits deducted.`)) {
-                const reqData = { uid: currentUser.uid, type: 'monthly', level, targetCount, reward, cost, status: 'pending', timestamp: Date.now() };
-                const updates = {}; updates['users/' + currentUser.uid + '/credits'] = myCredits - cost; updates['target_requests/' + currentUser.uid + '_monthly'] = reqData;
-                db.ref().update(updates).then(() => alert("Submitted for Approval!"));
-            }
-        }
-
-        function checkActiveProgress(user) {
-            if(!user.active_target || user.active_target.type !== 'monthly' || reviewRequest) {
-                document.getElementById('activeStatusArea').style.display = 'none'; clearInterval(timerInterval); return;
-            }
-            const t = user.active_target; document.getElementById('activeStatusArea').style.display = 'block'; document.getElementById('activeLvlName').innerText = `Level ${t.level}`; document.getElementById('activeTarget').innerText = t.targetCount;
-            if(t.endTime) startTimer(t.endTime);
-
-            db.ref('users/' + currentUser.uid + '/ownCode').once('value', codeSnap => {
-                const myCode = codeSnap.val(); let nowActive = 0;
-                db.ref('users').orderByChild('referredBy').equalTo(myCode).once('value', teamSnap => {
-                    teamSnap.forEach(child => { if(child.val().status === 'active') nowActive++; });
-                    let progress = nowActive - t.startCount; if(progress < 0) progress = 0;
-                    document.getElementById('activeProgress').innerText = progress;
-                    document.getElementById('progressBar').style.width = Math.min((progress / t.targetCount) * 100, 100) + "%";
-                    if(progress >= t.targetCount) document.getElementById('submitReviewBtn').style.display = 'block';
-                    else document.getElementById('submitReviewBtn').style.display = 'none';
-                });
-            });
-        }
-
-        function submitForReview() {
-            if(!confirm("Submit task for Admin Review?")) return;
-            const t = currentActiveTarget;
-            const reqData = { uid: currentUser.uid, type: 'monthly', level: t.level, reward: t.reward, targetCount: t.targetCount, completedAt: Date.now(), status: 'pending' };
-            db.ref('reward_requests').push(reqData).then(() => { alert("Submitted! Admin will verify and add funds."); });
-        }
-
-        function startTimer(endTime) {
-            clearInterval(timerInterval);
-            const el = document.getElementById('timerDisplay');
-            function update() {
-                const dist = endTime - Date.now();
-                if(dist < 0) { el.innerText = "EXPIRED"; el.style.color="var(--neon-red)"; return; }
-                const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60));
-                el.innerText = `${d}d ${h}h ${m}m`;
-            }
-            update(); timerInterval=setInterval(update, 1000);
-        }
-
-        function clearRejection() { db.ref('users/' + currentUser.uid + '/rejection_seen').set(true); document.getElementById('rejectedArea').style.display = 'none'; }
-        function openBuyModal(){ document.getElementById('buyModal').style.display='flex'; loadPackages(); }
-        function openRedeemModal(){ document.getElementById('redeemModal').style.display='flex'; }
-        function closeModals(){ document.getElementById('buyModal').style.display='none'; document.getElementById('redeemModal').style.display='none'; document.getElementById('paymentSection').style.display='none'; selectedPackage=null; }
-        function loadPackages(){ 
-            const list = document.getElementById('pkgList'); list.innerHTML="Loading...";
-            db.ref('settings/credit_packages').once('value', snap => {
-                list.innerHTML=""; if(!snap.exists()){ list.innerHTML="No packages."; return; }
-                snap.forEach(c => { const p=c.val(); const d=document.createElement('div'); d.className='pkg-item'; d.innerHTML=`<div><b>${p.credits} Credits</b></div><div style='color:var(--neon-purple)'>$${p.finalPrice}</div>`; d.onclick=()=>selectPackage(d,p); list.appendChild(d); });
-            });
-        }
-        function selectPackage(el, p){ document.querySelectorAll('.pkg-item').forEach(b=>b.classList.remove('selected')); el.classList.add('selected'); selectedPackage={credits:p.credits, price:p.finalPrice}; document.getElementById('payAmount').innerText=p.finalPrice; document.getElementById('adminAddrDisplay').innerText=adminWallet; document.getElementById('paymentSection').style.display='block'; }
-        function copyAddr(){ navigator.clipboard.writeText(adminWallet); alert("Copied!"); }
-        function submitOrder(){ if(!selectedPackage) return; const s=document.getElementById('senderAddr').value, t=document.getElementById('trxId').value; if(!s||!t) return; db.ref('credit_orders').push({uid:currentUser.uid, ...selectedPackage, sender:s, trx:t, status:'pending', timestamp:Date.now()}).then(()=>{alert("Submitted"); closeModals();}); }
-        function submitRedeem(){ const c=document.getElementById('redeemCodeInput').value; if(!c) return; db.ref('redeem_codes/'+c).transaction(d=>{ if(d && d.used<d.limit && (!d.users || !d.users[currentUser.uid])) { d.used++; if(!d.users) d.users={}; d.users[currentUser.uid]=true; return d; } }, (e,c,s)=>{ if(c) { db.ref('users/'+currentUser.uid+'/credits').transaction(v=>(v||0)+s.val().amount); alert("Success!"); closeModals(); } else alert("Invalid!"); }); }
-    </script>
-</body>
-</html>
+                snap.forEach(child => { const req = child.val
