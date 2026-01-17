@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Team | Commission History</title>
+    <title>My Team & Profits</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -130,7 +130,6 @@
                 });
 
                 // Calculate Today's Profit (From Commission History & Rewards)
-                // Note: We scan commission_history to be precise about sources
                 calculateToday(currentUser.uid);
             });
         }
@@ -163,7 +162,6 @@
         }
 
         // 2. LOAD TEAM DATA & LEVELS (Dynamic from History)
-        // This ensures if rate changes, old history remains correct (Locked Price)
         function loadTeamData() {
             // First get configured levels from settings to know names/structure
             db.ref('settings/referral_levels').once('value', setSnap => {
@@ -182,7 +180,6 @@
             container.innerHTML = "";
 
             // Group History by Level
-            // Structure: { 1: {total: 0, members: []}, 2: ... }
             let levelData = {};
 
             // Initialize based on settings (so we show Level 1, 2 etc even if empty)
@@ -193,7 +190,7 @@
             // Process History Data
             Object.values(history).forEach(record => {
                 const lvl = record.level;
-                if(!levelData[lvl]) levelData[lvl] = { totalBDT: 0, members: [] }; // Handle old levels if settings changed
+                if(!levelData[lvl]) levelData[lvl] = { totalBDT: 0, members: [] }; // Handle old levels
 
                 levelData[lvl].totalBDT += parseFloat(record.amount || 0);
                 levelData[lvl].members.push({
@@ -204,7 +201,6 @@
             });
 
             // Render HTML
-            // Sort keys to ensure Level 1 is first
             Object.keys(levelData).sort((a,b)=>a-b).forEach(lvlNum => {
                 const data = levelData[lvlNum];
                 const totalUSD = (data.totalBDT / RATE).toFixed(2);
