@@ -204,8 +204,8 @@
             <div id="successState" class="status-card" style="display:none; border-color: #00ff88;">
                 <i class="fas fa-check-circle" style="font-size:4rem; color:#00ff88; margin-bottom:10px;"></i>
                 <h2 class="status-title" style="color:#00ff88;">Payment Approved!</h2>
-                <p class="status-desc">Your account is active.</p>
-                <p class="status-desc" id="bonusMsg" style="font-size:0.8rem; color:#facc15;">...</p>
+                <p class="status-desc">Your account is now active.</p>
+                <p class="status-desc" style="font-size:0.8rem;">Redirecting...</p>
             </div>
         </div>
     </div>
@@ -249,12 +249,10 @@
         auth.onAuthStateChanged((user) => {
             if (user) { 
                 currentUser = user;
-                db.ref('users/' + user.uid).on('value', (snap) => {
-                    const u = snap.val();
-                    if (u.status === 'active') {
-                        // Check if Bonus Added
-                        const credits = u.credits || 0;
-                        showSuccess(credits);
+                db.ref('users/' + user.uid + '/status').on('value', (snap) => {
+                    const status = snap.val();
+                    if (status === 'active') {
+                        showSuccess();
                     } else {
                         checkPendingRequest(user.uid);
                     }
@@ -319,20 +317,14 @@
             });
         }
 
-        function showSuccess(credits) {
+        function showSuccess() {
             document.getElementById('loadingInit').style.display = 'none';
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('overlay').style.display = 'flex'; 
             document.getElementById('pendingState').style.display = 'none'; 
             document.getElementById('successState').style.display = 'flex';
             
-            if(credits > 0) {
-                document.getElementById('bonusMsg').innerText = `🎁 You received ${credits} Free Credits!`;
-            } else {
-                document.getElementById('bonusMsg').innerText = "Redirecting...";
-            }
-            
-            setTimeout(() => window.location.href = 'home.html', 3000);
+            setTimeout(() => window.location.href = 'home.html', 2500);
         }
 
         function logout() {
