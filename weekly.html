@@ -62,7 +62,7 @@
         <div style="width:40px;"></div>
     </div>
 
-    <!-- 1. STATS (Updated Logic) -->
+    <!-- 1. STATS -->
     <div class="stats-row">
         <div class="stat-card">
             <div class="stat-lbl">Current Balance</div>
@@ -91,7 +91,7 @@
     <!-- 3. STATUS DISPLAY -->
     <div id="statusArea" class="status-msg">
         <h4 style="margin:0;" id="statusTitle">...</h4>
-        <p style="margin:5px 0 0; font-size:0.9rem;" id="statusDesc">...</p>
+        <div id="statusDesc">...</div>
     </div>
 
     <!-- 4. LEVELS LIST -->
@@ -110,57 +110,33 @@
         const firebaseConfig = { apiKey: "AIzaSyBEEkp40hJF81XaLVa9DNPWX-aDy_0oEUE", authDomain: "shopping28-84906.firebaseapp.com", databaseURL: "https://shopping28-84906-default-rtdb.firebaseio.com", projectId: "shopping28-84906", storageBucket: "shopping28-84906.firebasestorage.app", messagingSenderId: "252107906792", appId: "1:252107906792:web:d39b0be25c88e07015b35d" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database(); const auth = firebase.auth();
+        const RATE = 120;
         
-        let currentUser=null, myCredits=0, currentActiveTarget=null, pendingRequest=null, reviewRequest=null, adminWallet="", selectedPackage=null;
-        const RATE = 120; // 1 USD = 120 BDT
+        let currentUser=null, myCredits=0, currentActiveTarget=null, pendingRequest=null, reviewRequest=null, adminWallet="", selectedPackage=null, timerInterval=null;
 
         auth.onAuthStateChanged(user => { 
             if(user) { currentUser=user; loadUserData(); loadFinancials(); loadLevels(); loadAdminData(); checkRequests(); } 
             else { window.location.href = 'login_register.html'; } 
         });
 
-        // === FINANCIAL STATS LOGIC (UPDATED) ===
+        // FINANCIALS
         function loadFinancials() {
             db.ref('users/' + currentUser.uid).on('value', snap => {
-                const u = snap.val(); 
-                if(!u) return;
-
-                // 1. Current Balance
+                const u = snap.val(); if(!u) return;
                 const balBDT = parseFloat(u.balance || 0);
                 document.getElementById('currBal').innerText = (balBDT/RATE).toFixed(2);
 
-                // 2. Lifetime Profit (Balance + Withdrawn)
                 let totalWithdrawn = 0;
                 db.ref('withdraw_requests').orderByChild('uid').equalTo(currentUser.uid).once('value', wSnap => {
-                    wSnap.forEach(c => { 
-                        const w = c.val();
-                        if(w.status === 'approved' || w.status === 'pending') {
-                            totalWithdrawn += parseFloat(w.amountBDT || w.amount || 0);
-                        }
-                    });
-                    const lifetimeBDT = balBDT + totalWithdrawn;
-                    document.getElementById('totalProf').innerText = (lifetimeBDT/RATE).toFixed(2);
+                    wSnap.forEach(c => { const w = c.val(); if(w.status === 'approved' || w.status === 'pending') totalWithdrawn += parseFloat(w.amountBDT || w.amount || 0); });
+                    document.getElementById('totalProf').innerText = ((balBDT + totalWithdrawn)/RATE).toFixed(2);
                 });
 
-                // 3. Today's Profit (Rewards + Commissions)
-                let todayBDT = 0;
-                const todayStr = new Date().toDateString();
-
-                // From Target Rewards
+                let todayBDT = 0; const todayStr = new Date().toDateString();
                 db.ref(`users/${currentUser.uid}/target_rewards`).once('value', rSnap => {
-                    rSnap.forEach(c => { 
-                        if(new Date(c.val().timestamp).toDateString() === todayStr) {
-                            todayBDT += parseFloat(c.val().amountBDT || 0); 
-                        }
-                    });
-                    
-                    // From Referral Commissions
+                    rSnap.forEach(c => { if(new Date(c.val().timestamp).toDateString() === todayStr) todayBDT += parseFloat(c.val().amountBDT || 0); });
                     db.ref(`users/${currentUser.uid}/commission_history`).once('value', cSnap => {
-                        cSnap.forEach(c => { 
-                            if(new Date(c.val().timestamp).toDateString() === todayStr) {
-                                todayBDT += parseFloat(c.val().amount || 0); 
-                            }
-                        });
+                        cSnap.forEach(c => { if(new Date(c.val().timestamp).toDateString() === todayStr) todayBDT += parseFloat(c.val().amount || 0); });
                         document.getElementById('todayProf').innerText = (todayBDT/RATE).toFixed(2);
                     });
                 });
@@ -182,7 +158,7 @@
                 pendingRequest = null;
                 snap.forEach(c => { if(c.val().status === 'pending' && c.val().type === 'weekly') pendingRequest = true; });
                 updateStatusUI();
-                loadLevels(); // Refresh buttons
+                loadLevels();
             });
             db.ref('reward_requests').orderByChild('uid').equalTo(currentUser.uid).on('value', snap => {
                 reviewRequest = null;
@@ -192,13 +168,16 @@
             });
         }
 
+        // UPDATE UI & START TIMER
         function updateStatusUI() {
             const box = document.getElementById('statusArea');
             const title = document.getElementById('statusTitle');
             const desc = document.getElementById('statusDesc');
             
             box.style.display = 'none';
-            box.className = 'status-msg'; 
+            box.className = 'status-msg';
+
+            if(timerInterval) clearInterval(timerInterval); // Reset timer
 
             if (reviewRequest) {
                 box.style.display = 'block';
@@ -220,77 +199,43 @@
                         let active = 0; team.forEach(m => { if(m.val().status === 'active') active++; });
                         let prog = active - currentActiveTarget.startCount; if(prog < 0) prog = 0;
                         
+                        // Show Progress
+                        let htmlContent = "";
                         if(prog >= currentActiveTarget.targetCount) {
-                            desc.innerHTML = `<b>Target Complete!</b> (${prog}/${currentActiveTarget.targetCount}) <br> <button onclick="submitForReview()" style="background:#000; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; margin-top:5px;">Claim Reward</button>`;
+                            htmlContent = `<b>Target Complete!</b> (${prog}/${currentActiveTarget.targetCount}) <br> <button onclick="submitForReview()" style="background:#000; color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer; margin-top:5px; font-weight:bold;">Claim Reward</button>`;
                         } else {
-                            desc.innerText = `Progress: ${prog} / ${currentActiveTarget.targetCount} Referrals`;
+                            htmlContent = `<p style="margin:5px 0;">Progress: ${prog} / ${currentActiveTarget.targetCount} Referrals</p>`;
                         }
+
+                        // Add Timer Div
+                        htmlContent += `<div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.1); font-size:0.9rem; color:#fff;">
+                            <i class="fas fa-clock" style="color:#facc15"></i> Ends in: <span id="timerDisplay" style="font-weight:bold; color:#facc15; margin-left:5px;">Loading...</span>
+                        </div>`;
+
+                        desc.innerHTML = htmlContent;
+
+                        // Start Timer (Weekly = 7 Days default)
+                        startTargetTimer(currentActiveTarget.timestamp, currentActiveTarget.duration || 7);
                     });
                 });
             }
         }
 
-        // LOAD LEVELS
-        function loadLevels() {
-            db.ref('settings/targets/weekly').on('value', snap => {
-                const c = document.getElementById('levelsContainer'); c.innerHTML = "";
-                if(!snap.exists()) { c.innerHTML = "<div style='text-align:center; color:#666;'>No challenges active.</div>"; return; }
-                
-                let lvls = [];
-                snap.forEach(x => { if(x.val()) lvls.push(x.val()); });
-                lvls.sort((a,b) => a.level - b.level);
+        // TIMER FUNCTION
+        function startTargetTimer(startTime, durationDays) {
+            const endTime = startTime + (durationDays * 24 * 60 * 60 * 1000);
+            
+            function updateTimer() {
+                const now = Date.now();
+                const diff = endTime - now;
 
-                lvls.forEach(l => {
-                    let btnState = "", btnTxt = `Apply Now`;
-                    
-                    if(currentActiveTarget && currentActiveTarget.type === 'weekly') { btnState = "disabled"; btnTxt = "Active"; }
-                    if(pendingRequest) { btnState = "disabled"; btnTxt = "Pending"; }
-                    if(reviewRequest) { btnState = "disabled"; btnTxt = "Reward Pending"; }
+                if(diff <= 0) {
+                    document.getElementById('timerDisplay').innerText = "Expired";
+                    clearInterval(timerInterval);
+                    return;
+                }
 
-                    c.innerHTML += `
-                    <div class="level-card">
-                        <div class="lvl-header">
-                            <span class="lvl-badge">Level ${l.level}</span>
-                            <span class="lvl-reward">$${l.reward}</span>
-                        </div>
-                        <div style="font-size:0.9rem; color:#ccc; margin-bottom:10px;">
-                            🎯 Target: <b style="color:white">${l.target} Active Refs</b> <br>
-                            ⏳ Duration: ${l.duration || 7} Days <br>
-                            🎫 Cost: ${l.cost} Credits
-                        </div>
-                        <button class="apply-btn" ${btnState} onclick="apply(${l.level},${l.target},${l.reward},${l.cost})">${btnTxt}</button>
-                    </div>`;
-                });
-            });
-        }
-
-        function apply(lvl, target, reward, cost) {
-            if(myCredits < cost) { openBuyModal(); return; }
-            if(confirm(`Use ${cost} credits to apply?`)) {
-                db.ref().update({
-                    ['users/'+currentUser.uid+'/credits']: myCredits - cost,
-                    ['target_requests/'+currentUser.uid+'_weekly']: { uid: currentUser.uid, type: 'weekly', level: lvl, targetCount: target, reward: reward, cost: cost, status: 'pending', timestamp: Date.now() }
-                }).then(()=>alert("Application Submitted!"));
-            }
-        }
-
-        function submitForReview() {
-            if(!confirm("Claim Reward Now?")) return;
-            const t = currentActiveTarget;
-            db.ref('reward_requests').push({
-                uid: currentUser.uid, type: 'weekly', level: t.level, reward: t.reward, status: 'pending', timestamp: Date.now()
-            }).then(() => alert("Reward Claim Submitted!"));
-        }
-
-        function loadAdminData(){ db.ref('settings/credits/wallet').on('value',s=> adminWallet=s.val()); }
-        function openBuyModal(){ document.getElementById('buyModal').style.display='flex'; document.getElementById('pkgList').style.display='block'; document.getElementById('paymentSection').style.display='none'; loadPackages(); }
-        function openRedeemModal(){ document.getElementById('redeemModal').style.display='flex'; }
-        function closeModals(){ document.getElementById('buyModal').style.display='none'; document.getElementById('redeemModal').style.display='none'; }
-        function loadPackages(){ const l = document.getElementById('pkgList'); l.innerHTML = "Loading..."; db.ref('settings/credit_packages').once('value', snap => { l.innerHTML = ""; snap.forEach(c => { const p = c.val(); l.innerHTML += `<div class="pkg-item" onclick="selectPkg(${p.credits},${p.finalPrice})"><span>${p.credits} Credits</span><span>$${p.finalPrice}</span></div>`; }); }); }
-        function selectPkg(c, p){ selectedPackage = {credits:c, price:p}; document.getElementById('pkgList').style.display='none'; document.getElementById('paymentSection').style.display='block'; document.getElementById('pkgInfoDisplay').innerText = `${c} Credits - $${p}`; document.getElementById('adminAddrDisplay').innerText = adminWallet; }
-        function copyAddr() { navigator.clipboard.writeText(adminWallet); alert("Copied!"); }
-        function submitOrder(){ const s = document.getElementById('senderAddr').value; const t = document.getElementById('trxId').value; if(!s || !t) return alert("Fill details"); db.ref('credit_orders').push({uid:currentUser.uid, ...selectedPackage, sender:s, trx:t, status:'pending'}).then(()=>{ alert("Order Submitted!"); closeModals(); }); }
-        function submitRedeem() { const code = document.getElementById('redeemCodeInput').value.trim(); if (!code) return alert("Enter Code"); const btn = document.querySelector('#redeemModal .modal-act'); btn.innerText = "Checking..."; btn.disabled = true; db.ref('redeem_codes/' + code).transaction(data => { if (data) { if (data.users_redeemed && data.users_redeemed[currentUser.uid]) return; if (data.used_count >= data.limit) return; data.used_count = (data.used_count || 0) + 1; if (!data.users_redeemed) data.users_redeemed = {}; data.users_redeemed[currentUser.uid] = true; } return data; }, (error, committed, snapshot) => { btn.innerText = "Redeem"; btn.disabled = false; if (!committed) { alert("Invalid, Expired or Used!"); } else { const amt = snapshot.val().amount; db.ref('users/'+currentUser.uid+'/credits').transaction(c => (c||0)+amt); alert(`Success! ${amt} Credits Added.`); closeModals(); } }); }
-    </script>
-</body>
-</html>
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 *
