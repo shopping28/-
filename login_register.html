@@ -121,7 +121,7 @@
         .switch-link { color: var(--primary-gold); font-weight: 700; cursor: pointer; text-decoration: none; margin-left: 5px; }
         .switch-link:hover { text-decoration: underline; }
 
-        .error { color: #ff4757; text-align: center; font-size: 0.85rem; margin-bottom: 15px; min-height: 20px; }
+        .error { color: #ff4757; text-align: center; font-size: 0.85rem; margin-bottom: 15px; min-height: 20px; font-weight: bold; }
 
         /* === FLEX ROW FOR NAMES === */
         .flex-row { display: flex; gap: 10px; }
@@ -349,6 +349,7 @@
             btn.disabled = true; btn.innerText = "Creating Account...";
 
             // Create Unique Auth Email (Country Code + Phone)
+            // এটিই মূলত ডুপ্লিকেট চেক করবে। যদি এই নাম্বারে আগে আইডি থাকে, ফায়ারবেস এরর দিবে।
             const authEmail = countryData.dial.replace('+','') + phone + "@shoppingfree.com";
 
             // Check Referral
@@ -373,8 +374,8 @@
                     db.ref('users/' + cred.user.uid).set({
                         firstName: fname, 
                         lastName: lname, 
-                        phone: phone, // Original number for display
-                        authEmail: authEmail, // Internal ID
+                        phone: phone, 
+                        authEmail: authEmail, 
                         country: countryName,
                         password: pass,
                         ownCode: newCode, 
@@ -388,7 +389,12 @@
                 })
                 .catch((e) => {
                     btn.disabled = false; btn.innerText = "CREATE ACCOUNT";
-                    showMsg(e.code === 'auth/email-already-in-use' ? "Phone already exists!" : e.message);
+                    // ⚠️ HERE IS THE LOGIC TO BLOCK DUPLICATE NUMBERS ⚠️
+                    if (e.code === 'auth/email-already-in-use') {
+                        showMsg("This phone number is already registered!");
+                    } else {
+                        showMsg(e.message);
+                    }
                 });
         }
 
