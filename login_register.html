@@ -76,11 +76,31 @@
 
         .input-icon { padding: 0 15px; color: var(--text-grey); font-size: 1rem; }
         
-        input {
+        input, select {
             width: 100%; background: transparent; border: none; color: #fff;
             padding: 16px 15px 16px 0; font-size: 0.95rem; outline: none;
         }
         input::placeholder { color: #555; }
+
+        /* Country Selector Style */
+        .country-select-wrapper {
+            display: flex;
+            align-items: center;
+            border-right: 1px solid var(--border-color);
+            padding-right: 10px;
+            margin-right: 10px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px 0 0 12px;
+            padding-left: 10px;
+        }
+        .flag-icon { width: 24px; height: 16px; border-radius: 2px; object-fit: cover; margin-right: 5px; }
+        .country-select {
+            width: 60px; padding: 16px 5px;
+            cursor: pointer; appearance: none;
+            font-weight: bold; color: var(--primary-gold);
+            text-align: center;
+        }
+        .country-select option { background: #000; color: #fff; }
 
         /* === BUTTONS === */
         .btn-gold {
@@ -120,7 +140,7 @@
 
         <p id="msg" class="error"></p>
 
-        <!-- REGISTER FORM (Default) -->
+        <!-- REGISTER FORM -->
         <div id="register" class="form-box active">
             <div class="flex-row">
                 <div class="input-group">
@@ -139,12 +159,19 @@
                 </div>
             </div>
 
+            <!-- Country & Phone -->
             <div class="input-group">
-                <label class="input-label">Phone Number</label>
+                <label class="input-label">Select Country & Phone</label>
                 <div class="input-wrapper">
-                    <i class="fas fa-phone-alt input-icon"></i>
-                    <input type="number" id="r_phone" placeholder="Enter phone number">
+                    <div class="country-select-wrapper">
+                        <img id="r_flag_img" src="https://flagcdn.com/w40/bd.png" class="flag-icon">
+                        <select id="r_country" class="country-select" onchange="updateCountry('r')">
+                            <!-- Options Loaded via JS -->
+                        </select>
+                    </div>
+                    <input type="number" id="r_phone" placeholder="1XXXXXXXXX">
                 </div>
+                <small id="r_hint" style="color:#666; font-size:0.7rem; margin-top:5px; display:block;">Required Digits: 11</small>
             </div>
 
             <div class="input-group">
@@ -183,10 +210,15 @@
             <h2 style="text-align:center; margin-bottom:20px; color:white;">Welcome Back</h2>
             
             <div class="input-group">
-                <label class="input-label">Phone Number</label>
+                <label class="input-label">Country & Phone</label>
                 <div class="input-wrapper">
-                    <i class="fas fa-phone-alt input-icon"></i>
-                    <input type="number" id="l_phone" placeholder="Enter your phone">
+                    <div class="country-select-wrapper">
+                        <img id="l_flag_img" src="https://flagcdn.com/w40/bd.png" class="flag-icon">
+                        <select id="l_country" class="country-select" onchange="updateCountry('l')">
+                            <!-- Options Loaded via JS -->
+                        </select>
+                    </div>
+                    <input type="number" id="l_phone" placeholder="Enter phone number">
                 </div>
             </div>
 
@@ -214,19 +246,64 @@
     
     <script>
         // FIREBASE CONFIGURATION
-        const firebaseConfig = {
-            apiKey: "AIzaSyBEEkp40hJF81XaLVa9DNPWX-aDy_0oEUE",
-            authDomain: "shopping28-84906.firebaseapp.com",
-            databaseURL: "https://shopping28-84906-default-rtdb.firebaseio.com",
-            projectId: "shopping28-84906",
-            storageBucket: "shopping28-84906.firebasestorage.app",
-            messagingSenderId: "252107906792",
-            appId: "1:252107906792:web:d39b0be25c88e07015b35d"
-        };
-        
+        const firebaseConfig = { apiKey: "AIzaSyBEEkp40hJF81XaLVa9DNPWX-aDy_0oEUE", authDomain: "shopping28-84906.firebaseapp.com", databaseURL: "https://shopping28-84906-default-rtdb.firebaseio.com", projectId: "shopping28-84906", storageBucket: "shopping28-84906.firebasestorage.app", messagingSenderId: "252107906792", appId: "1:252107906792:web:d39b0be25c88e07015b35d" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
+
+        // COUNTRY DATA LIST
+        const countries = [
+            { code: 'bd', name: 'Bangladesh', dial: '+880', len: [11] },
+            { code: 'in', name: 'India', dial: '+91', len: [10] },
+            { code: 'pk', name: 'Pakistan', dial: '+92', len: [10] },
+            { code: 'us', name: 'USA', dial: '+1', len: [10] },
+            { code: 'gb', name: 'UK', dial: '+44', len: [11] }, // GB for UK flag
+            { code: 'sa', name: 'Saudi Arabia', dial: '+966', len: [9] },
+            { code: 'ae', name: 'UAE', dial: '+971', len: [9] },
+            { code: 'qa', name: 'Qatar', dial: '+974', len: [8] },
+            { code: 'my', name: 'Malaysia', dial: '+60', len: [9, 10] },
+            { code: 'sg', name: 'Singapore', dial: '+65', len: [8] },
+            { code: 'cn', name: 'China', dial: '+86', len: [11] },
+            { code: 'jp', name: 'Japan', dial: '+81', len: [10, 11] },
+            { code: 'kr', name: 'South Korea', dial: '+82', len: [10, 11] },
+            { code: 'au', name: 'Australia', dial: '+61', len: [9] },
+            { code: 'ca', name: 'Canada', dial: '+1', len: [10] },
+            { code: 'de', name: 'Germany', dial: '+49', len: [10, 11] },
+            { code: 'fr', name: 'France', dial: '+33', len: [10] },
+            { code: 'it', name: 'Italy', dial: '+39', len: [9, 10] },
+            { code: 'tr', name: 'Turkey', dial: '+90', len: [10] },
+            { code: 'np', name: 'Nepal', dial: '+977', len: [10] }
+        ];
+
+        // LOAD COUNTRIES
+        function loadCountries() {
+            const selects = ['r_country', 'l_country'];
+            selects.forEach(id => {
+                const el = document.getElementById(id);
+                countries.forEach((c, index) => {
+                    const opt = document.createElement('option');
+                    opt.value = index;
+                    opt.innerText = c.code.toUpperCase();
+                    el.appendChild(opt);
+                });
+            });
+            updateCountry('r');
+            updateCountry('l');
+        }
+
+        function updateCountry(type) {
+            const idx = document.getElementById(`${type}_country`).value;
+            const data = countries[idx];
+            
+            // Update Flag
+            document.getElementById(`${type}_flag_img`).src = `https://flagcdn.com/w40/${data.code}.png`;
+            
+            // Update Validation Hint (Only for register)
+            if(type === 'r') {
+                const lenText = data.len.join(' or ');
+                document.getElementById('r_hint').innerText = `Required Digits: ${lenText} (Dial Code: ${data.dial})`;
+            }
+        }
 
         function switchTab(id) {
             document.querySelectorAll('.form-box').forEach(d => d.classList.remove('active'));
@@ -237,6 +314,7 @@
         function showMsg(text) { document.getElementById('msg').innerText = text; }
 
         window.onload = function() {
+            loadCountries();
             const urlParams = new URLSearchParams(window.location.search);
             const refCode = urlParams.get('ref');
             if (refCode) {
@@ -254,22 +332,32 @@
             const pass = document.getElementById('r_pass').value;
             const cpass = document.getElementById('r_cpass').value;
             const refCode = document.getElementById('r_ref').value.trim();
+            const cIdx = document.getElementById('r_country').value;
+            const countryData = countries[cIdx];
             const btn = document.getElementById('regBtn');
 
-            // REFERRAL CODE IS REQUIRED HERE
             if(!fname || !lname || !phone || !pass || !refCode) return showMsg("All fields are required!");
+            
+            // Validate Phone Length
+            if(!countryData.len.includes(phone.length)) {
+                return showMsg(`Invalid phone length for ${countryData.name}. Must be ${countryData.len.join(' or ')} digits.`);
+            }
+
             if(pass.length < 6) return showMsg("Password must be 6+ chars");
             if(pass !== cpass) return showMsg("Passwords do not match!");
 
             btn.disabled = true; btn.innerText = "Creating Account...";
 
+            // Create Unique Auth Email (Country Code + Phone)
+            const authEmail = countryData.dial.replace('+','') + phone + "@shoppingfree.com";
+
             // Check Referral
             if(refCode === "the_art2000") {
-                createAccount(fname, lname, phone, pass, refCode, btn);
+                createAccount(fname, lname, phone, pass, refCode, btn, authEmail, countryData.name);
             } else {
                 db.ref('users').orderByChild('ownCode').equalTo(refCode).once('value', s => {
                     if(s.exists()) {
-                        createAccount(fname, lname, phone, pass, refCode, btn);
+                        createAccount(fname, lname, phone, pass, refCode, btn, authEmail, countryData.name);
                     } else { 
                         showMsg("Invalid Referral Code!"); 
                         btn.disabled = false; btn.innerText = "CREATE ACCOUNT"; 
@@ -278,16 +366,23 @@
             }
         });
 
-        function createAccount(fname, lname, phone, pass, refBy, btn) {
-            auth.createUserWithEmailAndPassword(phone + "@shoppingfree.com", pass)
+        function createAccount(fname, lname, phone, pass, refBy, btn, authEmail, countryName) {
+            auth.createUserWithEmailAndPassword(authEmail, pass)
                 .then((cred) => {
                     const newCode = (fname.substring(0,3) + Math.floor(1000 + Math.random() * 9000)).toUpperCase();
-                    // 1. Account Created Here
                     db.ref('users/' + cred.user.uid).set({
-                        firstName: fname, lastName: lname, phone: phone, password: pass,
-                        ownCode: newCode, referredBy: refBy, status: 'inactive', balance: 0, joinedAt: new Date().toISOString()
+                        firstName: fname, 
+                        lastName: lname, 
+                        phone: phone, // Original number for display
+                        authEmail: authEmail, // Internal ID
+                        country: countryName,
+                        password: pass,
+                        ownCode: newCode, 
+                        referredBy: refBy, 
+                        status: 'inactive', 
+                        balance: 0, 
+                        joinedAt: new Date().toISOString()
                     }).then(() => {
-                        // 2. Redirect to Activation Page
                         window.location.href = 'account_active.html';
                     });
                 })
@@ -301,19 +396,24 @@
         document.getElementById('loginBtn').addEventListener('click', () => {
             const phone = document.getElementById('l_phone').value.trim();
             const pass = document.getElementById('l_pass').value;
+            const cIdx = document.getElementById('l_country').value;
+            const countryData = countries[cIdx];
+
             if(!phone || !pass) return showMsg("Enter Phone & Password");
             
             const btn = document.getElementById('loginBtn');
             btn.disabled = true; btn.innerText = "Authenticating...";
 
-            auth.signInWithEmailAndPassword(phone + "@shoppingfree.com", pass)
+            // Generate Auth Email for Login
+            const authEmail = countryData.dial.replace('+','') + phone + "@shoppingfree.com";
+
+            auth.signInWithEmailAndPassword(authEmail, pass)
             .then(() => {
-                // Login successful, check status in next page
                 window.location.href = 'account_active.html'; 
             })
             .catch(() => {
                 btn.disabled = false; btn.innerText = "LOGIN ACCESS";
-                showMsg("Invalid Credentials");
+                showMsg("Invalid Phone or Password (Check Country)");
             });
         });
     </script>
